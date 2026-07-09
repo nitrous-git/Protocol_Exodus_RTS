@@ -190,6 +190,7 @@ MonoBehaviour:
   selectionRingHeightOffset: 0.03
   selectionRingRotationSpeed: 20
   terrain: {fileID: 0}
+  cylinderRenderer: {fileID: 6093825781946558288}
 --- !u!136 &7189664564752166857
 CapsuleCollider:
   m_ObjectHideFlags: 0

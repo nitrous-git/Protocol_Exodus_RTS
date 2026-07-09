@@ -14,6 +14,12 @@ public class UnitView : MonoBehaviour
 
     private UnitBase owner;
 
+    [Header("Components")]
+    private MeshRenderer cylinderRenderer; 
+
+    private MaterialPropertyBlock propertyBlock;
+    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
+
     public void Initialize(UnitBase owner)
     {
         this.owner = owner;
@@ -21,7 +27,14 @@ public class UnitView : MonoBehaviour
         if (terrain == null)
             terrain = Terrain.activeTerrain;
 
+        propertyBlock = new();
+        if (cylinderRenderer == null)
+        {
+            cylinderRenderer = this.transform.GetChild(0).GetComponent<MeshRenderer>();
+        }
+
         SetSelected(false);
+        RefreshFactionVisuals();
         //PlayIdle();
     }
 
@@ -118,4 +131,14 @@ public class UnitView : MonoBehaviour
     //    if (animator != null)
     //        animator.Play("Move");
     //}
+
+    public void RefreshFactionVisuals()
+    {
+        if (owner == null)
+            return;
+
+        cylinderRenderer.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetColor(BaseColorID, Color.aquamarine);
+        cylinderRenderer.SetPropertyBlock(propertyBlock);
+    }
 }
