@@ -12,11 +12,14 @@ public class UnitManager : MonoBehaviour
 
         if (!unitList.Contains(unit))
             unitList.Add(unit);
+
+        GameContext.Instance.RegisterUnit(unit);
     }
 
     public void UnregisterUnit(UnitBase unit)
     {
         unitList.Remove(unit);
+        GameContext.Instance.UnregisterUnit(unit);
     }
 
     public bool Contains(UnitBase unit)
