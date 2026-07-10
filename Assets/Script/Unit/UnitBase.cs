@@ -13,6 +13,9 @@ public class UnitBase : MonoBehaviour, IControllable
     [SerializeField] private Transform selectionPoint;
 
     protected Faction ownerFaction;
+    protected GameContext gameContext;
+    protected UnitManager owningUnitManager;
+
     protected IUnitState currentState;
     protected CommandContext currentContext;
 
@@ -23,12 +26,14 @@ public class UnitBase : MonoBehaviour, IControllable
 
     public UnitDefinition Definition => definition;
     public Faction OwnerFaction => ownerFaction;
+
     public CommandType CurrentCommand { get; protected set; } = CommandType.Idle;
+
     public bool IsSelected { get; private set; }
     public bool IsInitialized { get; private set; }
+
     public bool CanReceiveCommands => canReceiveCommands;
     public bool CanBeSelected { get { return canBeSelected; } }
-
 
     public UnitHealth Health => health;
     public UnitMotor Motor => motor;
@@ -49,15 +54,9 @@ public class UnitBase : MonoBehaviour, IControllable
         }
     }
 
-
     protected virtual void Awake()
     {
         CacheComponents();
-    }
-
-    protected virtual void Start()
-    {
-        Initialize();
     }
 
     protected virtual void CacheComponents()
@@ -68,9 +67,16 @@ public class UnitBase : MonoBehaviour, IControllable
         view = GetComponent<UnitView>();
     }
 
-    public virtual void Initialize()
+    public virtual void Initialize(Faction ownerFaction, GameContext gameContext, IPathfindingService pathfindingService, UnitManager owningUnitManager)
     {
+        if (IsInitialized)
+            return;
+
         CacheComponents();
+
+        this.ownerFaction = ownerFaction;
+        this.gameContext = gameContext;
+        this.owningUnitManager = owningUnitManager;
 
         if (definition == null)
         {
@@ -78,7 +84,7 @@ public class UnitBase : MonoBehaviour, IControllable
             return;
         }
 
-        if (GameContext.Instance == null)
+        if (gameContext == null)
         {
             Debug.LogError(name + " cannot initialize because GameContext is missing.");
             return;
@@ -88,7 +94,7 @@ public class UnitBase : MonoBehaviour, IControllable
         {
             motor.Initialize(
                 this,
-                GameContext.Instance.PathfindingService,
+                pathfindingService,
                 definition.moveSpeed
             );
         }
@@ -96,7 +102,7 @@ public class UnitBase : MonoBehaviour, IControllable
         if (view != null)
             view.Initialize(this);
 
-        GameContext.Instance.RegisterUnit(this);
+        owningUnitManager.RegisterUnit(this);
 
         IsInitialized = true;
 
@@ -108,8 +114,7 @@ public class UnitBase : MonoBehaviour, IControllable
         if (!IsInitialized)
             return;
 
-        if (currentState != null)
-            currentState.Tick(this);
+        currentState?.Tick(this);
     }
 
     public virtual void IssueCommand(CommandType commandType, CommandContext context)
@@ -139,13 +144,11 @@ public class UnitBase : MonoBehaviour, IControllable
 
     protected void SetState(IUnitState nextState)
     {
-        if (currentState != null)
-            currentState.OnExit(this);
+        currentState?.OnExit(this);
 
         currentState = nextState;
 
-        if (currentState != null)
-            currentState.OnEnter(this);
+        currentState?.OnEnter(this);
     }
 
     public virtual void SetSelected(bool selected)
@@ -158,9 +161,8 @@ public class UnitBase : MonoBehaviour, IControllable
 
     protected virtual void OnDestroy()
     {
-        if (GameContext.Instance != null)
-            GameContext.Instance.UnregisterUnit(this);
+        if (owningUnitManager != null)
+            owningUnitManager.UnregisterUnit(this);
     }
-
 
 }

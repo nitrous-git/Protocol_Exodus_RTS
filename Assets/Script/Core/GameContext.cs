@@ -1,33 +1,25 @@
 using System.Collections.Generic;
 
-public class GameContext
+public sealed class GameContext
 {
-    // Thread-safe Lazy Singleton Setup
-    private static readonly object _lock = new object();
-    private static GameContext _instance;
-
-    public static GameContext Instance
-    {
-        get
-        {
-            lock (_lock)
-            {
-                if (_instance == null)
-                {
-                    _instance = new GameContext();
-                }
-                return _instance;
-            }
-        }
-    }
-
     private readonly List<UnitBase> allUnits = new List<UnitBase>();
     private readonly List<UnitBase> selectedUnits = new List<UnitBase>();
 
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
     public IReadOnlyList<UnitBase> SelectedUnits => selectedUnits;
 
-    private GameContext() { }
+    public FactionManager FactionManager { get; private set; }
+    public Faction PlayerFaction { get; private set; }
+
+    public void SetFactionManager(FactionManager factionManager)
+    {
+        FactionManager = factionManager;
+    }
+
+    public void SetPlayerFaction(Faction faction)
+    {
+        PlayerFaction = faction;
+    }
 
     public void RegisterUnit(UnitBase unit)
     {
@@ -95,12 +87,11 @@ public class GameContext
         selectedUnits.Clear();
     }
 
-    /// <summary>
-    /// Resets the context. For transitioning between matches or loading levels.
-    /// </summary>
-    public void Reset()
+    public void Clear()
     {
+        ClearSelectedUnits();
         allUnits.Clear();
-        selectedUnits.Clear();
+        FactionManager = null;
+        PlayerFaction = null;
     }
 }

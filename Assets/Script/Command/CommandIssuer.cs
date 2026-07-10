@@ -13,6 +13,15 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private bool issueMoveOnRightClick = true;
     [SerializeField] private bool ignoreInputOverUI = true;
 
+    private GameContext gameContext;
+    private Faction playerFaction;
+
+    public void Initialize(GameContext gameContext, Faction playerFaction)
+    {
+        this.gameContext = gameContext;
+        this.playerFaction = playerFaction;
+    }
+
     private void Awake()
     {
         if (worldCamera == null)
@@ -24,7 +33,7 @@ public class CommandIssuer : MonoBehaviour
         if (!issueMoveOnRightClick)
             return;
 
-        if (GameContext.Instance == null || worldCamera == null)
+        if (gameContext == null || worldCamera == null)
             return;
 
         if (!Input.GetMouseButtonDown(1))
@@ -50,7 +59,7 @@ public class CommandIssuer : MonoBehaviour
 
     public void IssueMoveCommand(Vector3 worldPosition)
     {
-        IReadOnlyList<UnitBase> selectedUnits = GameContext.Instance.SelectedUnits;
+        IReadOnlyList<UnitBase> selectedUnits = gameContext.SelectedUnits;
 
         for (int i = 0; i < selectedUnits.Count; i++)
         {

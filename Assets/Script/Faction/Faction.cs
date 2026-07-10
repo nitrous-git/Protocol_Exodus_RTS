@@ -1,36 +1,39 @@
 using UnityEngine;
 
-public class Faction
+public sealed class Faction
 {
     public FactionDefinition Definition { get; }
-    //public UnitManager UnitManager { get; }
-    //public ResourceManager ResourceManager { get; }
-    //public IFactionController Controller { get; }
+    public IFactionController Controller { get; }
+    public UnitManager UnitManager { get; }
+    public ResourceManager ResourceManager { get; }
 
     public string Name => Definition != null ? Definition.factionName : "Unnamed Faction";
     public Color FactionColor => Definition != null ? Definition.factionColor : Color.white;
-    //public bool IsPlayerControlled => Definition != null && Definition.isPlayerControlled;
+    public bool IsPlayerControlled => Definition != null && Definition.isPlayerControlled;
 
-    //public Faction(FactionDefinition definition, IFactionController controller)
-    //{
-    //    Definition = definition;
-    //    ResourceManager = new ResourceManager();
+    public Faction(
+        FactionDefinition definition,
+        IFactionController controller,
+        UnitManager unitManager,
+        ResourceManager resourceManager,
+        GameContext gameContext)
+    {
+        Definition = definition;
+        Controller = controller;
+        UnitManager = unitManager;
+        ResourceManager = resourceManager;
 
-    //    UnitManager = IsPlayerControlled
-    //        ? new PlayerUnitManager(this)
-    //        : new UnitManager(this);
+        UnitManager?.SetOwnerFaction(this);
+        Controller?.Initialize(this, gameContext);
+    }
 
-    //    Controller = controller;
-    //    Controller?.Initialize(this);
-    //}
+    public void Tick()
+    {
+        Controller?.Tick();
+    }
 
-    //public void UpdateFaction()
-    //{
-    //    Controller?.UpdateFaction();
-    //}
-
-    //public bool IsEnemy(Faction other)
-    //{
-    //    return other != null && other != this;
-    //}
+    public bool IsEnemy(Faction other)
+    {
+        return other != null && other != this;
+    }
 }
