@@ -138,7 +138,7 @@ public class UnitView : MonoBehaviour
             return;
 
         cylinderRenderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetColor(BaseColorID, Color.aquamarine);
+        propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.FactionColor);
         cylinderRenderer.SetPropertyBlock(propertyBlock);
     }
 }

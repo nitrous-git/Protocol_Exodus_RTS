@@ -14,10 +14,17 @@ public class SelectionManager : MonoBehaviour
     [SerializeField] private bool shiftAddsToSelection = true;
     [SerializeField] private bool ignoreInputOverUI = true;
 
+    private GameContext gameContext;
+
     private Vector2 dragStartScreenPosition;
     private Vector2 currentScreenPosition;
     private bool isDragging;
     private bool mouseDownStartedOverUI;
+
+    public void Initialize(GameContext gameContext)
+    {
+        this.gameContext = gameContext;
+    }
 
     private void Awake()
     {
@@ -27,7 +34,7 @@ public class SelectionManager : MonoBehaviour
 
     private void Update()
     {
-        if (worldCamera == null || GameContext.Instance == null)
+        if (worldCamera == null || gameContext == null)
             return;
 
         HandleSelectionInput();
@@ -103,12 +110,12 @@ public class SelectionManager : MonoBehaviour
 
         if (unit != null)
         {
-            GameContext.Instance.SelectUnit(unit, append);
+            gameContext.SelectUnit(unit, append);
             return;
         }
 
         if (!append)
-            GameContext.Instance.ClearSelectedUnits();
+            gameContext.ClearSelectedUnits();
     }
 
     private UnitBase FindUnitUnderMouse()
@@ -132,7 +139,7 @@ public class SelectionManager : MonoBehaviour
         Rect selectionRect = GetScreenRect(dragStartScreenPosition, currentScreenPosition);
         List<UnitBase> unitsInBox = new List<UnitBase>();
 
-        IReadOnlyList<UnitBase> allUnits = GameContext.Instance.AllUnits;
+        IReadOnlyList<UnitBase> allUnits = gameContext.AllUnits;
 
         //Debug.Log("SelectUnitsInBox");
 
@@ -156,7 +163,7 @@ public class SelectionManager : MonoBehaviour
             }
         }
 
-        GameContext.Instance.SelectUnits(unitsInBox, append);
+        gameContext.SelectUnits(unitsInBox, append);
     }
 
     private Rect GetScreenRect(Vector2 start, Vector2 end)

@@ -1,86 +1,45 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-public class GameContext : MonoBehaviour
+public sealed class GameContext
 {
-    public static GameContext Instance { get; private set; }
+    private readonly List<UnitBase> allUnits = new List<UnitBase>();
+    private readonly List<UnitBase> selectedUnits = new List<UnitBase>();
 
-    [Header("Scene Services")]
-    [SerializeField] private MonoBehaviour pathfindingServiceComponent;
-    [SerializeField] private UnitManager unitManager;
-    [SerializeField] private SelectionManager selectionManager;
-    [SerializeField] private CommandIssuer commandIssuer;
+    public IReadOnlyList<UnitBase> AllUnits => allUnits;
+    public IReadOnlyList<UnitBase> SelectedUnits => selectedUnits;
 
-    private List<UnitBase> allUnits = new List<UnitBase>();
-    private List<UnitBase> selectedUnits = new List<UnitBase>();
+    public FactionManager FactionManager { get; private set; }
+    public Faction PlayerFaction { get; private set; }
 
-    public IPathfindingService PathfindingService { get; private set; }
-    public UnitManager UnitManager { get { return unitManager; } }
-    public SelectionManager SelectionManager { get { return selectionManager; } }
-    public CommandIssuer CommandIssuer { get { return commandIssuer; } }
-
-    public IReadOnlyList<UnitBase> AllUnits { get { return allUnits; } }
-    public IReadOnlyList<UnitBase> SelectedUnits { get { return selectedUnits; } }
-
-    private void Awake()
+    public void SetFactionManager(FactionManager factionManager)
     {
-        if (Instance != null && Instance != this)
-        {
-            Debug.LogWarning("Duplicate GameContext found. Destroying duplicate.");
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-
-        PathfindingService = pathfindingServiceComponent as IPathfindingService;
-
-        if (PathfindingService == null)
-            Debug.LogError("Pathfinding service is missing or invalid.");
-
-        ResolveSceneReferences();
+        FactionManager = factionManager;
     }
 
-    private void ResolveSceneReferences()
+    public void SetPlayerFaction(Faction faction)
     {
-        if (unitManager == null)
-            unitManager = GetComponentInChildren<UnitManager>();
-
-        if (selectionManager == null)
-            selectionManager = GetComponentInChildren<SelectionManager>();
-
-        if (commandIssuer == null)
-            commandIssuer = GetComponentInChildren<CommandIssuer>();
+        PlayerFaction = faction;
     }
 
     public void RegisterUnit(UnitBase unit)
     {
-        if (unit == null)
-            return;
+        if (unit == null) return;
 
         if (!allUnits.Contains(unit))
             allUnits.Add(unit);
-
-        if (unitManager != null)
-            unitManager.RegisterUnit(unit);
     }
 
     public void UnregisterUnit(UnitBase unit)
     {
-        if (unit == null)
-            return;
+        if (unit == null) return;
 
         allUnits.Remove(unit);
         selectedUnits.Remove(unit);
-
-        if (unitManager != null)
-            unitManager.UnregisterUnit(unit);
     }
 
     public void SelectUnit(UnitBase unit, bool append)
     {
-        if (unit == null || !unit.CanBeSelected)
-            return;
+        if (unit == null || !unit.CanBeSelected) return;
 
         if (!append)
             ClearSelectedUnits();
@@ -96,13 +55,11 @@ public class GameContext : MonoBehaviour
         if (!append)
             ClearSelectedUnits();
 
-        if (units == null)
-            return;
+        if (units == null) return;
 
         foreach (UnitBase unit in units)
         {
-            if (unit == null || !unit.CanBeSelected)
-                continue;
+            if (unit == null || !unit.CanBeSelected) continue;
 
             if (!selectedUnits.Contains(unit))
                 selectedUnits.Add(unit);
@@ -113,8 +70,7 @@ public class GameContext : MonoBehaviour
 
     public void DeselectUnit(UnitBase unit)
     {
-        if (unit == null)
-            return;
+        if (unit == null) return;
 
         selectedUnits.Remove(unit);
         unit.SetSelected(false);
@@ -131,9 +87,11 @@ public class GameContext : MonoBehaviour
         selectedUnits.Clear();
     }
 
-    private void OnDestroy()
+    public void Clear()
     {
-        if (Instance == this)
-            Instance = null;
+        ClearSelectedUnits();
+        allUnits.Clear();
+        FactionManager = null;
+        PlayerFaction = null;
     }
 }
