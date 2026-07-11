@@ -23,7 +23,7 @@ public sealed class FactionManager
         factions.Remove(faction);
     }
 
-    public void Tick()
+    public void Tick(float deltaTime)
     {
         for (int i = 0; i < factions.Count; i++)
         {

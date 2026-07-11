@@ -32,7 +32,7 @@ public class SelectionManager : MonoBehaviour
             worldCamera = Camera.main;
     }
 
-    private void Update()
+    public void TickInput(float deltaTime)
     {
         if (worldCamera == null || gameContext == null)
             return;

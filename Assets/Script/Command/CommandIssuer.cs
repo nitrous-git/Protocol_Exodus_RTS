@@ -28,7 +28,7 @@ public class CommandIssuer : MonoBehaviour
             worldCamera = Camera.main;
     }
 
-    private void Update()
+    public void TickInput(float deltaTime)
     {
         if (!issueMoveOnRightClick)
             return;

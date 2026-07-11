@@ -2,58 +2,63 @@ using UnityEngine;
 
 public class GameBuilder : MonoBehaviour
 {
+    [Header("Core")]
+    [SerializeField] private GameLoop gameLoop;
+    [SerializeField] private MatchWorld matchWorld;
+
+    [Header("UI Sections")]
+    [SerializeField] private MinimapPanelController minimapPanel;
+    [SerializeField] private SelectionPanelController selectionPanel;
+    [SerializeField] private CommandPanelController commandPanel;
+
     [Header("Faction Definitions")]
     [SerializeField] private FactionDefinition playerFactionDefinition;
 
-    [Header("Scene Services")]
-    [SerializeField] private MonoBehaviour pathfindingServiceComponent;
-    [SerializeField] private SelectionManager selectionManager;
-    [SerializeField] private CommandIssuer commandIssuer;
-
     [Header("Starting Units")]
     [SerializeField] private UnitBase combatUnitPrefab;
-    [SerializeField] private Transform playerSpawnPoint;
-    [SerializeField] private Transform spawnedUnitsRoot;
     [SerializeField] private int startingWorkerCount = 3;
     [SerializeField] private float startingUnitSpacing = 2f;
 
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }
+    public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public Faction PlayerFaction { get; private set; }
-    public IPathfindingService PathfindingService { get; private set; }
 
     private void Awake()
     {
         ResolveSceneReferences();
-        ResolveServices();
-        BuildMatch();
-    }
 
-    private void Update()
-    {
-        FactionManager?.Tick();
+        matchWorld.ResolveServices();
+
+        BuildMatch();
+        InitializeSections();
+        SpawnStartingPlayerUnits();
+        InitializeLoop();
     }
 
     private void ResolveSceneReferences()
     {
-        if (selectionManager == null)
-            selectionManager = GetComponentInChildren<SelectionManager>();
+        if (gameLoop == null)
+            gameLoop = GetComponentInChildren<GameLoop>();
 
-        if (commandIssuer == null)
-            commandIssuer = GetComponentInChildren<CommandIssuer>();
-    }
+        if (matchWorld == null)
+            matchWorld = GetComponentInChildren<MatchWorld>();
 
-    private void ResolveServices()
-    {
-        PathfindingService = pathfindingServiceComponent as IPathfindingService;
+        if (minimapPanel == null)
+            minimapPanel = GetComponentInChildren<MinimapPanelController>();
 
-        if (PathfindingService == null)
-            Debug.LogError("GameBuilder is missing a valid IPathfindingService component.");
+        if (selectionPanel == null)
+            selectionPanel = GetComponentInChildren<SelectionPanelController>();
+
+        if (commandPanel == null)
+            commandPanel = GetComponentInChildren<CommandPanelController>();
     }
 
     private void BuildMatch()
     {
         GameContext = new GameContext();
+
+        ResourceNodeRepository = new ResourceNodeRepository(GameContext);
 
         FactionManager = new FactionManager();
         GameContext.SetFactionManager(FactionManager);
@@ -62,20 +67,17 @@ public class GameBuilder : MonoBehaviour
         GameContext.SetPlayerFaction(PlayerFaction);
 
         FactionManager.AddFaction(PlayerFaction);
-
-        if (selectionManager != null)
-            selectionManager.Initialize(GameContext);
-
-        if (commandIssuer != null)
-            commandIssuer.Initialize(GameContext, PlayerFaction);
-
-        SpawnStartingPlayerUnits();
     }
 
     private Faction BuildPlayerFaction()
     {
         ResourceManager resourceManager = new ResourceManager();
-        UnitManager unitManager = new UnitManager(GameContext, PathfindingService);
+
+        UnitManager unitManager = new UnitManager(
+            GameContext,
+            matchWorld.PathfindingService
+        );
+
         IFactionController controller = new PlayerFactionController();
 
         return new Faction(
@@ -87,9 +89,39 @@ public class GameBuilder : MonoBehaviour
         );
     }
 
+    private void InitializeSections()
+    {
+        matchWorld.Initialize(
+            GameContext,
+            FactionManager,
+            ResourceNodeRepository,
+            PlayerFaction
+        );
+
+        minimapPanel?.Initialize(GameContext, matchWorld);
+        selectionPanel?.Initialize(PlayerFaction, GameContext);
+        commandPanel?.Initialize(PlayerFaction, GameContext);
+    }
+
+    private void InitializeLoop()
+    {
+        if (gameLoop == null)
+        {
+            Debug.LogError("GameBuilder cannot initialize because GameLoop is missing.");
+            return;
+        }
+
+        gameLoop.Initialize(
+            matchWorld,
+            minimapPanel,
+            selectionPanel,
+            commandPanel
+        );
+    }
+
     private void SpawnStartingPlayerUnits()
     {
-        if (PlayerFaction == null)
+        if (PlayerFaction == null || matchWorld == null)
             return;
 
         if (combatUnitPrefab == null)
@@ -98,19 +130,23 @@ public class GameBuilder : MonoBehaviour
             return;
         }
 
-        Vector3 origin = playerSpawnPoint != null ? playerSpawnPoint.position : Vector3.zero;
-        Quaternion rotation = playerSpawnPoint != null ? playerSpawnPoint.rotation : Quaternion.identity;
+        Vector3 origin = matchWorld.PlayerSpawnPoint != null
+            ? matchWorld.PlayerSpawnPoint.position
+            : Vector3.zero;
+
+        Quaternion rotation = matchWorld.PlayerSpawnPoint != null
+            ? matchWorld.PlayerSpawnPoint.rotation
+            : Quaternion.identity;
 
         for (int i = 0; i < startingWorkerCount; i++)
         {
-            Vector3 offset = GetStartingUnitOffset(i+1);
-            Vector3 spawnPosition = origin + offset;
+            Vector3 spawnPosition = origin + GetStartingUnitOffset(i + 1);
 
             PlayerFaction.UnitManager.SpawnUnit(
                 combatUnitPrefab,
                 spawnPosition,
                 rotation,
-                spawnedUnitsRoot
+                matchWorld.UnitsRoot
             );
         }
     }
