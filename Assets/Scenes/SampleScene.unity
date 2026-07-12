@@ -749,7 +749,7 @@ Transform:
   m_GameObject: {fileID: 476404813}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 41.94, y: 0, z: -80.79}
+  m_LocalPosition: {x: 150, y: 0, z: 173.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -780,7 +780,7 @@ Transform:
   m_GameObject: {fileID: 480938120}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8, y: -1, z: 0}
+  m_LocalPosition: {x: 52.8, y: 0, z: 140.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1585,7 +1585,7 @@ Transform:
   m_GameObject: {fileID: 1279945554}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 62.2, y: 0.9158, z: 143.51762}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1737,7 +1737,10 @@ MonoBehaviour:
   unitsRoot: {fileID: 1893217313}
   buildingsRoot: {fileID: 196520087}
   projectilesRoot: {fileID: 1221676278}
-  playerSpawnPoint: {fileID: 480938121}
+  factionSpawnPoints:
+  - {fileID: 480938121}
+  - {fileID: 1989332474}
+  - {fileID: 476404814}
 --- !u!1 &1742503940
 GameObject:
   m_ObjectHideFlags: 0
@@ -1764,7 +1767,7 @@ Transform:
   m_GameObject: {fileID: 1742503940}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -11.411121, y: 0.55567, z: 4.7690277}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1787,7 +1790,9 @@ MonoBehaviour:
   minimapPanel: {fileID: 1144536113}
   selectionPanel: {fileID: 1371911580}
   commandPanel: {fileID: 1788038492}
-  playerFactionDefinition: {fileID: 11400000, guid: 02096f93430aee843bc22e6ffc75c685, type: 2}
+  FactionA_Definition: {fileID: 11400000, guid: 02096f93430aee843bc22e6ffc75c685, type: 2}
+  FactionB_Definition: {fileID: 11400000, guid: e3acd9b9c4d96fa46943014c5ba01390, type: 2}
+  FactionC_Definition: {fileID: 11400000, guid: f7bfc0e744381e2408d4229ff5c91076, type: 2}
   combatUnitPrefab: {fileID: 8320676107144926392, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
   startingWorkerCount: 4
   startingUnitSpacing: 3
@@ -1925,7 +1930,7 @@ Transform:
   m_GameObject: {fileID: 1989332473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 81.39, y: 0, z: 11.89}
+  m_LocalPosition: {x: 125.2, y: 0, z: 62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

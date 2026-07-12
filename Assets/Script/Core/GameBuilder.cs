@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class GameBuilder : MonoBehaviour
 {
@@ -12,7 +13,9 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private CommandPanelController commandPanel;
 
     [Header("Faction Definitions")]
-    [SerializeField] private FactionDefinition playerFactionDefinition;
+    [SerializeField] private FactionDefinition FactionA_Definition;
+    [SerializeField] private FactionDefinition FactionB_Definition;
+    [SerializeField] private FactionDefinition FactionC_Definition;
 
     [Header("Starting Units")]
     [SerializeField] private UnitBase combatUnitPrefab;
@@ -28,11 +31,11 @@ public class GameBuilder : MonoBehaviour
     {
         ResolveSceneReferences();
 
-        matchWorld.ResolveServices();
+        // because we need to pass it to factions before InitializeSections, we might fix this later. 
+        matchWorld.ResolveServices(); 
 
         BuildMatch();
         InitializeSections();
-        SpawnStartingPlayerUnits();
         InitializeLoop();
     }
 
@@ -63,25 +66,33 @@ public class GameBuilder : MonoBehaviour
         FactionManager = new FactionManager();
         GameContext.SetFactionManager(FactionManager);
 
-        PlayerFaction = BuildPlayerFaction();
-        GameContext.SetPlayerFaction(PlayerFaction);
+        // ------ faction setup ------
+        Faction playerFaction = BuildFaction(FactionA_Definition, new PlayerFactionController());
+        SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
 
+        Faction aiFaction01 = BuildFaction(FactionB_Definition, new AIFactionController());
+        SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
+
+        Faction aiFaction02 = BuildFaction(FactionC_Definition, new AIFactionController());
+        SpawnStartingUnits(aiFaction02, matchWorld.FactionSpawnPoints[2]);
+
+        FactionManager.AddFaction(playerFaction);
+        FactionManager.AddFaction(aiFaction01);
+        FactionManager.AddFaction(aiFaction02);
+
+        PlayerFaction = playerFaction;
+        GameContext.SetPlayerFaction(PlayerFaction);
         FactionManager.AddFaction(PlayerFaction);
     }
 
-    private Faction BuildPlayerFaction()
+    private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
         ResourceManager resourceManager = new ResourceManager();
 
-        UnitManager unitManager = new UnitManager(
-            GameContext,
-            matchWorld.PathfindingService
-        );
-
-        IFactionController controller = new PlayerFactionController();
+        UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService);
 
         return new Faction(
-            playerFactionDefinition,
+            definition,
             controller,
             unitManager,
             resourceManager,
@@ -119,9 +130,9 @@ public class GameBuilder : MonoBehaviour
         );
     }
 
-    private void SpawnStartingPlayerUnits()
+    private void SpawnStartingUnits(Faction faction, Transform spawnPoint)
     {
-        if (PlayerFaction == null || matchWorld == null)
+        if (faction == null || matchWorld == null)
             return;
 
         if (combatUnitPrefab == null)
@@ -130,19 +141,19 @@ public class GameBuilder : MonoBehaviour
             return;
         }
 
-        Vector3 origin = matchWorld.PlayerSpawnPoint != null
-            ? matchWorld.PlayerSpawnPoint.position
+        Vector3 origin = spawnPoint != null
+            ? spawnPoint.position
             : Vector3.zero;
 
-        Quaternion rotation = matchWorld.PlayerSpawnPoint != null
-            ? matchWorld.PlayerSpawnPoint.rotation
+        Quaternion rotation = spawnPoint != null
+            ? spawnPoint.rotation
             : Quaternion.identity;
 
         for (int i = 0; i < startingWorkerCount; i++)
         {
             Vector3 spawnPosition = origin + GetStartingUnitOffset(i + 1);
 
-            PlayerFaction.UnitManager.SpawnUnit(
+            faction.UnitManager.SpawnUnit(
                 combatUnitPrefab,
                 spawnPosition,
                 rotation,

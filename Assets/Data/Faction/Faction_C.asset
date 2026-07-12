@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1cfc02b6906fe9448daf883e6128efc, type: 3}
-  m_Name: Faction_Player
+  m_Name: Faction_C
   m_EditorClassIdentifier: Assembly-CSharp::FactionDefinition
-  factionName: Faction_01
-  factionColor: {r: 0.028596058, g: 0.6981132, b: 0, a: 1}
+  factionName: Faction_C
+  factionColor: {r: 0.028898807, g: 0.020024916, b: 0.8490566, a: 1}
   isPlayerControlled: 1

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 // owner of world-level update, equivalent of GamePanel
@@ -19,14 +20,14 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private Transform projectilesRoot;
 
     [Header("Spawn Points")]
-    [SerializeField] private Transform playerSpawnPoint;
+    [SerializeField] private List<Transform> factionSpawnPoints = new();
 
     public IPathfindingService PathfindingService { get; private set; }
 
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
     public Transform ProjectilesRoot => projectilesRoot;
-    public Transform PlayerSpawnPoint => playerSpawnPoint;
+    public IReadOnlyList<Transform> FactionSpawnPoints => factionSpawnPoints;
 
     public FactionManager FactionManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
