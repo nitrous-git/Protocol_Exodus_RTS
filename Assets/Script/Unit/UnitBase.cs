@@ -109,12 +109,17 @@ public class UnitBase : MonoBehaviour, IControllable
         IssueCommand(CommandType.Idle, CommandContext.None());
     }
 
-    protected virtual void Update()
+    public virtual void Tick(float deltaTime)
     {
         if (!IsInitialized)
             return;
 
         currentState?.Tick(this);
+    }
+
+    public virtual void TickLate(float deltaTime)
+    {
+        View?.TickLate();
     }
 
     public virtual void IssueCommand(CommandType commandType, CommandContext context)

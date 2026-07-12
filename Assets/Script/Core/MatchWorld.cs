@@ -80,6 +80,7 @@ public sealed class MatchWorld : MonoBehaviour
 
     public void TickLate(float deltaTime)
     {
+        FactionManager?.TickLate(deltaTime);
         cameraController?.TickLate(deltaTime);
     }
 }

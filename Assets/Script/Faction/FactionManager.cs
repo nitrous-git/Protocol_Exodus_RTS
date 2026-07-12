@@ -27,7 +27,15 @@ public sealed class FactionManager
     {
         for (int i = 0; i < factions.Count; i++)
         {
-            factions[i]?.Tick();
+            factions[i]?.Tick(deltaTime);
+        }
+    }
+
+    public void TickLate(float deltaTime)
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            factions[i]?.TickLate(deltaTime);
         }
     }
 }

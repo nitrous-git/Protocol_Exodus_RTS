@@ -13,13 +13,15 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private bool issueMoveOnRightClick = true;
     [SerializeField] private bool ignoreInputOverUI = true;
 
-    private GameContext gameContext;
-    private Faction playerFaction;
+    private List<UnitBase> commandableUnits = new List<UnitBase>();
 
-    public void Initialize(GameContext gameContext, Faction playerFaction)
+    private GameContext gameContext;
+    private Faction issuingFaction;
+
+    public void Initialize(GameContext gameContext, Faction issuingFaction)
     {
         this.gameContext = gameContext;
-        this.playerFaction = playerFaction;
+        this.issuingFaction = issuingFaction;
     }
 
     private void Awake()
@@ -59,28 +61,42 @@ public class CommandIssuer : MonoBehaviour
 
     public void IssueMoveCommand(Vector3 worldPosition)
     {
+        CollectCommandableSelectedUnits();
+
+        int commandableCount = commandableUnits.Count;
+
+        for (int i = 0; i < commandableCount; i++)
+        {
+            UnitBase unit = commandableUnits[i];
+
+            IControllable controllable = unit as IControllable;
+
+            if (controllable == null)
+                continue;
+
+            Vector3 destination = worldPosition + GetSimpleDestinationOffset(i + 1, commandableCount);
+
+            controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+        }
+    }
+
+    private void CollectCommandableSelectedUnits()
+    {
+        commandableUnits.Clear();
+
+        if (gameContext == null || issuingFaction == null)
+            return;
+
         IReadOnlyList<UnitBase> selectedUnits = gameContext.SelectedUnits;
 
         for (int i = 0; i < selectedUnits.Count; i++)
         {
             UnitBase unit = selectedUnits[i];
 
-            if (unit == null)
+            if (!issuingFaction.CanIssueCommandsTo(unit))
                 continue;
 
-            IControllable controllable = unit as IControllable;
-
-            //Debug.Log("controllable is null");
-            if (controllable == null || !controllable.CanReceiveCommands)
-            {
-                //Debug.Log("controllable is null or CanReceiveCommands is false");
-                continue;
-            }
-
-            Vector3 destination = worldPosition + GetSimpleDestinationOffset(i, selectedUnits.Count);
-
-            //Debug.Log("MoveCommand : "+ unit.name + " at location : " + destination);
-            controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+            commandableUnits.Add(unit);
         }
     }
 

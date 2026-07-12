@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class UnitManager 
 {
-    private readonly List<UnitBase> unitList = new List<UnitBase>();
+    private List<UnitBase> unitList = new List<UnitBase>();
 
     private readonly GameContext gameContext;
     private readonly IPathfindingService pathfindingService;
@@ -15,6 +15,22 @@ public class UnitManager
     {
         this.gameContext = gameContext;
         this.pathfindingService = pathfindingService;
+    }
+
+    public void Tick(float deltaTime)
+    {
+        for (int i = 0; i < unitList.Count; i++)
+        {
+            unitList[i]?.Tick(deltaTime);
+        }
+    }
+
+    public void TickLate(float deltaTime)
+    {
+        for (int i = 0; i < unitList.Count; i++)
+        {
+            unitList[i]?.TickLate(deltaTime);
+        }
     }
 
     public void SetOwnerFaction(Faction ownerFaction)
