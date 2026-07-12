@@ -9,7 +9,7 @@ public sealed class Faction
 
     public string Name => Definition != null ? Definition.factionName : "Unnamed Faction";
     public Color FactionColor => Definition != null ? Definition.factionColor : Color.white;
-    public bool IsPlayerControlled => Definition != null && Definition.isPlayerControlled;
+    public Color SelectionRingColor => Definition != null ? Definition.selectionRingColor : Color.white;
 
     public Faction(
         FactionDefinition definition,
@@ -27,13 +27,36 @@ public sealed class Faction
         Controller?.Initialize(this, gameContext);
     }
 
-    public void Tick()
+    public void Tick(float deltaTime)
     {
+        UnitManager?.Tick(deltaTime);
         Controller?.Tick();
+    }
+
+    public void TickLate(float deltaTime)
+    {
+        UnitManager?.TickLate(deltaTime);
     }
 
     public bool IsEnemy(Faction other)
     {
         return other != null && other != this;
+    }
+
+    public bool CanIssueCommandsTo(UnitBase unit)
+    {
+        if (unit == null || !unit.CanReceiveCommands)
+            return false;
+
+        if (unit.OwnerFaction == this)
+            return true;
+
+        // Later:
+        // shared allied control
+        // temporary mind control
+        // transferred ownership
+        // network authority
+
+        return false;
     }
 }

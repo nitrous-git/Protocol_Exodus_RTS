@@ -15,7 +15,8 @@ public class UnitView : MonoBehaviour
     private UnitBase owner;
 
     [Header("Components")]
-    private MeshRenderer cylinderRenderer; 
+    private MeshRenderer cylinderRenderer;
+    private MeshRenderer selectionRingRenderer;
 
     private MaterialPropertyBlock propertyBlock;
     private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
@@ -31,6 +32,7 @@ public class UnitView : MonoBehaviour
         if (cylinderRenderer == null)
         {
             cylinderRenderer = this.transform.GetChild(0).GetComponent<MeshRenderer>();
+            selectionRingRenderer = selectionRing.GetComponent<MeshRenderer>();
         }
 
         SetSelected(false);
@@ -38,7 +40,7 @@ public class UnitView : MonoBehaviour
         //PlayIdle();
     }
 
-    private void LateUpdate()
+    public void TickLate()
     {
         if (owner == null)
             return;
@@ -140,5 +142,9 @@ public class UnitView : MonoBehaviour
         cylinderRenderer.GetPropertyBlock(propertyBlock);
         propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.FactionColor);
         cylinderRenderer.SetPropertyBlock(propertyBlock);
+
+        selectionRingRenderer.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
+        selectionRingRenderer.SetPropertyBlock(propertyBlock);
     }
 }

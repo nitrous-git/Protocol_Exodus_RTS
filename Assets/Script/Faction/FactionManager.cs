@@ -23,11 +23,19 @@ public sealed class FactionManager
         factions.Remove(faction);
     }
 
-    public void Tick()
+    public void Tick(float deltaTime)
     {
         for (int i = 0; i < factions.Count; i++)
         {
-            factions[i]?.Tick();
+            factions[i]?.Tick(deltaTime);
+        }
+    }
+
+    public void TickLate(float deltaTime)
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            factions[i]?.TickLate(deltaTime);
         }
     }
 }

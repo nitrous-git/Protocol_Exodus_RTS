@@ -1,85 +1,98 @@
 using UnityEngine;
+using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class GameBuilder : MonoBehaviour
 {
-    [Header("Faction Definitions")]
-    [SerializeField] private FactionDefinition playerFactionDefinition;
+    [Header("Core")]
+    [SerializeField] private GameLoop gameLoop;
+    [SerializeField] private MatchWorld matchWorld;
 
-    [Header("Scene Services")]
-    [SerializeField] private MonoBehaviour pathfindingServiceComponent;
-    [SerializeField] private SelectionManager selectionManager;
-    [SerializeField] private CommandIssuer commandIssuer;
+    [Header("UI Sections")]
+    [SerializeField] private MinimapPanelController minimapPanel;
+    [SerializeField] private SelectionPanelController selectionPanel;
+    [SerializeField] private CommandPanelController commandPanel;
+
+    [Header("Faction Definitions")]
+    [SerializeField] private FactionDefinition FactionA_Definition;
+    [SerializeField] private FactionDefinition FactionB_Definition;
+    [SerializeField] private FactionDefinition FactionC_Definition;
 
     [Header("Starting Units")]
     [SerializeField] private UnitBase combatUnitPrefab;
-    [SerializeField] private Transform playerSpawnPoint;
-    [SerializeField] private Transform spawnedUnitsRoot;
     [SerializeField] private int startingWorkerCount = 3;
     [SerializeField] private float startingUnitSpacing = 2f;
 
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }
+    public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public Faction PlayerFaction { get; private set; }
-    public IPathfindingService PathfindingService { get; private set; }
 
     private void Awake()
     {
         ResolveSceneReferences();
-        ResolveServices();
-        BuildMatch();
-    }
 
-    private void Update()
-    {
-        FactionManager?.Tick();
+        // because we need to pass it to factions before InitializeSections, we might fix this later. 
+        matchWorld.ResolveServices(); 
+
+        BuildMatch();
+        InitializeSections();
+        InitializeLoop();
     }
 
     private void ResolveSceneReferences()
     {
-        if (selectionManager == null)
-            selectionManager = GetComponentInChildren<SelectionManager>();
+        if (gameLoop == null)
+            gameLoop = GetComponentInChildren<GameLoop>();
 
-        if (commandIssuer == null)
-            commandIssuer = GetComponentInChildren<CommandIssuer>();
-    }
+        if (matchWorld == null)
+            matchWorld = GetComponentInChildren<MatchWorld>();
 
-    private void ResolveServices()
-    {
-        PathfindingService = pathfindingServiceComponent as IPathfindingService;
+        if (minimapPanel == null)
+            minimapPanel = GetComponentInChildren<MinimapPanelController>();
 
-        if (PathfindingService == null)
-            Debug.LogError("GameBuilder is missing a valid IPathfindingService component.");
+        if (selectionPanel == null)
+            selectionPanel = GetComponentInChildren<SelectionPanelController>();
+
+        if (commandPanel == null)
+            commandPanel = GetComponentInChildren<CommandPanelController>();
     }
 
     private void BuildMatch()
     {
         GameContext = new GameContext();
 
+        ResourceNodeRepository = new ResourceNodeRepository(GameContext);
+
         FactionManager = new FactionManager();
         GameContext.SetFactionManager(FactionManager);
 
-        PlayerFaction = BuildPlayerFaction();
+        // ------ faction setup ------
+        Faction playerFaction = BuildFaction(FactionA_Definition, new PlayerFactionController());
+        SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
+
+        Faction aiFaction01 = BuildFaction(FactionB_Definition, new AIFactionController());
+        SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
+
+        Faction aiFaction02 = BuildFaction(FactionC_Definition, new AIFactionController());
+        SpawnStartingUnits(aiFaction02, matchWorld.FactionSpawnPoints[2]);
+
+        FactionManager.AddFaction(playerFaction);
+        FactionManager.AddFaction(aiFaction01);
+        FactionManager.AddFaction(aiFaction02);
+
+        PlayerFaction = playerFaction;
         GameContext.SetPlayerFaction(PlayerFaction);
-
         FactionManager.AddFaction(PlayerFaction);
-
-        if (selectionManager != null)
-            selectionManager.Initialize(GameContext);
-
-        if (commandIssuer != null)
-            commandIssuer.Initialize(GameContext, PlayerFaction);
-
-        SpawnStartingPlayerUnits();
     }
 
-    private Faction BuildPlayerFaction()
+    private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
         ResourceManager resourceManager = new ResourceManager();
-        UnitManager unitManager = new UnitManager(GameContext, PathfindingService);
-        IFactionController controller = new PlayerFactionController();
+
+        UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService);
 
         return new Faction(
-            playerFactionDefinition,
+            definition,
             controller,
             unitManager,
             resourceManager,
@@ -87,9 +100,39 @@ public class GameBuilder : MonoBehaviour
         );
     }
 
-    private void SpawnStartingPlayerUnits()
+    private void InitializeSections()
     {
-        if (PlayerFaction == null)
+        matchWorld.Initialize(
+            GameContext,
+            FactionManager,
+            ResourceNodeRepository,
+            PlayerFaction
+        );
+
+        minimapPanel?.Initialize(GameContext, matchWorld);
+        selectionPanel?.Initialize(PlayerFaction, GameContext);
+        commandPanel?.Initialize(PlayerFaction, GameContext);
+    }
+
+    private void InitializeLoop()
+    {
+        if (gameLoop == null)
+        {
+            Debug.LogError("GameBuilder cannot initialize because GameLoop is missing.");
+            return;
+        }
+
+        gameLoop.Initialize(
+            matchWorld,
+            minimapPanel,
+            selectionPanel,
+            commandPanel
+        );
+    }
+
+    private void SpawnStartingUnits(Faction faction, Transform spawnPoint)
+    {
+        if (faction == null || matchWorld == null)
             return;
 
         if (combatUnitPrefab == null)
@@ -98,19 +141,23 @@ public class GameBuilder : MonoBehaviour
             return;
         }
 
-        Vector3 origin = playerSpawnPoint != null ? playerSpawnPoint.position : Vector3.zero;
-        Quaternion rotation = playerSpawnPoint != null ? playerSpawnPoint.rotation : Quaternion.identity;
+        Vector3 origin = spawnPoint != null
+            ? spawnPoint.position
+            : Vector3.zero;
+
+        Quaternion rotation = spawnPoint != null
+            ? spawnPoint.rotation
+            : Quaternion.identity;
 
         for (int i = 0; i < startingWorkerCount; i++)
         {
-            Vector3 offset = GetStartingUnitOffset(i+1);
-            Vector3 spawnPosition = origin + offset;
+            Vector3 spawnPosition = origin + GetStartingUnitOffset(i + 1);
 
-            PlayerFaction.UnitManager.SpawnUnit(
+            faction.UnitManager.SpawnUnit(
                 combatUnitPrefab,
                 spawnPosition,
                 rotation,
-                spawnedUnitsRoot
+                matchWorld.UnitsRoot
             );
         }
     }
