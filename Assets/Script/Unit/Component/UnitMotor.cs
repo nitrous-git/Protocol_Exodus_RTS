@@ -82,7 +82,7 @@ public class UnitMotor : MonoBehaviour
         hasPath = false;
     }
 
-    private void Update()
+    public void Tick()
     {
         if (!hasPath)
             return;

@@ -115,6 +115,8 @@ public class UnitBase : MonoBehaviour, IControllable
             return;
 
         currentState?.Tick(this);
+
+        Motor?.Tick();
     }
 
     public virtual void TickLate(float deltaTime)

@@ -9,7 +9,7 @@ public class CommandIssuer : MonoBehaviour
 
     [Header("Move Command")]
     [SerializeField] private LayerMask groundMask = ~0;
-    [SerializeField] private float groupDestinationSpacing = 50.25f;
+    [SerializeField] private float groupDestinationSpacing = 5f;
     [SerializeField] private bool issueMoveOnRightClick = true;
     [SerializeField] private bool ignoreInputOverUI = true;
 
@@ -53,7 +53,9 @@ public class CommandIssuer : MonoBehaviour
         RaycastHit hit;
 
         if (!Physics.Raycast(ray, out hit, 10000f, groundMask))
+        {
             return false;
+        }
 
         IssueMoveCommand(hit.point);
         return true;
@@ -74,8 +76,9 @@ public class CommandIssuer : MonoBehaviour
             if (controllable == null)
                 continue;
 
-            Vector3 destination = worldPosition + GetSimpleDestinationOffset(i + 1, commandableCount);
+            Vector3 destination = worldPosition + GetSimpleDestinationOffset(i, commandableCount);
 
+            //Debug.Log("Success issueCommand");
             controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
         }
     }

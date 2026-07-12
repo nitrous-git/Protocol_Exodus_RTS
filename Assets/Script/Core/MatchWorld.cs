@@ -58,13 +58,15 @@ public sealed class MatchWorld : MonoBehaviour
 
         selectionManager?.Initialize(gameContext);
         commandIssuer?.Initialize(gameContext, playerFaction);
-        cameraController?.Initialize(gameContext);
+
+        cameraController?.Initialize();
     }
 
     public void TickInput(float deltaTime)
     {
         selectionManager?.TickInput(deltaTime);
         commandIssuer?.TickInput(deltaTime);
+        cameraController?.TickInput(deltaTime);
     }
 
     public void TickSimulation(float deltaTime)

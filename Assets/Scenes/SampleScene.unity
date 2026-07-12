@@ -234,7 +234,7 @@ MonoBehaviour:
     m_Bits: 64
   groupDestinationSpacing: 1.25
   issueMoveOnRightClick: 1
-  ignoreInputOverUI: 1
+  ignoreInputOverUI: 0
 --- !u!1 &316370787
 GameObject:
   m_ObjectHideFlags: 0
@@ -1168,6 +1168,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1057549935}
+  - component: {fileID: 1057549936}
   m_Layer: 0
   m_Name: CameraRoot
   m_TagString: Untagged
@@ -1184,13 +1185,34 @@ Transform:
   m_GameObject: {fileID: 1057549934}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 68.56, y: 4.35, z: 155.66}
+  m_LocalPosition: {x: 69.16, y: 4.35, z: 157.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 330585546}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1057549936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1057549934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86c7879a1b363a34e9f14d67bf1b6816, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraController
+  terrain: {fileID: 1084719835}
+  borderBuffer: 25
+  keyboardMovementEnabled: 1
+  movementSpeed: 30
+  northKey: 119
+  southKey: 115
+  westKey: 97
+  eastKey: 100
+  allowArrowKeys: 1
 --- !u!1 &1074590052
 GameObject:
   m_ObjectHideFlags: 0
@@ -1221,7 +1243,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1149530444}
-  - {fileID: 1181941342}
   m_Father: {fileID: 1559407553}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1084719833
@@ -1234,6 +1255,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1084719836}
   - component: {fileID: 1084719835}
+  - component: {fileID: 1084719837}
   - component: {fileID: 1084719834}
   m_Layer: 6
   m_Name: Terrain
@@ -1257,7 +1279,7 @@ TerrainCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ProvidesContacts: 1
+  m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 214d9c817f658554bb01feb0e09a87e3, type: 2}
@@ -1318,6 +1340,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1084719837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084719833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.13333334
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: ff60012f6f267fd488011ad0e3b4cc52, type: 2}
+  m_BuildHeightMesh: 0
 --- !u!1 &1144536111
 GameObject:
   m_ObjectHideFlags: 0
@@ -1408,6 +1462,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NavMeshPathfindingService
   areaMask: -1
   requireCompletePath: 1
+  endpointSampleRadius: 3
+  logPathFailures: 1
 --- !u!1 &1156663935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1442,91 +1498,6 @@ Transform:
   - {fileID: 275599315}
   m_Father: {fileID: 1559407553}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1181941340
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1181941342}
-  - component: {fileID: 1181941341}
-  - component: {fileID: 1181941343}
-  m_Layer: 6
-  m_Name: NavMesh Surface
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1181941341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181941340}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshSurface
-  m_SerializedVersion: 0
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_GenerateLinks: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.13333334
-  m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 4f423fe2feb67d843adff8c8bd1d0924, type: 2}
-  m_BuildHeightMesh: 0
---- !u!4 &1181941342
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181941340}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.9688797, y: -1.00147, z: 30.642365}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1074590053}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!154 &1181941343
-TerrainCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181941340}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_TerrainData: {fileID: 15600000, guid: 214d9c817f658554bb01feb0e09a87e3, type: 2}
-  m_EnableTreeColliders: 1
 --- !u!1 &1221676277
 GameObject:
   m_ObjectHideFlags: 0
@@ -1766,6 +1737,7 @@ MonoBehaviour:
   pathfindingServiceComponent: {fileID: 1149530445}
   selectionManager: {fileID: 648430995}
   commandIssuer: {fileID: 275599316}
+  cameraController: {fileID: 1057549936}
   unitsRoot: {fileID: 1893217313}
   buildingsRoot: {fileID: 196520087}
   projectilesRoot: {fileID: 1221676278}
