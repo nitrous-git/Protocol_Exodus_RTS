@@ -44,10 +44,7 @@ public class NavMeshPathfindingService : MonoBehaviour, IPathfindingService
     //}
 
 
-    public bool TryFindPath(
-    Vector3 start,
-    Vector3 end,
-    List<Vector3> result)
+    public bool TryFindPath(Vector3 start, Vector3 end, List<Vector3> result)
     {
         result.Clear();
 
