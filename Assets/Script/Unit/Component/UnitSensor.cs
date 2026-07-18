@@ -6,77 +6,80 @@ public class UnitSensor : MonoBehaviour
     [SerializeField] private float sensorInterval = 0.2f;
 
     private UnitBase owner;
-    private float nextSensorTime;
+    private GameContext gameContext;
+    private float timeUntilNextScan;
 
-    public void Initialize(UnitBase owner)
+    public bool IsReady => timeUntilNextScan <= 0f;
+
+    public void Initialize(UnitBase owner, GameContext gameContext)
     {
         this.owner = owner;
+        this.gameContext = gameContext;
+
+        // Permit an immediate first scan after initialization.
+        timeUntilNextScan = 0f;
     }
 
-    //public void TickSensor()
-    //{
-    //    if (owner == null || Time.time < nextSensorTime)
-    //        return;
+    public void Tick(float deltaTime)
+    {
+        if (timeUntilNextScan > 0f)
+            timeUntilNextScan -= deltaTime;
+    }
 
-    //    nextSensorTime = Time.time + sensorInterval;
+    public ITargetable FindClosestEnemy(float maxRange)
+    {
 
-    //    if (!(owner is CombatUnit combatUnit))
-    //        return;
+        if (owner == null || gameContext == null || owner.OwnerFaction == null)
+            return null;
 
-    //    if (combatUnit.Definition == null || !combatUnit.Definition.canAttack)
-    //        return;
+        if (!IsReady)
+            return null;
 
-    //    if (combatUnit.CurrentCommand != CommandType.Idle)
-    //        return;
+        timeUntilNextScan = sensorInterval;
 
-    //    ITargetable target = combatUnit.FindBestTargetInVision();
+        ITargetable closestTarget = null;
+        float maxRangeSqr = maxRange * maxRange;
+        float bestDistanceSqr = float.MaxValue;
 
-    //    if (target != null)
-    //        combatUnit.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
-    //}
+        IReadOnlyList<ITargetable> targetables = gameContext.AllTargetables;
 
-    //public ITargetable FindClosestEnemy(float maxRange)
-    //{
-    //    if (owner == null || owner.OwnerFaction == null || GameContext.Instance == null)
-    //        return null;
+        for (int i = 0; i < targetables.Count; i++)
+        {
+            ITargetable candidate = targetables[i];
 
-    //    float maxRangeSqr = maxRange * maxRange;
-    //    ITargetable bestTarget = null;
-    //    float bestDistanceSqr = float.MaxValue;
+            if (!IsValidEnemyTarget(candidate))
+                continue;
 
-    //    IReadOnlyList<ITargetable> targetables = GameContext.Instance.AllTargetables;
+            Vector3 difference = candidate.Position - owner.Position;
 
-    //    for (int i = 0; i < targetables.Count; i++)
-    //    {
-    //        ITargetable candidate = targetables[i];
+            difference.y = 0f;
 
-    //        if (candidate == null)
-    //            continue;
+            float distanceSqr = difference.sqrMagnitude;
 
-    //        if (ReferenceEquals(candidate, owner))
-    //            continue;
+            if (distanceSqr > maxRangeSqr)
+                continue;
 
-    //        if (!candidate.IsAlive)
-    //            continue;
+            if (distanceSqr >= bestDistanceSqr)
+                continue;
 
-    //        if (candidate.OwnerFaction == null)
-    //            continue;
+            closestTarget = candidate;
+            bestDistanceSqr = distanceSqr;
+        }
 
-    //        if (!owner.OwnerFaction.IsEnemy(candidate.OwnerFaction))
-    //            continue;
+        return closestTarget;
+    }
 
-    //        float distanceSqr = (candidate.Position - owner.Position).sqrMagnitude;
+    public bool IsValidEnemyTarget(ITargetable candidate)
+    {
+        if (candidate == null || owner == null)
+            return false;
 
-    //        if (distanceSqr > maxRangeSqr)
-    //            continue;
+        if (ReferenceEquals(candidate, owner) || !candidate.IsAlive)
+            return false;
 
-    //        if (distanceSqr < bestDistanceSqr)
-    //        {
-    //            bestDistanceSqr = distanceSqr;
-    //            bestTarget = candidate;
-    //        }
-    //    }
+        if (owner.OwnerFaction == null || candidate.OwnerFaction == null)
+            return false;
 
-    //    return bestTarget;
-    //}
+        return owner.OwnerFaction.IsEnemy(candidate.OwnerFaction);
+    }
 }

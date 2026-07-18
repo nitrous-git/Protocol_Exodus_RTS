@@ -31,7 +31,7 @@ public sealed class MatchWorld : MonoBehaviour
 
     public FactionManager FactionManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
-
+    public ProjectileManager ProjectileManager { get; private set; }
     public CameraController CameraController => cameraController;
 
     public void ResolveServices()
@@ -46,10 +46,12 @@ public sealed class MatchWorld : MonoBehaviour
         GameContext gameContext,
         FactionManager factionManager,
         ResourceNodeRepository resourceNodeRepository,
+        ProjectileManager projectileManager,
         Faction playerFaction)
     {
         FactionManager = factionManager;
         ResourceNodeRepository = resourceNodeRepository;
+        ProjectileManager = projectileManager;
 
         PathfindingService = pathfindingServiceComponent as IPathfindingService;
 
@@ -73,6 +75,7 @@ public sealed class MatchWorld : MonoBehaviour
     {
         //ResourceNodeRepository?.Tick(deltaTime);
         FactionManager?.Tick(deltaTime);
+        ProjectileManager?.Tick(deltaTime);
 
         // Later:
         // FogOfWarController?.Tick(deltaTime);

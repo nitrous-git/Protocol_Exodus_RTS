@@ -13,10 +13,10 @@ public abstract class UnitState<TUnit> : IUnitState where TUnit : UnitBase
         Debug.LogError($"{GetType().Name} cannot run on unit type {unit.GetType().Name}.");
     }
 
-    public void Tick(UnitBase unit)
+    public void Tick(UnitBase unit, float deltaTime)
     {
         if (unit is TUnit typedUnit)
-            TickTyped(typedUnit);
+            TickTyped(typedUnit, deltaTime);
     }
 
     public void OnExit(UnitBase unit)
@@ -26,6 +26,15 @@ public abstract class UnitState<TUnit> : IUnitState where TUnit : UnitBase
     }
 
     protected virtual void OnEnterTyped(TUnit unit) { }
-    protected virtual void TickTyped(TUnit unit) { }
+
+    // States that do not need deltaTime override this.
+    protected virtual void TickTyped(TUnit unit){ }
+
+    // By default, forward to the parameterless version.
+    protected virtual void TickTyped(TUnit unit, float deltaTime)
+    {
+        TickTyped(unit);
+    }
+
     protected virtual void OnExitTyped(TUnit unit) { }
 }

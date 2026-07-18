@@ -1,8 +1,9 @@
 using System.Data;
+using System.Reflection.Metadata;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
-public class UnitBase : MonoBehaviour, IControllable
+public class UnitBase : MonoBehaviour, IControllable, ITargetable
 {
     [Header("Definition")]
     [SerializeField] protected UnitDefinition definition;
@@ -11,6 +12,9 @@ public class UnitBase : MonoBehaviour, IControllable
     [SerializeField] private bool canBeSelected = true;
     [SerializeField] private bool canReceiveCommands = true;
     [SerializeField] private Transform selectionPoint;
+
+    [Header("Targeting")]
+    [SerializeField] private Transform aimPoint;
 
     protected Faction ownerFaction;
     protected GameContext gameContext;
@@ -33,7 +37,7 @@ public class UnitBase : MonoBehaviour, IControllable
     public bool IsInitialized { get; private set; }
 
     public bool CanReceiveCommands => canReceiveCommands;
-    public bool CanBeSelected { get { return canBeSelected; } }
+    public bool CanBeSelected => canBeSelected;
 
     public UnitHealth Health => health;
     public UnitMotor Motor => motor;
@@ -42,17 +46,9 @@ public class UnitBase : MonoBehaviour, IControllable
 
     public Vector3 Position => transform.position;
     public bool IsAlive => health != null && health.IsAlive;
+    public Transform AimPoint => aimPoint != null ? aimPoint : transform;
 
-    public Vector3 SelectionPosition
-    {
-        get
-        {
-            if (selectionPoint != null)
-                return selectionPoint.position;
-
-            return transform.position;
-        }
-    }
+    public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
 
     protected virtual void Awake()
     {
@@ -78,6 +74,7 @@ public class UnitBase : MonoBehaviour, IControllable
         this.gameContext = gameContext;
         this.owningUnitManager = owningUnitManager;
 
+
         if (definition == null)
         {
             Debug.LogError(name + " cannot initialize because UnitDefinition is missing.");
@@ -90,86 +87,116 @@ public class UnitBase : MonoBehaviour, IControllable
             return;
         }
 
-        if (motor != null)
+        if (health == null)
         {
-            motor.Initialize(
-                this,
-                pathfindingService,
-                definition.moveSpeed
-            );
+            Debug.LogError(name + " cannot initialize because UnitHealth is missing.");
+            return;
         }
 
-        if (view != null)
-            view.Initialize(this);
+        health.Initialize(this, definition.maxHealth);
+        health.OnDied += HandleDied;
+
+        motor?.Initialize(this, pathfindingService, definition.moveSpeed);
+        sensor?.Initialize(this, gameContext);
+        view?.Initialize(this);
 
         owningUnitManager.RegisterUnit(this);
 
         IsInitialized = true;
-
         IssueCommand(CommandType.Idle, CommandContext.None());
     }
 
     public virtual void Tick(float deltaTime)
     {
-        if (!IsInitialized)
-            return;
+        if (!IsInitialized) return;
 
-        currentState?.Tick(this);
-
-        Motor?.Tick();
+        sensor?.Tick(deltaTime);
+        currentState?.Tick(this, deltaTime);
+        motor?.Tick();
     }
 
     public virtual void TickLate(float deltaTime)
     {
-        View?.TickLate();
+        if (!IsInitialized) return; 
+
+        view?.TickLate();
     }
 
     public virtual void IssueCommand(CommandType commandType, CommandContext context)
     {
-        if (!CanReceiveCommands)
-            return;
+        if (!CanReceiveCommands) return;
 
         CurrentCommand = commandType;
         currentContext = context;
 
-        IUnitState nextState = CreateStateForCommand(commandType, context);
-        SetState(nextState);
-    }
+        //IUnitState nextState = CreateStateForCommand(commandType, context);
+        //SetState(nextState);
 
-    protected virtual IUnitState CreateStateForCommand(CommandType commandType, CommandContext context)
-    {
         switch (commandType)
         {
             case CommandType.Move:
-                return new MoveState(context.WorldPosition);
+                SetState(new MoveState(context.WorldPosition));
+                break;
+
+            case CommandType.HoldPosition: 
+                //EndPathEarly();
+                break;
 
             case CommandType.Idle:
             default:
-                return new IdleState();
+                SetState(new IdleState()); 
+                break;  
         }
     }
+
+    //protected virtual IUnitState CreateStateForCommand(CommandType commandType, CommandContext context)
+    //{
+    //    switch (commandType)
+    //    {
+    //        case CommandType.Move:
+    //            return new MoveState(context.WorldPosition);
+
+    //        case CommandType.Idle:
+    //        default:
+    //            return new IdleState();
+    //    }
+    //}
+
+    // Selection methods
 
     protected void SetState(IUnitState nextState)
     {
         currentState?.OnExit(this);
-
         currentState = nextState;
-
         currentState?.OnEnter(this);
     }
 
     public virtual void SetSelected(bool selected)
     {
         IsSelected = selected;
+        view?.SetSelected(selected);
+    }
 
-        if (view != null)
-            view.SetSelected(selected);
+    // Health & Damage methods
+
+    public virtual void TakeDamage(DamageInfo damageInfo)
+    {
+        health?.ApplyDamage(damageInfo);
+    }
+
+    protected virtual void HandleDied()
+    {
+        motor?.Stop();
+        SetSelected(false);
+        owningUnitManager?.RequestRemoveUnit(this);
     }
 
     protected virtual void OnDestroy()
     {
-        if (owningUnitManager != null)
-            owningUnitManager.UnregisterUnit(this);
+        if (health != null)
+            health.OnDied -= HandleDied;
+
+        owningUnitManager?.UnregisterUnit(this);
     }
 
 }

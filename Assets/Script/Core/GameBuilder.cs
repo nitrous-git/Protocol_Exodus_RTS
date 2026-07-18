@@ -24,6 +24,7 @@ public class GameBuilder : MonoBehaviour
 
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }
+    public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public Faction PlayerFaction { get; private set; }
 
@@ -60,11 +61,12 @@ public class GameBuilder : MonoBehaviour
     private void BuildMatch()
     {
         GameContext = new GameContext();
-
         ResourceNodeRepository = new ResourceNodeRepository(GameContext);
-
         FactionManager = new FactionManager();
+        ProjectileManager = new ProjectileManager(matchWorld.ProjectilesRoot);
+
         GameContext.SetFactionManager(FactionManager);
+        GameContext.SetProjectileManager(ProjectileManager);
 
         // ------ faction setup ------
         Faction playerFaction = BuildFaction(FactionA_Definition, new PlayerFactionController());
@@ -106,6 +108,7 @@ public class GameBuilder : MonoBehaviour
             GameContext,
             FactionManager,
             ResourceNodeRepository,
+            ProjectileManager,
             PlayerFaction
         );
 
