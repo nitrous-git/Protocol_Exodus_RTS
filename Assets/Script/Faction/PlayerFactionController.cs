@@ -1,7 +1,11 @@
+using UnityEngine;
+
 public sealed class PlayerFactionController : IFactionController, IPlayerInputController
 {
     private Faction faction;
     private GameContext gameContext;
+
+    private PlayerInteractionMode currentInteractionMode = PlayerInteractionMode.Default;
 
     private SelectionManager selectionManager;
     private CommandIssuer commandIssuer;
@@ -14,6 +18,8 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private bool isPlayerControlInitialized;
     private bool selectionPointerCaptured;
+
+    public PlayerInteractionMode CurrentInteractionMode => currentInteractionMode;
 
     public void Initialize(Faction faction, GameContext gameContext)
     {
@@ -42,6 +48,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         mouseInputHandler = new MouseInputHandler(inputBindings);
 
         isPlayerControlInitialized = true;
+        selectionPointerCaptured = false;
+
+        currentInteractionMode = PlayerInteractionMode.Default;
+        EnterInteractionMode(currentInteractionMode);
     }
 
     public void Tick(){ }
@@ -50,29 +60,41 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     {
         if (!isPlayerControlInitialized)
         {
-            cameraController?.ClearMovementInput();
-            selectionManager?.CancelSelection();
-            selectionPointerCaptured = false;
+            ResetPlayerInputState();
             return;
         }
 
         keyInputHandler.TickInput();
         mouseInputHandler.TickInput();
 
+        // Global input
         cameraController?.SetMovementInput(keyInputHandler.CameraMovement);
-        HandleSelectionInput();
-        HandleCommandInput();
+
+        // Interaction-dependent input
+        HandleCurrentInteraction();
+    }
+
+    private void HandleCurrentInteraction()
+    {
+        switch (currentInteractionMode)
+        {
+            case PlayerInteractionMode.Default:
+                HandleDefaultInteraction();
+                break;
+
+            default:
+                Debug.LogWarning($"Unsupported player interaction mode: " + $"{currentInteractionMode}. Returning to Default.");
+                CancelCurrentInteraction();
+                break;
+        }
     }
 
     // Input handle methods 
-
     private void HandleSelectionInput()
     {
         if (mouseInputHandler.PrimaryPressed)
         {
-            bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
-
-            selectionPointerCaptured = !blockedByUI && selectionManager != null && selectionManager.BeginSelection( mouseInputHandler.PointerPosition);
+            selectionPointerCaptured = !IsWorldPointerBlocked() && selectionManager != null && selectionManager.BeginSelection( mouseInputHandler.PointerPosition);
         }
 
         if (selectionPointerCaptured && mouseInputHandler.PrimaryHeld)
@@ -91,7 +113,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         }
     }
 
-    private void HandleCommandInput()
+    private void HandleDefaultCommandInput()
     {
         if (!inputBindings.IssueMoveOnSecondaryPointer)
             return;
@@ -99,11 +121,88 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         if (!mouseInputHandler.SecondaryPressed)
             return;
 
-        bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
-
-        if (blockedByUI)
+        if (IsWorldPointerBlocked())
             return;
 
         commandIssuer?.TryIssueMoveCommandFromScreen(mouseInputHandler.PointerPosition);
+    }
+
+    private void HandleDefaultInteraction()
+    {
+        HandleSelectionInput();
+        HandleDefaultCommandInput();
+    }
+
+    // Interaction Mode methods
+    public void SetInteractionMode(PlayerInteractionMode newMode)
+    {
+        if (currentInteractionMode == newMode)
+            return;
+
+        ExitInteractionMode(currentInteractionMode);
+        currentInteractionMode = newMode;
+        EnterInteractionMode(currentInteractionMode);
+    }
+
+    public void CancelCurrentInteraction()
+    {
+        ExitInteractionMode(currentInteractionMode);
+        currentInteractionMode = PlayerInteractionMode.Default;
+        EnterInteractionMode(currentInteractionMode);
+    }
+
+    private void EnterInteractionMode(PlayerInteractionMode mode)
+    {
+        switch (mode)
+        {
+            case PlayerInteractionMode.Default:
+                EnterDefaultInteraction();
+                break;
+        }
+    }
+
+    private void ExitInteractionMode(PlayerInteractionMode mode)
+    {
+        switch (mode)
+        {
+            case PlayerInteractionMode.Default:
+                ExitDefaultInteraction();
+                break;
+        }
+    }
+    
+    // Specific Interaction Enter/Exit methods
+    private void EnterDefaultInteraction() { }
+
+    private void ExitDefaultInteraction()
+    {
+        CancelSelectionGesture();
+    }
+
+
+    // Helpers method 
+    private bool IsWorldPointerBlocked()
+    {
+        bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
+        return blockedByUI;
+    }
+
+    private void ResetPlayerInputState()
+    {
+        cameraController?.ClearMovementInput();
+
+        CancelSelectionGesture();
+
+        keyInputHandler?.Reset();
+        mouseInputHandler?.Reset();
+
+        currentInteractionMode =
+            PlayerInteractionMode.Default;
+    }
+
+    private void CancelSelectionGesture()
+    {
+        selectionManager?.CancelSelection();
+        selectionPointerCaptured = false;
     }
 }
