@@ -36,7 +36,7 @@ public class GameBuilder : MonoBehaviour
         matchWorld.ResolveServices(); 
 
         BuildMatch();
-        InitializeSections();
+        //InitializeSections();
         InitializeLoop();
     }
 
@@ -62,14 +62,19 @@ public class GameBuilder : MonoBehaviour
     {
         GameContext = new GameContext();
         ResourceNodeRepository = new ResourceNodeRepository(GameContext);
-        FactionManager = new FactionManager();
+       
         ProjectileManager = new ProjectileManager(matchWorld.ProjectilesRoot);
-
-        GameContext.SetFactionManager(FactionManager);
         GameContext.SetProjectileManager(ProjectileManager);
 
         // ------ faction setup ------
-        Faction playerFaction = BuildFaction(FactionA_Definition, new PlayerFactionController());
+        // -------------------------------------------------------
+        FactionManager = new FactionManager();
+        GameContext.SetFactionManager(FactionManager);
+
+        // Controller
+        PlayerFactionController playerFactionController = new();
+
+        Faction playerFaction = BuildFaction(FactionA_Definition, playerFactionController);
         SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
 
         Faction aiFaction01 = BuildFaction(FactionB_Definition, new AIFactionController());
@@ -84,7 +89,16 @@ public class GameBuilder : MonoBehaviour
 
         PlayerFaction = playerFaction;
         GameContext.SetPlayerFaction(PlayerFaction);
-        FactionManager.AddFaction(PlayerFaction);
+        //FactionManager.AddFaction(PlayerFaction); dont need this... 
+
+        // --- panels ---
+        matchWorld.Initialize(GameContext, FactionManager, ResourceNodeRepository, ProjectileManager, PlayerFaction);
+        minimapPanel?.Initialize(GameContext, matchWorld);
+        selectionPanel?.Initialize(PlayerFaction, GameContext);
+        commandPanel?.Initialize(PlayerFaction, GameContext);
+
+        // --- controller init ---
+        playerFactionController?.InitializePlayerControl(matchWorld.SelectionManager, matchWorld.CommandIssuer, matchWorld.CameraController);
     }
 
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
@@ -102,20 +116,20 @@ public class GameBuilder : MonoBehaviour
         );
     }
 
-    private void InitializeSections()
-    {
-        matchWorld.Initialize(
-            GameContext,
-            FactionManager,
-            ResourceNodeRepository,
-            ProjectileManager,
-            PlayerFaction
-        );
+    //private void InitializeSections()
+    //{
+    //    matchWorld.Initialize(
+    //        GameContext,
+    //        FactionManager,
+    //        ResourceNodeRepository,
+    //        ProjectileManager,
+    //        PlayerFaction
+    //    );
 
-        minimapPanel?.Initialize(GameContext, matchWorld);
-        selectionPanel?.Initialize(PlayerFaction, GameContext);
-        commandPanel?.Initialize(PlayerFaction, GameContext);
-    }
+    //    minimapPanel?.Initialize(GameContext, matchWorld);
+    //    selectionPanel?.Initialize(PlayerFaction, GameContext);
+    //    commandPanel?.Initialize(PlayerFaction, GameContext);
+    //}
 
     private void InitializeLoop()
     {

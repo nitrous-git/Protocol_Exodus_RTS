@@ -28,11 +28,14 @@ public sealed class MatchWorld : MonoBehaviour
     public Transform BuildingsRoot => buildingsRoot;
     public Transform ProjectilesRoot => projectilesRoot;
     public IReadOnlyList<Transform> FactionSpawnPoints => factionSpawnPoints;
+    public SelectionManager SelectionManager => selectionManager;
+    public CommandIssuer CommandIssuer => commandIssuer;
+    public CameraController CameraController => cameraController;
 
+    public Faction PlayerFaction { get; private set; }
     public FactionManager FactionManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
-    public CameraController CameraController => cameraController;
 
     public void ResolveServices()
     {
@@ -52,6 +55,7 @@ public sealed class MatchWorld : MonoBehaviour
         FactionManager = factionManager;
         ResourceNodeRepository = resourceNodeRepository;
         ProjectileManager = projectileManager;
+        PlayerFaction = playerFaction;
 
         PathfindingService = pathfindingServiceComponent as IPathfindingService;
 
@@ -60,15 +64,15 @@ public sealed class MatchWorld : MonoBehaviour
 
         selectionManager?.Initialize(gameContext);
         commandIssuer?.Initialize(gameContext, playerFaction);
-
         cameraController?.Initialize();
     }
 
     public void TickInput(float deltaTime)
     {
-        selectionManager?.TickInput(deltaTime);
-        commandIssuer?.TickInput(deltaTime);
-        cameraController?.TickInput(deltaTime);
+        //selectionManager?.TickInput(deltaTime);
+        //commandIssuer?.TickInput(deltaTime);
+        //cameraController?.TickInput(deltaTime);
+        PlayerFaction?.TickInput(deltaTime);
     }
 
     public void TickSimulation(float deltaTime)

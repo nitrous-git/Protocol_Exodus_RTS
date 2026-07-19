@@ -66,9 +66,7 @@ public sealed class CameraController : MonoBehaviour
             return;
         }
 
-        movementInput = keyboardMovementEnabled
-            ? ReadKeyboardMovement()
-            : Vector2.zero;
+        movementInput = keyboardMovementEnabled ? ReadKeyboardMovement() : Vector2.zero;
     }
 
     public void TickLate(float deltaTime)

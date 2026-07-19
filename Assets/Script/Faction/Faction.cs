@@ -27,6 +27,12 @@ public sealed class Faction
         Controller?.Initialize(this, gameContext);
     }
 
+    public void TickInput(float deltaTime)
+    {
+        if (Controller is IPlayerInputController playerInputController)
+            playerInputController.TickInput(deltaTime);
+    }
+
     public void Tick(float deltaTime)
     {
         UnitManager?.Tick(deltaTime);
