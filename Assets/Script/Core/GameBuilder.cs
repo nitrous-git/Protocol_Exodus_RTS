@@ -98,7 +98,12 @@ public class GameBuilder : MonoBehaviour
         commandPanel?.Initialize(PlayerFaction, GameContext);
 
         // --- controller init ---
-        playerFactionController?.InitializePlayerControl(matchWorld.SelectionManager, matchWorld.CommandIssuer, matchWorld.CameraController);
+        playerFactionController?.InitializePlayerControl(
+            matchWorld.PlayerInputBindings,
+            matchWorld.SelectionManager, 
+            matchWorld.CommandIssuer, 
+            matchWorld.CameraController
+        );
     }
 
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
