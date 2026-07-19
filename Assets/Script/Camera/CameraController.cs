@@ -9,16 +9,8 @@ public sealed class CameraController : MonoBehaviour
     [Tooltip("Distance kept between the CameraRoot and the Terrain border.")]
     [SerializeField, Min(0f)] private float borderBuffer = 25f;
 
-    [Header("Keyboard Movement")]
-    [SerializeField] private bool keyboardMovementEnabled = true;
+    [Header("Movement")]
     [SerializeField, Min(0f)] private float movementSpeed = 30f;
-
-    [Header("Keyboard Bindings")]
-    [SerializeField] private KeyCode northKey = KeyCode.W;
-    [SerializeField] private KeyCode southKey = KeyCode.S;
-    [SerializeField] private KeyCode westKey = KeyCode.A;
-    [SerializeField] private KeyCode eastKey = KeyCode.D;
-    [SerializeField] private bool allowArrowKeys = true;
 
     private Vector2 movementInput;
 
@@ -41,10 +33,7 @@ public sealed class CameraController : MonoBehaviour
 
         if (terrain == null || terrain.terrainData == null)
         {
-            Debug.LogError(
-                "CameraController cannot initialize because no valid Terrain is assigned.",
-                this);
-
+            Debug.LogError("CameraController cannot initialize because no valid Terrain is assigned.", this);
             return;
         }
 
@@ -58,18 +47,6 @@ public sealed class CameraController : MonoBehaviour
         SetGroundPosition(transform.position);
     }
 
-    public void TickInput(float deltaTime)
-    {
-        if (!isInitialized || !isActiveAndEnabled)
-        {
-            movementInput = Vector2.zero;
-            return;
-        }
-
-        movementInput = keyboardMovementEnabled
-            ? ReadKeyboardMovement()
-            : Vector2.zero;
-    }
 
     public void TickLate(float deltaTime)
     {
@@ -92,12 +69,7 @@ public sealed class CameraController : MonoBehaviour
             return;
 
         direction = Vector2.ClampMagnitude(direction, 1f);
-
-        Vector3 displacement = new Vector3(
-            direction.x,
-            0f,
-            direction.y);
-
+        Vector3 displacement = new Vector3(direction.x, 0f, direction.y);
         displacement *= movementSpeed * deltaTime;
 
         SetGroundPosition(transform.position + displacement);
@@ -116,28 +88,13 @@ public sealed class CameraController : MonoBehaviour
 
         Vector3 currentPosition = transform.position;
 
-        worldPosition.x = Mathf.Clamp(
-            worldPosition.x,
-            minimumX,
-            maximumX);
-
+        worldPosition.x = Mathf.Clamp(worldPosition.x, minimumX, maximumX);
         worldPosition.y = currentPosition.y;
-
-        worldPosition.z = Mathf.Clamp(
-            worldPosition.z,
-            minimumZ,
-            maximumZ);
+        worldPosition.z = Mathf.Clamp(worldPosition.z, minimumZ, maximumZ);
 
         transform.position = worldPosition;
     }
 
-    public void SetKeyboardMovementEnabled(bool enabled)
-    {
-        keyboardMovementEnabled = enabled;
-
-        if (!keyboardMovementEnabled)
-            movementInput = Vector2.zero;
-    }
 
     public bool RecalculateMovementBounds()
     {
@@ -173,42 +130,7 @@ public sealed class CameraController : MonoBehaviour
         return true;
     }
 
-    private Vector2 ReadKeyboardMovement()
-    {
-        float horizontal = 0f;
-        float vertical = 0f;
-
-        bool moveWest =
-            Input.GetKey(westKey) ||
-            (allowArrowKeys && Input.GetKey(KeyCode.LeftArrow));
-
-        bool moveEast =
-            Input.GetKey(eastKey) ||
-            (allowArrowKeys && Input.GetKey(KeyCode.RightArrow));
-
-        bool moveNorth =
-            Input.GetKey(northKey) ||
-            (allowArrowKeys && Input.GetKey(KeyCode.UpArrow));
-
-        bool moveSouth =
-            Input.GetKey(southKey) ||
-            (allowArrowKeys && Input.GetKey(KeyCode.DownArrow));
-
-        if (moveWest)
-            horizontal -= 1f;
-
-        if (moveEast)
-            horizontal += 1f;
-
-        if (moveSouth)
-            vertical -= 1f;
-
-        if (moveNorth)
-            vertical += 1f;
-
-        return new Vector2(horizontal, vertical);
-    }
-
+   
     private static void ResolveInsetBounds(
         float terrainMinimum,
         float terrainMaximum,
@@ -232,7 +154,7 @@ public sealed class CameraController : MonoBehaviour
 
     private void OnDisable()
     {
-        movementInput = Vector2.zero;
+        ClearMovementInput();
     }
 
     private void OnValidate()
@@ -241,6 +163,30 @@ public sealed class CameraController : MonoBehaviour
         borderBuffer = Mathf.Max(0f, borderBuffer);
     }
 
+    /// <summary>
+    /// Supplies world-space XZ camera movement intent.
+    ///
+    /// The input source is owned by the player controller. CameraController
+    /// only stores and executes the requested movement.
+    /// </summary>
+    public void SetMovementInput(Vector2 input)
+    {
+        if (!isInitialized || !isActiveAndEnabled)
+        {
+            movementInput = Vector2.zero;
+            return;
+        }
+
+        movementInput = Vector2.ClampMagnitude(input, 1f);
+    }
+
+    public void ClearMovementInput()
+    {
+        movementInput = Vector2.zero;
+    }
+
+
+    // Gizmos 
     private void OnDrawGizmosSelected()
     {
         Terrain targetTerrain = terrain;

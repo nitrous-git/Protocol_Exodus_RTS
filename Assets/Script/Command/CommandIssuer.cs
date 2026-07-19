@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class CommandIssuer : MonoBehaviour
 {
@@ -10,8 +9,6 @@ public class CommandIssuer : MonoBehaviour
     [Header("Move Command")]
     [SerializeField] private LayerMask groundMask = ~0;
     [SerializeField] private float groupDestinationSpacing = 5f;
-    [SerializeField] private bool issueMoveOnRightClick = true;
-    [SerializeField] private bool ignoreInputOverUI = true;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
 
@@ -30,25 +27,16 @@ public class CommandIssuer : MonoBehaviour
             worldCamera = Camera.main;
     }
 
-    public void TickInput(float deltaTime)
-    {
-        if (!issueMoveOnRightClick)
-            return;
-
-        if (gameContext == null || worldCamera == null)
-            return;
-
-        if (!Input.GetMouseButtonDown(1))
-            return;
-
-        if (ignoreInputOverUI && EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
-
-        TryIssueMoveCommandFromScreen(Input.mousePosition);
-    }
-
+    /// <summary>
+    /// Resolves a screen-space position into a valid ground position
+    /// and issues a move command to the currently selected,
+    /// commandable units.
+    /// </summary>
     public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
     {
+        if (!CanIssueCommands())
+            return false;
+
         Ray ray = worldCamera.ScreenPointToRay(screenPosition);
         RaycastHit hit;
 
@@ -61,8 +49,17 @@ public class CommandIssuer : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Issues a move command directly from a world-space position.
+    ///
+    /// This entry point can also be used later by the minimap or
+    /// other input surfaces that already know the world position.
+    /// </summary>
     public void IssueMoveCommand(Vector3 worldPosition)
     {
+        if (gameContext == null || issuingFaction == null)
+            return;
+
         CollectCommandableSelectedUnits();
 
         int commandableCount = commandableUnits.Count;
@@ -103,6 +100,7 @@ public class CommandIssuer : MonoBehaviour
         }
     }
 
+    // Helpers method 
     private Vector3 GetSimpleDestinationOffset(int index, int count)
     {
         if (count <= 1)
@@ -112,5 +110,10 @@ public class CommandIssuer : MonoBehaviour
         float radius = Mathf.Sqrt(index + 1) * groupDestinationSpacing;
 
         return new Vector3(Mathf.Cos(angle) * radius,0f, Mathf.Sin(angle) * radius);
+    }
+
+    private bool CanIssueCommands()
+    {
+        return isActiveAndEnabled && worldCamera != null && gameContext != null && issuingFaction != null;
     }
 }
