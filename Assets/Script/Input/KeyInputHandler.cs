@@ -13,6 +13,8 @@ public sealed class KeyInputHandler
 
     public Vector2 CameraMovement { get; private set; }
 
+    public bool AddToSelectionHeld { get; private set; }
+
     public KeyInputHandler(PlayerInputBindings bindings)
     {
         this.bindings = bindings;
@@ -22,7 +24,7 @@ public sealed class KeyInputHandler
     {
         if (bindings == null)
         {
-            CameraMovement = Vector2.zero;
+            Reset();
             return;
         }
 
@@ -50,10 +52,13 @@ public sealed class KeyInputHandler
             vertical += 1f;
 
         CameraMovement = Vector2.ClampMagnitude(new Vector2(horizontal, vertical), 1f);
+
+        AddToSelectionHeld = bindings.AdditiveSelectionEnabled && (Input.GetKey(bindings.AddToSelectionKey) || Input.GetKey(bindings.AlternateAddToSelectionKey));
     }
 
     public void Reset()
     {
         CameraMovement = Vector2.zero;
+        AddToSelectionHeld = false;
     }
 }

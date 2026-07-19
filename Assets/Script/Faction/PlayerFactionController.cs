@@ -7,7 +7,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private CommandIssuer commandIssuer;
     private CameraController cameraController;
 
+    private PlayerInputBindings inputBindings;
+
     private KeyInputHandler keyInputHandler;
+    private MouseInputHandler mouseInputHandler;
+
+    private bool selectionPointerCaptured;
 
     private bool isPlayerControlInitialized;
 
@@ -29,11 +34,13 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     CommandIssuer commandIssuer,
     CameraController cameraController)
     {
+        this.inputBindings = inputBindings;
         this.selectionManager = selectionManager;
         this.commandIssuer = commandIssuer;
         this.cameraController = cameraController;
 
         keyInputHandler = new KeyInputHandler(inputBindings);
+        mouseInputHandler = new MouseInputHandler(inputBindings);
 
         isPlayerControlInitialized = true;
     }
@@ -46,17 +53,44 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         if (!isPlayerControlInitialized)
         {
             cameraController?.ClearMovementInput();
+            selectionManager?.CancelSelection();
+            selectionPointerCaptured = false;
             return;
         }
 
-        // Read centralized keyboard state once for this input frame.
         keyInputHandler.TickInput();
+        mouseInputHandler.TickInput();
 
-        // Route movement intent to the camera.
         cameraController?.SetMovementInput(keyInputHandler.CameraMovement);
+        HandleSelectionInput();
 
         // Mouse input remains inside these systems temporarily.
-        selectionManager?.TickInput(deltaTime);
         commandIssuer?.TickInput(deltaTime);
     }
+
+    private void HandleSelectionInput()
+    {
+        if (mouseInputHandler.PrimaryPressed)
+        {
+            bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
+
+            selectionPointerCaptured = !blockedByUI && selectionManager != null && selectionManager.BeginSelection( mouseInputHandler.PointerPosition);
+        }
+
+        if (selectionPointerCaptured && mouseInputHandler.PrimaryHeld)
+        {
+            selectionManager.UpdateSelection(mouseInputHandler.PointerPosition);
+        }
+
+        if (mouseInputHandler.PrimaryReleased)
+        {
+            if (selectionPointerCaptured)
+            {
+                selectionManager.EndSelection(mouseInputHandler.PointerPosition, keyInputHandler.AddToSelectionHeld);
+            }
+
+            selectionPointerCaptured = false;
+        }
+    }
+
 }

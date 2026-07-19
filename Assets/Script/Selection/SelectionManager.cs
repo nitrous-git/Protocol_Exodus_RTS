@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class SelectionManager : MonoBehaviour
 {
@@ -11,15 +10,14 @@ public class SelectionManager : MonoBehaviour
     [Header("Selection")]
     [SerializeField] private LayerMask selectableMask = ~0;
     [SerializeField] private float dragThresholdPixels = 8f;
-    [SerializeField] private bool shiftAddsToSelection = true;
-    [SerializeField] private bool ignoreInputOverUI = true;
 
     private GameContext gameContext;
 
     private Vector2 dragStartScreenPosition;
     private Vector2 currentScreenPosition;
+
+    private bool isSelectionActive;
     private bool isDragging;
-    private bool mouseDownStartedOverUI;
 
     public void Initialize(GameContext gameContext)
     {
@@ -32,81 +30,105 @@ public class SelectionManager : MonoBehaviour
             worldCamera = Camera.main;
     }
 
-    public void TickInput(float deltaTime)
+    /// <summary>
+    /// Begins a potential click or drag selection at the supplied
+    /// screen-space position.
+    /// </summary>
+    public bool BeginSelection(Vector2 screenPosition)
     {
-        if (worldCamera == null || gameContext == null)
+        if (!CanProcessSelection())
+            return false;
+
+        isSelectionActive = true;
+        isDragging = false;
+
+        dragStartScreenPosition = screenPosition;
+        currentScreenPosition = screenPosition;
+
+        selectionBox?.Hide();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Updates the active selection gesture.
+    ///
+    /// The manager determines when the gesture crosses the configured
+    /// drag threshold and becomes a box selection.
+    /// </summary>
+    public void UpdateSelection(Vector2 screenPosition)
+    {
+        if (!isSelectionActive)
             return;
 
-        HandleSelectionInput();
-    }
+        currentScreenPosition = screenPosition;
 
-    private void HandleSelectionInput()
-    {
-        if (Input.GetMouseButtonDown(0))
+        if (!isDragging)
         {
-            mouseDownStartedOverUI = IsPointerOverUI();
+            float dragDistance = Vector2.Distance(dragStartScreenPosition, currentScreenPosition);
 
-            if (ignoreInputOverUI && mouseDownStartedOverUI)
-                return;
-
-            dragStartScreenPosition = Input.mousePosition;
-            currentScreenPosition = dragStartScreenPosition;
-            isDragging = false;
-
-            if (selectionBox != null)
-                selectionBox.Hide();
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            if (ignoreInputOverUI && mouseDownStartedOverUI)
-                return;
-
-            currentScreenPosition = Input.mousePosition;
-
-            if (!isDragging)
+            if (dragDistance >= dragThresholdPixels)
             {
-                float dragDistance = Vector2.Distance(dragStartScreenPosition, currentScreenPosition);
-
-                if (dragDistance >= dragThresholdPixels)
-                {
-                    isDragging = true;
-
-                    if (selectionBox != null)
-                        selectionBox.Show();
-                }
+                isDragging = true;
+                selectionBox?.Show();
             }
-
-            if (isDragging && selectionBox != null)
-                selectionBox.UpdateVisual(dragStartScreenPosition, currentScreenPosition);
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (isDragging)
         {
-            if (ignoreInputOverUI && mouseDownStartedOverUI)
-                return;
-
-            currentScreenPosition = Input.mousePosition;
-
-            bool append = shiftAddsToSelection &&
-                (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift));
-
-            if (isDragging)
-                SelectUnitsInBox(append);
-            else
-                SelectSingleUnitUnderMouse(append);
-
-            isDragging = false;
-            mouseDownStartedOverUI = false;
-
-            if (selectionBox != null)
-                selectionBox.Hide();
+            selectionBox?.UpdateVisual(dragStartScreenPosition, currentScreenPosition);
         }
     }
 
-    private void SelectSingleUnitUnderMouse(bool append)
+    /// <summary>
+    /// Completes the active selection gesture.
+    ///
+    /// A gesture below the drag threshold becomes a single selection.
+    /// A gesture above the threshold becomes a box selection.
+    /// </summary>
+    public void EndSelection(
+        Vector2 screenPosition,
+        bool append)
     {
-        UnitBase unit = FindUnitUnderMouse();
+        if (!isSelectionActive)
+            return;
+
+        currentScreenPosition = screenPosition;
+
+        if (isDragging)
+            SelectUnitsInBox(append);
+        else
+            SelectSingleUnitAtScreenPosition(screenPosition, append);
+
+        ResetSelectionGesture();
+    }
+
+    /// <summary>
+    /// Cancels the current selection gesture without changing the
+    /// selected-unit collection.
+    /// </summary>
+    public void CancelSelection()
+    {
+        ResetSelectionGesture();
+    }
+
+    // Helpers method
+    private bool CanProcessSelection()
+    {
+        return isActiveAndEnabled && worldCamera != null && gameContext != null;
+    }
+
+    private void ResetSelectionGesture()
+    {
+        isSelectionActive = false;
+        isDragging = false;
+
+        selectionBox?.Hide();
+    }
+
+    private void SelectSingleUnitAtScreenPosition(Vector2 screenPosition, bool append)
+    {
+        UnitBase unit = FindUnitAtScreenPosition(screenPosition);
 
         if (unit != null)
         {
@@ -118,13 +140,14 @@ public class SelectionManager : MonoBehaviour
             gameContext.ClearSelectedUnits();
     }
 
-    private UnitBase FindUnitUnderMouse()
+    private UnitBase FindUnitAtScreenPosition(Vector2 screenPosition)
     {
-        Ray ray = worldCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        Ray ray = worldCamera.ScreenPointToRay(screenPosition);
 
-        if (!Physics.Raycast(ray, out hit, 10000f, selectableMask))
+        if (!Physics.Raycast(ray, out RaycastHit hit, 10000f, selectableMask))
+        {
             return null;
+        }
 
         UnitBase unit = hit.collider.GetComponentInParent<UnitBase>();
 
@@ -176,8 +199,9 @@ public class SelectionManager : MonoBehaviour
         return Rect.MinMaxRect(xMin, yMin, xMax, yMax);
     }
 
-    private bool IsPointerOverUI()
+    // Cleanup 
+    private void OnDisable()
     {
-        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        ResetSelectionGesture();
     }
 }
