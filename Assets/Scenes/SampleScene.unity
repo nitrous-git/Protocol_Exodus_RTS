@@ -233,8 +233,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groupDestinationSpacing: 1.25
-  issueMoveOnRightClick: 1
-  ignoreInputOverUI: 0
 --- !u!1 &316370787
 GameObject:
   m_ObjectHideFlags: 0
@@ -926,8 +924,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   dragThresholdPixels: 8
-  shiftAddsToSelection: 1
-  ignoreInputOverUI: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,13 +1202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   terrain: {fileID: 1084719835}
   borderBuffer: 25
-  keyboardMovementEnabled: 1
   movementSpeed: 30
-  northKey: 119
-  southKey: 115
-  westKey: 97
-  eastKey: 100
-  allowArrowKeys: 1
 --- !u!1 &1074590052
 GameObject:
   m_ObjectHideFlags: 0
@@ -1735,6 +1725,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchWorld
   pathfindingServiceComponent: {fileID: 1149530445}
+  playerInputBindings:
+    cameraNorthKey: 119
+    cameraSouthKey: 115
+    cameraWestKey: 97
+    cameraEastKey: 100
+    allowArrowKeys: 1
+    primaryPointerButton: 0
+    secondaryPointerButton: 1
+    ignoreWorldInputOverUI: 1
+    additiveSelectionEnabled: 1
+    addToSelectionKey: 304
+    alternateAddToSelectionKey: 303
+    issueMoveOnSecondaryPointer: 1
   selectionManager: {fileID: 648430995}
   commandIssuer: {fileID: 275599316}
   cameraController: {fileID: 1057549936}

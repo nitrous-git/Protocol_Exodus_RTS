@@ -12,9 +12,8 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private KeyInputHandler keyInputHandler;
     private MouseInputHandler mouseInputHandler;
 
-    private bool selectionPointerCaptured;
-
     private bool isPlayerControlInitialized;
+    private bool selectionPointerCaptured;
 
     public void Initialize(Faction faction, GameContext gameContext)
     {
@@ -45,7 +44,6 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         isPlayerControlInitialized = true;
     }
 
-
     public void Tick(){ }
 
     public void TickInput(float deltaTime)
@@ -63,10 +61,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         cameraController?.SetMovementInput(keyInputHandler.CameraMovement);
         HandleSelectionInput();
-
-        // Mouse input remains inside these systems temporarily.
-        commandIssuer?.TickInput(deltaTime);
+        HandleCommandInput();
     }
+
+    // Input handle methods 
 
     private void HandleSelectionInput()
     {
@@ -93,4 +91,19 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         }
     }
 
+    private void HandleCommandInput()
+    {
+        if (!inputBindings.IssueMoveOnSecondaryPointer)
+            return;
+
+        if (!mouseInputHandler.SecondaryPressed)
+            return;
+
+        bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
+
+        if (blockedByUI)
+            return;
+
+        commandIssuer?.TryIssueMoveCommandFromScreen(mouseInputHandler.PointerPosition);
+    }
 }

@@ -21,6 +21,9 @@ public sealed class PlayerInputBindings
     [SerializeField] private KeyCode addToSelectionKey = KeyCode.LeftShift;
     [SerializeField] private KeyCode alternateAddToSelectionKey = KeyCode.RightShift;
 
+    [Header("Commands")]
+    [SerializeField] private bool issueMoveOnSecondaryPointer = true;
+
     public KeyCode CameraNorthKey => cameraNorthKey;
     public KeyCode CameraSouthKey => cameraSouthKey;
     public KeyCode CameraWestKey => cameraWestKey;
@@ -35,4 +38,6 @@ public sealed class PlayerInputBindings
     public bool AdditiveSelectionEnabled => additiveSelectionEnabled;
     public KeyCode AddToSelectionKey => addToSelectionKey;
     public KeyCode AlternateAddToSelectionKey => alternateAddToSelectionKey;
+
+    public bool IssueMoveOnSecondaryPointer => issueMoveOnSecondaryPointer;
 }
