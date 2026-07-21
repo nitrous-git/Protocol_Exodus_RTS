@@ -7,10 +7,8 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private GameLoop gameLoop;
     [SerializeField] private MatchWorld matchWorld;
 
-    [Header("UI Sections")]
-    [SerializeField] private MinimapPanelController minimapPanel;
-    [SerializeField] private SelectionPanelController selectionPanel;
-    [SerializeField] private CommandPanelController commandPanel;
+    [Header("UI")]
+    [SerializeField] private MatchUIController matchUI;
 
     [Header("Faction Definitions")]
     [SerializeField] private FactionDefinition FactionA_Definition;
@@ -48,14 +46,8 @@ public class GameBuilder : MonoBehaviour
         if (matchWorld == null)
             matchWorld = GetComponentInChildren<MatchWorld>();
 
-        if (minimapPanel == null)
-            minimapPanel = GetComponentInChildren<MinimapPanelController>();
-
-        if (selectionPanel == null)
-            selectionPanel = GetComponentInChildren<SelectionPanelController>();
-
-        if (commandPanel == null)
-            commandPanel = GetComponentInChildren<CommandPanelController>();
+        if (matchUI == null)
+            matchUI = GetComponentInChildren<MatchUIController>(true);
     }
 
     private void BuildMatch()
@@ -89,13 +81,10 @@ public class GameBuilder : MonoBehaviour
 
         PlayerFaction = playerFaction;
         GameContext.SetPlayerFaction(PlayerFaction);
-        //FactionManager.AddFaction(PlayerFaction); dont need this... 
 
         // --- panels ---
         matchWorld.Initialize(GameContext, FactionManager, ResourceNodeRepository, ProjectileManager, PlayerFaction);
-        minimapPanel?.Initialize(GameContext, matchWorld);
-        selectionPanel?.Initialize(PlayerFaction, GameContext);
-        commandPanel?.Initialize(PlayerFaction, GameContext);
+        matchUI?.Initialize(PlayerFaction, GameContext, matchWorld);
 
         // --- controller init ---
         playerFactionController?.InitializePlayerControl(
@@ -144,14 +133,10 @@ public class GameBuilder : MonoBehaviour
             return;
         }
 
-        gameLoop.Initialize(
-            matchWorld,
-            minimapPanel,
-            selectionPanel,
-            commandPanel
-        );
+        gameLoop.Initialize(matchWorld, matchUI);
     }
 
+    // Helper methods (should be moved later on)
     private void SpawnStartingUnits(Faction faction, Transform spawnPoint)
     {
         if (faction == null || matchWorld == null)
@@ -163,13 +148,8 @@ public class GameBuilder : MonoBehaviour
             return;
         }
 
-        Vector3 origin = spawnPoint != null
-            ? spawnPoint.position
-            : Vector3.zero;
-
-        Quaternion rotation = spawnPoint != null
-            ? spawnPoint.rotation
-            : Quaternion.identity;
+        Vector3 origin = spawnPoint != null ? spawnPoint.position : Vector3.zero;
+        Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
 
         for (int i = 0; i < startingWorkerCount; i++)
         {

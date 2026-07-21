@@ -3,23 +3,17 @@ using UnityEngine;
 public sealed class GameLoop : MonoBehaviour
 {
     private MatchWorld matchWorld;
-    private MinimapPanelController minimapPanel;
-    private SelectionPanelController selectionPanel;
-    private CommandPanelController commandPanel;
+    private MatchUIController matchUI;
 
     private bool isInitialized;
     private bool isPaused;
 
     public void Initialize(
         MatchWorld matchWorld,
-        MinimapPanelController minimapPanel,
-        SelectionPanelController selectionPanel,
-        CommandPanelController commandPanel)
+        MatchUIController matchUI)
     {
         this.matchWorld = matchWorld;
-        this.minimapPanel = minimapPanel;
-        this.selectionPanel = selectionPanel;
-        this.commandPanel = commandPanel;
+        this.matchUI = matchUI; 
 
         isInitialized = true;
     }
@@ -36,11 +30,7 @@ public sealed class GameLoop : MonoBehaviour
         if (!isPaused)
             matchWorld?.TickSimulation(deltaTime);
 
-        minimapPanel?.Tick(deltaTime);
-        selectionPanel?.Tick(deltaTime);
-
-        // Usually event-driven, but useful if we need to refresh button state.
-        commandPanel?.Tick(deltaTime);
+        matchUI?.Tick(deltaTime);
     }
 
     private void LateUpdate()
