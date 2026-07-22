@@ -28,16 +28,20 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
     protected UnitSensor sensor;
     protected UnitView view;
 
+
     public UnitDefinition Definition => definition;
     public Faction OwnerFaction => ownerFaction;
 
     public CommandType CurrentCommand { get; protected set; } = CommandType.Idle;
+    public string CurrentStateName => currentState != null ? currentState.GetType().Name : "None";
+
 
     public bool IsSelected { get; private set; }
     public bool IsInitialized { get; private set; }
 
     public bool CanReceiveCommands => canReceiveCommands;
     public bool CanBeSelected => canBeSelected;
+
 
     public UnitHealth Health => health;
     public UnitMotor Motor => motor;

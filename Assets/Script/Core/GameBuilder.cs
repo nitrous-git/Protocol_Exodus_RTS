@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEngine.InputSystem.DefaultInputActions;
 
 public class GameBuilder : MonoBehaviour
 {
@@ -97,7 +96,7 @@ public class GameBuilder : MonoBehaviour
 
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
-        ResourceManager resourceManager = new ResourceManager();
+        ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
 
         UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService);
 

@@ -2340,6 +2340,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 235c3f6bb8e9d2c4ca00085e6b82a46f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SelectionPanelController
+  titleText: {fileID: 2020133666}
+  infoText: {fileID: 1934173614}
 --- !u!1 &1455499595
 GameObject:
   m_ObjectHideFlags: 0
@@ -2914,9 +2916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameBuilder
   gameLoop: {fileID: 1551415267}
   matchWorld: {fileID: 1559407554}
-  minimapPanel: {fileID: 1144536113}
-  selectionPanel: {fileID: 1371911580}
-  commandPanel: {fileID: 1788038492}
+  matchUI: {fileID: 1808596899}
   FactionA_Definition: {fileID: 11400000, guid: 02096f93430aee843bc22e6ffc75c685, type: 2}
   FactionB_Definition: {fileID: 11400000, guid: e3acd9b9c4d96fa46943014c5ba01390, type: 2}
   FactionC_Definition: {fileID: 11400000, guid: f7bfc0e744381e2408d4229ff5c91076, type: 2}
@@ -3084,6 +3084,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1808596898}
+  - component: {fileID: 1808596899}
   m_Layer: 0
   m_Name: MatchUI
   m_TagString: Untagged
@@ -3107,6 +3108,21 @@ Transform:
   - {fileID: 2036205961}
   m_Father: {fileID: 1279945555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1808596899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1808596897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00121ec8bc9c200469920e70801b3a39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchUIController
+  minimapPanel: {fileID: 1144536113}
+  selectionPanel: {fileID: 1371911580}
+  commandPanel: {fileID: 1788038492}
 --- !u!1 &1893217312
 GameObject:
   m_ObjectHideFlags: 0
@@ -3499,7 +3515,7 @@ GameObject:
   - component: {fileID: 2020133667}
   - component: {fileID: 2020133666}
   m_Layer: 0
-  m_Name: TextTitle
+  m_Name: TitleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
