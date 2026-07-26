@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
@@ -12,6 +13,8 @@ public sealed class CommandSlotView : MonoBehaviour
     [SerializeField] private Button button;
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text labelText;
+
+    private UnityAction currentClickAction;
 
     public Button Button => button;
 
@@ -37,8 +40,23 @@ public sealed class CommandSlotView : MonoBehaviour
             button.interactable = interactable;
     }
 
+    public void SetClickAction(UnityAction clickAction)
+    {
+        if (button == null)
+            return;
+
+        if (currentClickAction != null)
+            button.onClick.RemoveListener(currentClickAction);
+
+        currentClickAction = clickAction;
+
+        if (currentClickAction != null)
+            button.onClick.AddListener(currentClickAction);
+    }
+
     public void ClearVisual()
     {
+        SetClickAction(null);
         SetVisual(string.Empty, null, false);
     }
 

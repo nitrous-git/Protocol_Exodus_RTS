@@ -27,14 +27,13 @@ public class CommandIssuer : MonoBehaviour
             worldCamera = Camera.main;
     }
 
-    /// <summary>
-    /// Resolves a screen-space position into a valid ground position
-    /// and issues a move command to the currently selected,
-    /// commandable units.
-    /// </summary>
+    // ---------------------------------------------------------------------
+    // Move
+    // ---------------------------------------------------------------------
+
     public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
     {
-        if (!CanIssueCommands())
+        if (!CanIssueCommands() || worldCamera == null)
             return false;
 
         Ray ray = worldCamera.ScreenPointToRay(screenPosition);
@@ -49,12 +48,6 @@ public class CommandIssuer : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Issues a move command directly from a world-space position.
-    ///
-    /// This entry point can also be used later by the minimap or
-    /// other input surfaces that already know the world position.
-    /// </summary>
     public void IssueMoveCommand(Vector3 worldPosition)
     {
         if (gameContext == null || issuingFaction == null)
@@ -80,6 +73,41 @@ public class CommandIssuer : MonoBehaviour
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Immediate commands
+    // ---------------------------------------------------------------------
+    public bool TryIssueHoldPositionCommand()
+    {
+        if (!CanIssueCommands())
+            return false;
+
+        CollectCommandableSelectedUnits();
+
+        if (commandableUnits.Count == 0)
+            return false;
+
+        bool issuedAnyCommand = false;
+        CommandContext context = CommandContext.None();
+
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            UnitBase unit = commandableUnits[i];
+
+            if (unit is not IControllable controllable)
+                continue;
+
+            controllable.IssueCommand(CommandType.HoldPosition, context);
+
+            issuedAnyCommand = true;
+        }
+
+        return issuedAnyCommand;
+    }
+
+    // ---------------------------------------------------------------------
+    // Selection resolution
+    // ---------------------------------------------------------------------
+
     private void CollectCommandableSelectedUnits()
     {
         commandableUnits.Clear();
@@ -100,7 +128,10 @@ public class CommandIssuer : MonoBehaviour
         }
     }
 
-    // Helpers method 
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
     private Vector3 GetSimpleDestinationOffset(int index, int count)
     {
         if (count <= 1)
@@ -114,6 +145,6 @@ public class CommandIssuer : MonoBehaviour
 
     private bool CanIssueCommands()
     {
-        return isActiveAndEnabled && worldCamera != null && gameContext != null && issuingFaction != null;
+        return isActiveAndEnabled && gameContext != null && issuingFaction != null;
     }
 }

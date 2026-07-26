@@ -142,8 +142,9 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
                 SetState(new MoveState(context.WorldPosition));
                 break;
 
-            case CommandType.HoldPosition: 
-                //EndPathEarly();
+            case CommandType.HoldPosition:
+                motor?.Stop();
+                SetState(new IdleState());
                 break;
 
             case CommandType.Idle:

@@ -16,9 +16,9 @@ MonoBehaviour:
   displayName: Worker Unit
   prefab: {fileID: 0}
   cost:
-    minerals: 0
+    minerals: 50
     gas: 0
-    supply: 0
+    supply: 1
   maxHealth: 100
   moveSpeed: 4
   visionRange: 12
