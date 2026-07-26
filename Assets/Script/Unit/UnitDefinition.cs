@@ -24,5 +24,9 @@ public class UnitDefinition : ScriptableObject
 
     [Header("Selection")]
     public float selectionRadius = 0.5f;
+
+    public UnitType Type => unitType;
+    public string DisplayName => displayName;
+    public Cost Cost => cost;
 }
 

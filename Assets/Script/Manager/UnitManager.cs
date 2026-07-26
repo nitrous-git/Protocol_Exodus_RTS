@@ -9,8 +9,12 @@ public class UnitManager
     private readonly GameContext gameContext;
     private readonly IPathfindingService pathfindingService;
 
+    private int currentPopulation;
+
     public Faction OwnerFaction { get; private set; }
     public IReadOnlyList<UnitBase> UnitList => unitList;
+    public int CurrentPopulation => currentPopulation;
+
 
     public UnitManager(GameContext gameContext, IPathfindingService pathfindingService)
     {
@@ -43,20 +47,33 @@ public class UnitManager
 
     public void RegisterUnit(UnitBase unit)
     {
-        if (unit == null) return;
+        if (unit == null || unitList.Contains(unit)) 
+            return;
 
-        if (!unitList.Contains(unit))
-            unitList.Add(unit);
-
+        currentPopulation += GetPopulationCost(unit);
+        unitList.Add(unit);
         gameContext?.RegisterUnit(unit);
     }
 
     public void UnregisterUnit(UnitBase unit)
     {
-        if (unit == null) return;
+        if (unit == null) 
+            return;
 
-        unitList.Remove(unit);
+        //unitList.Remove(unit);
+        //pendingRemovals.Remove(unit);
+        //gameContext?.UnregisterUnit(unit);
+
+        bool wasRegistered = unitList.Remove(unit);
+
         pendingRemovals.Remove(unit);
+
+        // might already have been unregister by OnDestroy()
+        if (!wasRegistered)
+            return;
+
+        currentPopulation = Mathf.Max(0, currentPopulation - GetPopulationCost(unit));
+
         gameContext?.UnregisterUnit(unit);
     }
 
@@ -71,10 +88,11 @@ public class UnitManager
     public void setUnitList(List<UnitBase> newList)
     {
         unitList.Clear();
+
         if (newList != null)
-        {
             unitList.AddRange(newList);
-        }
+
+        RecalculateCurrentPopulation();
     }
 
     // Helpers
@@ -113,5 +131,22 @@ public class UnitManager
             return;
 
         pendingRemovals.Add(unit);
+    }
+
+    private static int GetPopulationCost(UnitBase unit)
+    {
+        if (unit == null || unit.Definition == null)
+            return 0;
+
+        return Mathf.Max(0, unit.Definition.Cost.Supply);
+    }
+
+    private void RecalculateCurrentPopulation()
+    {
+        currentPopulation = 0;
+        for (int i = 0; i < unitList.Count; i++)
+        {
+            currentPopulation += GetPopulationCost(unitList[i]);
+        }
     }
 }

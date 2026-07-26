@@ -1,5 +1,12 @@
 using UnityEngine;
 
+/// <summary>
+/// Interprets input for a human-controlled faction.
+///
+/// Raw keyboard and pointer state is read through the input handlers.
+/// This controller decides what that input means according to the
+/// current PlayerInteractionMode.
+/// </summary>
 public sealed class PlayerFactionController : IFactionController, IPlayerInputController
 {
     private Faction faction;
@@ -20,6 +27,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private bool selectionPointerCaptured;
 
     public PlayerInteractionMode CurrentInteractionMode => currentInteractionMode;
+
+    // ---------------------------------------------------------------------
+    // Initialization
+    // ---------------------------------------------------------------------
 
     public void Initialize(Faction faction, GameContext gameContext)
     {
@@ -54,6 +65,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         EnterInteractionMode(currentInteractionMode);
     }
 
+    // ---------------------------------------------------------------------
+    // Tick
+    // ---------------------------------------------------------------------
+
     public void Tick(){ }
 
     public void TickInput(float deltaTime)
@@ -74,6 +89,108 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         HandleCurrentInteraction();
     }
 
+    // ---------------------------------------------------------------------
+    // Command Panel requests
+    // ---------------------------------------------------------------------
+
+    /// <summary>
+    /// Receives an action requested by the Command Panel.
+    ///
+    /// The panel does not need to know whether the action executes
+    /// immediately or changes the current interaction mode.
+    /// </summary>
+    public void HandleCommandPanelAction(CommandPanelAction action)
+    {
+        if (!isPlayerControlInitialized)
+            return;
+
+        switch (action.Type)
+        {
+            case CommandPanelActionType.None:
+                break;
+
+            case CommandPanelActionType.HoldPosition:
+                IssueHoldPosition();
+                break;
+
+            case CommandPanelActionType.BeginMoveTargeting:
+                BeginMoveTargeting();
+                break;
+
+            case CommandPanelActionType.BeginAttackTargeting:
+                //BeginAttackTargeting();
+                break;
+
+            case CommandPanelActionType.BeginBuildingPlacement:
+                BeginBuildingPlacement(action.BuildingDefinition);
+                break;
+
+            case CommandPanelActionType.TrainUnit:
+                TryTrainUnit(action.UnitDefinition);
+                break;
+
+            case CommandPanelActionType.BeginRallyPointTargeting:
+                //BeginRallyPointTargeting();
+                break;
+
+            case CommandPanelActionType.CancelProduction:
+                //TryCancelProduction();
+                break;
+
+            case CommandPanelActionType.CancelInteraction:
+                CancelCurrentInteraction();
+                break;
+
+            default:
+                Debug.LogWarning($"Unsupported Command Panel action: {action.Type}");
+                break;
+        }
+    }
+
+    private void IssueHoldPosition()
+    {
+        if (currentInteractionMode != PlayerInteractionMode.Default)
+        {
+            return;
+        }
+
+        commandIssuer?.TryIssueHoldPositionCommand();
+    }
+
+    private void BeginMoveTargeting()
+    {
+        if (currentInteractionMode != PlayerInteractionMode.Default)
+        {
+            return;
+        }
+
+        SetInteractionMode(PlayerInteractionMode.MoveTargeting);
+    }
+
+    private void BeginBuildingPlacement(BuildingDefinition buildingDefinition)
+    {
+        if (buildingDefinition == null)
+            return;
+
+        //pendingBuildingDefinition = buildingDefinition;
+        //SetInteractionMode(PlayerInteractionMode.BuildingPlacement);
+    }
+
+    private void TryTrainUnit(UnitDefinition unitDefinition)
+    {
+        if (unitDefinition == null)
+            return;
+
+        // Later:
+        // 1. Resolve the selected player-owned production building.
+        // 2. Verify it supports this UnitDefinition.
+        // 3. Ask the building's production component to enqueue it.
+    }
+
+    // ---------------------------------------------------------------------
+    // Interaction routing
+    // ---------------------------------------------------------------------
+
     private void HandleCurrentInteraction()
     {
         switch (currentInteractionMode)
@@ -83,13 +200,16 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 break;
 
             default:
-                Debug.LogWarning($"Unsupported player interaction mode: " + $"{currentInteractionMode}. Returning to Default.");
+                Debug.LogWarning($"Unsupported player interaction mode: ${currentInteractionMode}. Returning to Default.");
                 CancelCurrentInteraction();
                 break;
         }
     }
 
-    // Input handle methods 
+    // ---------------------------------------------------------------------
+    // Default interaction
+    // ---------------------------------------------------------------------
+
     private void HandleSelectionInput()
     {
         if (mouseInputHandler.PrimaryPressed)
@@ -133,7 +253,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         HandleDefaultCommandInput();
     }
 
-    // Interaction Mode methods
+    // ---------------------------------------------------------------------
+    // Interaction-mode lifecycle
+    // ---------------------------------------------------------------------
+
     public void SetInteractionMode(PlayerInteractionMode newMode)
     {
         if (currentInteractionMode == newMode)
@@ -170,8 +293,11 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 break;
         }
     }
-    
-    // Specific Interaction Enter/Exit methods
+
+    // ---------------------------------------------------------------------
+    // Specific interaction lifecycle
+    // ---------------------------------------------------------------------
+
     private void EnterDefaultInteraction() { }
 
     private void ExitDefaultInteraction()
@@ -179,8 +305,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         CancelSelectionGesture();
     }
 
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
 
-    // Helpers method 
     private bool IsWorldPointerBlocked()
     {
         bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
@@ -196,8 +324,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         keyInputHandler?.Reset();
         mouseInputHandler?.Reset();
 
-        currentInteractionMode =
-            PlayerInteractionMode.Default;
+        currentInteractionMode = PlayerInteractionMode.Default;
     }
 
     private void CancelSelectionGesture()

@@ -12,5 +12,6 @@ public enum PlayerInteractionMode
     /// </summary>
     Default,
     BuildPlacement,
-    AttackTarget
+    AttackTarget,
+    MoveTargeting,
 }

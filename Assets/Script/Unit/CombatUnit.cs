@@ -55,6 +55,12 @@ public class CombatUnit : UnitBase
 
     public override void IssueCommand(CommandType commandType, CommandContext context)
     {
+        if (!CanReceiveCommands)
+            return;
+
+        CurrentCommand = commandType;
+        currentContext = context;
+
         switch (commandType)
         {
             case CommandType.Move:

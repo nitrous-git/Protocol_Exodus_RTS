@@ -8,4 +8,8 @@ public class FactionDefinition : ScriptableObject
     public Color factionColor = Color.white;
     public Color selectionRingColor = Color.white;
 
+    [Header("Starting Economy")]
+    [Min(0)] public int startingMinerals = 0;
+    [Min(0)] public int startingGas = 0;
+    [Min(0)] public int startingMaxSupply = 10;
 }

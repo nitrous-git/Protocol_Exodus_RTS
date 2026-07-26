@@ -15,3 +15,6 @@ MonoBehaviour:
   factionName: Faction_C
   factionColor: {r: 0.028898807, g: 0.020024916, b: 0.8490566, a: 1}
   selectionRingColor: {r: 0.15686272, g: 0.16581999, b: 0.5647059, a: 0.59607846}
+  startingMinerals: 20
+  startingGas: 20
+  startingMaxSupply: 10
