@@ -26,6 +26,11 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private bool isPlayerControlInitialized;
     private bool selectionPointerCaptured;
 
+    private GameObject targetMarkerPrefab;
+    private Transform interactionMarkersRoot;
+    private GameObject activeMoveTargetMarker;
+    private const float markerHeightOffset = 0.05f;
+
     public PlayerInteractionMode CurrentInteractionMode => currentInteractionMode;
 
     // ---------------------------------------------------------------------
@@ -48,12 +53,17 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     PlayerInputBindings inputBindings,
     SelectionManager selectionManager,
     CommandIssuer commandIssuer,
-    CameraController cameraController)
+    CameraController cameraController, 
+    GameObject targetMarkerPrefab,
+    Transform interactionMarkersRoot)
     {
         this.inputBindings = inputBindings;
         this.selectionManager = selectionManager;
         this.commandIssuer = commandIssuer;
         this.cameraController = cameraController;
+
+        this.targetMarkerPrefab = targetMarkerPrefab;
+        this.interactionMarkersRoot = interactionMarkersRoot;
 
         keyInputHandler = new KeyInputHandler(inputBindings);
         mouseInputHandler = new MouseInputHandler(inputBindings);
@@ -199,8 +209,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 HandleDefaultInteraction();
                 break;
 
+            case PlayerInteractionMode.MoveTargeting:
+                HandleMoveTargetingInteraction();
+                break;
+
             default:
-                Debug.LogWarning($"Unsupported player interaction mode: ${currentInteractionMode}. Returning to Default.");
+                Debug.LogWarning($"Unsupported player interaction mode: {currentInteractionMode}. Returning to Default.");
                 CancelCurrentInteraction();
                 break;
         }
@@ -254,10 +268,83 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     }
 
     // ---------------------------------------------------------------------
+    // Move Targeting interaction
+    // ---------------------------------------------------------------------
+
+    private void HandleMoveTargetingInteraction()
+    {
+        bool hasGroundPosition = UpdateMoveTargetMarker();
+
+        if (mouseInputHandler.SecondaryPressed)
+        {
+            CancelCurrentInteraction();
+            return;
+        }
+
+        if (!mouseInputHandler.PrimaryPressed)
+            return;
+
+        if (IsWorldPointerBlocked() || !hasGroundPosition)
+            return;
+
+        Vector3 destination = commandIssuer.CurrentGroundPosition;
+        bool commandIssued = commandIssuer.TryIssueMoveCommand(destination);
+
+        if (commandIssued)
+        {
+            SetInteractionMode(PlayerInteractionMode.Default);
+        }
+    }
+
+    private bool UpdateMoveTargetMarker()
+    { 
+        if (activeMoveTargetMarker == null || commandIssuer == null)
+            return false;
+
+        bool hasGroundPosition = 
+            !IsWorldPointerBlocked() 
+            && commandIssuer != null 
+            && commandIssuer.TryResolveGroundPositionFromScreen(mouseInputHandler.PointerPosition);
+
+        activeMoveTargetMarker.SetActive(hasGroundPosition);
+
+        if (!hasGroundPosition)
+            return false;
+
+        Vector3 groundPosition = commandIssuer.CurrentGroundPosition;
+        Vector3 groundNormal = commandIssuer.CurrentGroundNormal;
+
+        Vector3 markerPosition = groundPosition + groundNormal * markerHeightOffset;
+        Quaternion markerRotation = Quaternion.FromToRotation(Vector3.up, groundNormal);
+
+        activeMoveTargetMarker.transform.SetPositionAndRotation(markerPosition, markerRotation);
+
+        return true;
+    }
+
+    private void SpawnMoveTargetMarker()
+    {
+        if (activeMoveTargetMarker != null)
+            return;
+
+        activeMoveTargetMarker = Object.Instantiate(targetMarkerPrefab, interactionMarkersRoot);
+        activeMoveTargetMarker.SetActive(false);
+    }
+
+    private void DestroyMoveTargetMarker()
+    {
+        if (activeMoveTargetMarker == null)
+            return;
+
+        Object.Destroy(activeMoveTargetMarker);
+        activeMoveTargetMarker = null;
+    }
+
+    // ---------------------------------------------------------------------
     // Interaction-mode lifecycle
     // ---------------------------------------------------------------------
 
-    public void SetInteractionMode(PlayerInteractionMode newMode)
+    private void SetInteractionMode(PlayerInteractionMode newMode)
     {
         if (currentInteractionMode == newMode)
             return;
@@ -267,11 +354,9 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         EnterInteractionMode(currentInteractionMode);
     }
 
-    public void CancelCurrentInteraction()
+    private void CancelCurrentInteraction()
     {
-        ExitInteractionMode(currentInteractionMode);
-        currentInteractionMode = PlayerInteractionMode.Default;
-        EnterInteractionMode(currentInteractionMode);
+        SetInteractionMode(PlayerInteractionMode.Default);
     }
 
     private void EnterInteractionMode(PlayerInteractionMode mode)
@@ -280,6 +365,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         {
             case PlayerInteractionMode.Default:
                 EnterDefaultInteraction();
+                break;
+
+            case PlayerInteractionMode.MoveTargeting:
+                EnterMoveTargeting();
                 break;
         }
     }
@@ -290,6 +379,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         {
             case PlayerInteractionMode.Default:
                 ExitDefaultInteraction();
+                break;
+
+            case PlayerInteractionMode.MoveTargeting:
+                ExitMoveTargeting();
                 break;
         }
     }
@@ -303,6 +396,17 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private void ExitDefaultInteraction()
     {
         CancelSelectionGesture();
+    }
+
+    private void EnterMoveTargeting()
+    {
+        CancelSelectionGesture();
+        SpawnMoveTargetMarker();
+    }
+
+    private void ExitMoveTargeting()
+    {
+        DestroyMoveTargetMarker();
     }
 
     // ---------------------------------------------------------------------

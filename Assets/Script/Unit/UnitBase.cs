@@ -149,7 +149,7 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
 
             case CommandType.Idle:
             default:
-                SetState(new IdleState()); 
+                //SetState(new IdleState()); 
                 break;  
         }
     }

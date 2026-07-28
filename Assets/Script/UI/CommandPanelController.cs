@@ -236,7 +236,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowWorkerUnitCommands()
     {
-        ConfigureGameplaySlot(MoveSlot,"M", false, CommandPanelAction.Move());
+        ConfigureGameplaySlot(MoveSlot,"M", true, CommandPanelAction.Move());
         ConfigureGameplaySlot(HoldPositionSlot,"H", true, CommandPanelAction.HoldPosition());
         ConfigureGameplaySlot(AttackSlot,"A", false, CommandPanelAction.Attack());
 
@@ -247,14 +247,14 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowCombatUnitCommands()
     {
-        ConfigureGameplaySlot(MoveSlot, "M", false, CommandPanelAction.Move());
+        ConfigureGameplaySlot(MoveSlot, "M", true, CommandPanelAction.Move());
         ConfigureGameplaySlot(HoldPositionSlot, "H", true, CommandPanelAction.HoldPosition());
         ConfigureGameplaySlot(AttackSlot, "A", false, CommandPanelAction.Attack());
     }
 
     private void ShowMultipleUnitCommands()
     {
-        ConfigureGameplaySlot(MoveSlot, "M", false, CommandPanelAction.Move());
+        ConfigureGameplaySlot(MoveSlot, "M", true, CommandPanelAction.Move());
         ConfigureGameplaySlot(HoldPositionSlot, "H", true, CommandPanelAction.HoldPosition());
         ConfigureGameplaySlot(AttackSlot, "A", false, CommandPanelAction.Attack());
     }

@@ -366,6 +366,7 @@ Transform:
   - {fileID: 1893217313}
   - {fileID: 196520087}
   - {fileID: 1221676278}
+  - {fileID: 496525871}
   m_Father: {fileID: 1559407553}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &196520086
@@ -1213,6 +1214,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1241736814}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &496525870
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 496525871}
+  m_Layer: 0
+  m_Name: InteractionMarkersRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &496525871
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496525870}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 195413928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &507257367
 GameObject:
@@ -2692,6 +2724,8 @@ MonoBehaviour:
   - {fileID: 480938121}
   - {fileID: 1989332474}
   - {fileID: 476404814}
+  targetMarkerPrefab: {fileID: 2965236448411335283, guid: e4c52fee894e9dd4a9b72e76be80b8c1, type: 3}
+  interactionMarkersRoot: {fileID: 496525871}
 --- !u!1001 &1625794929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2965,7 +2999,7 @@ MonoBehaviour:
   FactionB_Definition: {fileID: 11400000, guid: e3acd9b9c4d96fa46943014c5ba01390, type: 2}
   FactionC_Definition: {fileID: 11400000, guid: f7bfc0e744381e2408d4229ff5c91076, type: 2}
   combatUnitPrefab: {fileID: 8320676107144926392, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
-  startingWorkerCount: 4
+  startingWorkerCount: 9
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:

@@ -15,6 +15,12 @@ public class CommandIssuer : MonoBehaviour
     private GameContext gameContext;
     private Faction issuingFaction;
 
+    private Vector3 currentGroundPosition = Vector3.zero;
+    private Vector3 currentGroundNormal = Vector3.up;
+
+    public Vector3 CurrentGroundPosition => currentGroundPosition;
+    public Vector3 CurrentGroundNormal => currentGroundNormal;
+
     public void Initialize(GameContext gameContext, Faction issuingFaction)
     {
         this.gameContext = gameContext;
@@ -31,8 +37,14 @@ public class CommandIssuer : MonoBehaviour
     // Move
     // ---------------------------------------------------------------------
 
-    public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
+    /// <summary>
+    /// Resolves a screen position to a point on commandable ground.
+    /// </summary>
+    public bool TryResolveGroundPositionFromScreen(Vector2 screenPosition)
     {
+        currentGroundPosition = Vector3.zero;
+        currentGroundNormal = Vector3.up;
+
         if (!CanIssueCommands() || worldCamera == null)
             return false;
 
@@ -44,34 +56,71 @@ public class CommandIssuer : MonoBehaviour
             return false;
         }
 
-        IssueMoveCommand(hit.point);
+        currentGroundPosition = hit.point;
+        currentGroundNormal = hit.normal;
+
         return true;
     }
 
-    public void IssueMoveCommand(Vector3 worldPosition)
+    public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
     {
-        if (gameContext == null || issuingFaction == null)
-            return;
+        if (!TryResolveGroundPositionFromScreen(screenPosition))
+        {
+            return false;
+        }
+
+        return TryIssueMoveCommand(currentGroundPosition);
+    }
+
+    public bool TryIssueMoveCommand(Vector3 destinationCenter)
+    {
+        if (!CanIssueCommands())
+            return false;
 
         CollectCommandableSelectedUnits();
 
         int commandableCount = commandableUnits.Count;
+
+        if (commandableCount == 0)
+            return false;
+
+        bool issuedAnyCommand = false;
 
         for (int i = 0; i < commandableCount; i++)
         {
             UnitBase unit = commandableUnits[i];
 
             IControllable controllable = unit as IControllable;
-
             if (controllable == null)
                 continue;
 
-            Vector3 destination = worldPosition + GetSimpleDestinationOffset(i, commandableCount);
-
-            //Debug.Log("Success issueCommand");
+            Vector3 destination = destinationCenter + GetSimpleDestinationOffset(i, commandableCount);
+;
             controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+
+            issuedAnyCommand = true;
         }
+
+        return issuedAnyCommand;
     }
+
+
+    //public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
+    //{
+    //    if (!CanIssueCommands() || worldCamera == null)
+    //        return false;
+
+    //    Ray ray = worldCamera.ScreenPointToRay(screenPosition);
+    //    RaycastHit hit;
+
+    //    if (!Physics.Raycast(ray, out hit, 10000f, groundMask))
+    //    {
+    //        return false;
+    //    }
+
+    //    IssueMoveCommand(hit.point);
+    //    return true;
+    //}
 
     // ---------------------------------------------------------------------
     // Immediate commands

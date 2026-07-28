@@ -23,6 +23,9 @@ public sealed class MatchWorld : MonoBehaviour
     [Header("Spawn Points")]
     [SerializeField] private List<Transform> factionSpawnPoints = new();
 
+    [Header("Interaction Presentation")]
+    [SerializeField] private GameObject targetMarkerPrefab;
+    [SerializeField] private Transform interactionMarkersRoot;
 
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
@@ -33,12 +36,14 @@ public sealed class MatchWorld : MonoBehaviour
     public CameraController CameraController => cameraController;
     public PlayerInputBindings PlayerInputBindings => playerInputBindings;
 
-
     public Faction PlayerFaction { get; private set; }
     public FactionManager FactionManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
     public IPathfindingService PathfindingService { get; private set; }
+
+    public GameObject TargetMarkerPrefab => targetMarkerPrefab;
+    public Transform InteractionMarkersRoot => interactionMarkersRoot;
 
     public void ResolveServices()
     {
