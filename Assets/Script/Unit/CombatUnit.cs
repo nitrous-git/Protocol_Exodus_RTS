@@ -166,8 +166,6 @@ public class CombatUnit : UnitBase
     }
 
 
-
-
     // Getter & Setter 
 
     public float GetAttackRange()
