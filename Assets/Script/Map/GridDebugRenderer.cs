@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class RTSGridDebugRenderer : MonoBehaviour
+public class GridDebugRenderer : MonoBehaviour
 {
-    [SerializeField] private RTSGridBootstrap gridBootstrap;
+    [SerializeField] private TerrainGridSystem gridBootstrap;
 
     [Header("Debug Draw")]
     [SerializeField] private bool drawGrid = true;
@@ -25,7 +25,7 @@ public class RTSGridDebugRenderer : MonoBehaviour
         if (gridBootstrap == null)
             return;
 
-        RTSGrid grid = gridBootstrap.Grid;
+        TerrainGrid grid = gridBootstrap.Grid;
 
         if (grid == null)
             return;
@@ -43,7 +43,7 @@ public class RTSGridDebugRenderer : MonoBehaviour
             for (int x = 0; x < grid.Width; x++)
             {
                 GridCoord coord = new GridCoord(x, z);
-                RTSGridCell cell = grid.GetCell(coord);
+                GridCell cell = grid.GetCell(coord);
 
                 if (drawOnlyNearCamera && hasCamera)
                 {
@@ -63,7 +63,7 @@ public class RTSGridDebugRenderer : MonoBehaviour
         }
     }
 
-    private Color GetCellColor(RTSGridCell cell)
+    private Color GetCellColor(GridCell cell)
     {
         if (cell.Occupied)
             return occupiedColor;

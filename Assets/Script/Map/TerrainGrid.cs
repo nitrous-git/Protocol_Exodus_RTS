@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RTSGrid
+public class TerrainGrid
 {
     public int Width { get; private set; }
     public int Height { get; private set; }
@@ -11,16 +11,16 @@ public class RTSGrid
     private Vector3 terrainOrigin;
     private Vector3 terrainSize;
 
-    private RTSGridCell[,] cells;
+    private GridCell[,] cells;
 
     private float maxWalkableSlope;
     private float maxBuildableSlope;
 
-    public RTSGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope)
+    public TerrainGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope)
     {
         if (terrain == null)
         {
-            Debug.LogError("RTSGrid cannot be created because Terrain is null.");
+            Debug.LogError("TerrainGrid cannot be created because Terrain is null.");
             return;
         }
 
@@ -36,7 +36,7 @@ public class RTSGrid
         Width = Mathf.FloorToInt(terrainSize.x / cellSize);
         Height = Mathf.FloorToInt(terrainSize.z / cellSize);
 
-        cells = new RTSGridCell[Width, Height];
+        cells = new GridCell[Width, Height];
 
         BuildCells();
     }
@@ -61,7 +61,7 @@ public class RTSGrid
                 bool walkable = slope <= maxWalkableSlope;
                 bool buildable = slope <= maxBuildableSlope;
 
-                cells[x, z] = new RTSGridCell
+                cells[x, z] = new GridCell
                 {
                     Coord = coord,
                     WorldCenter = worldCenter,
@@ -109,12 +109,12 @@ public class RTSGrid
                coord.z < Height;
     }
 
-    public RTSGridCell GetCell(GridCoord coord)
+    public GridCell GetCell(GridCoord coord)
     {
         return cells[coord.x, coord.z];
     }
 
-    public bool TryGetCell(GridCoord coord, out RTSGridCell cell)
+    public bool TryGetCell(GridCoord coord, out GridCell cell)
     {
         if (!IsInside(coord))
         {
@@ -128,7 +128,7 @@ public class RTSGrid
 
     public bool IsWalkable(GridCoord coord)
     {
-        if (!TryGetCell(coord, out RTSGridCell cell))
+        if (!TryGetCell(coord, out GridCell cell))
             return false;
 
         return cell.IsFreeForMovement();
@@ -136,7 +136,7 @@ public class RTSGrid
 
     public bool IsBuildable(GridCoord coord)
     {
-        if (!TryGetCell(coord, out RTSGridCell cell))
+        if (!TryGetCell(coord, out GridCell cell))
             return false;
 
         return cell.IsFreeForBuilding();
@@ -147,7 +147,7 @@ public class RTSGrid
         if (!IsInside(coord))
             return;
 
-        RTSGridCell cell = cells[coord.x, coord.z];
+        GridCell cell = cells[coord.x, coord.z];
 
         cell.Occupied = occupied;
 
@@ -162,7 +162,7 @@ public class RTSGrid
         if (!IsInside(coord))
             return;
 
-        RTSGridCell cell = cells[coord.x, coord.z];
+        GridCell cell = cells[coord.x, coord.z];
         cell.Reserved = reserved;
 
         cells[coord.x, coord.z] = cell;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct RTSGridCell
+public struct GridCell
 {
         public GridCoord Coord;
         public Vector3 WorldCenter;

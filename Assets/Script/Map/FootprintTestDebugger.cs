@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FootprintTestDebugger : MonoBehaviour
 {
-    [SerializeField] private RTSGridBootstrap gridBootstrap;
+    [SerializeField] private TerrainGridSystem gridBootstrap;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask terrainLayerMask = ~0;
 
@@ -46,7 +46,7 @@ public class FootprintTestDebugger : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, terrainLayerMask))
             return;
 
-        RTSGrid grid = gridBootstrap.Grid;
+        TerrainGrid grid = gridBootstrap.Grid;
 
         GridCoord centerCell = grid.WorldToCell(hit.point);
         previewTopLeft = GetTopLeftFromCenter(centerCell, footprintSize);
@@ -70,7 +70,7 @@ public class FootprintTestDebugger : MonoBehaviour
     }
 
     private bool CanPlaceFootprint(
-        RTSGrid grid,
+        TerrainGrid grid,
         GridCoord topLeft,
         Vector2Int size,
         float maxHeightDiff)
@@ -84,7 +84,7 @@ public class FootprintTestDebugger : MonoBehaviour
             {
                 GridCoord coord = new GridCoord(topLeft.x + x, topLeft.z + z);
 
-                if (!grid.TryGetCell(coord, out RTSGridCell cell))
+                if (!grid.TryGetCell(coord, out GridCell cell))
                     return false;
 
                 if (!cell.IsFreeForBuilding())
@@ -111,7 +111,7 @@ public class FootprintTestDebugger : MonoBehaviour
         if (gridBootstrap == null || gridBootstrap.Grid == null)
             return;
 
-        RTSGrid grid = gridBootstrap.Grid;
+        TerrainGrid grid = gridBootstrap.Grid;
 
         Gizmos.color = previewValid
             ? new Color(0f, 1f, 0.2f, 0.9f)
@@ -123,7 +123,7 @@ public class FootprintTestDebugger : MonoBehaviour
             {
                 GridCoord coord = new GridCoord(previewTopLeft.x + x, previewTopLeft.z + z);
 
-                if (!grid.TryGetCell(coord, out RTSGridCell cell))
+                if (!grid.TryGetCell(coord, out GridCell cell))
                     continue;
 
                 Vector3 center = cell.WorldCenter + Vector3.up * yOffset;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RTSGridBootstrap : MonoBehaviour
+public class TerrainGridSystem : MonoBehaviour
 {
     [Header("Terrain")]
     [SerializeField] private Terrain terrain;
@@ -12,7 +12,7 @@ public class RTSGridBootstrap : MonoBehaviour
     [SerializeField] private float maxWalkableSlope = 35f;
     [SerializeField] private float maxBuildableSlope = 8f;
 
-    public RTSGrid Grid { get; private set; }
+    public TerrainGrid Grid { get; private set; }
 
     public Terrain Terrain => terrain;
     public float CellSize => cellSize;
@@ -21,11 +21,11 @@ public class RTSGridBootstrap : MonoBehaviour
     {
         if (terrain == null)
         {
-            Debug.LogError("RTSGridBootstrap is missing Terrain reference.");
+            Debug.LogError("TerrainGridSystem is missing Terrain reference.");
             return;
         }
 
-        Grid = new RTSGrid(
+        Grid = new TerrainGrid(
             terrain,
             cellSize,
             maxWalkableSlope,

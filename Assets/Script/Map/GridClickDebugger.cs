@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class RTSGridClickDebugger : MonoBehaviour
+public class GridClickDebugger : MonoBehaviour
 {
-    [SerializeField] private RTSGridBootstrap gridBootstrap;
+    [SerializeField] private TerrainGridSystem gridBootstrap;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask terrainLayerMask = ~0;
 
@@ -50,11 +50,11 @@ public class RTSGridClickDebugger : MonoBehaviour
         if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, terrainLayerMask))
             return;
 
-        RTSGrid grid = gridBootstrap.Grid;
+        TerrainGrid grid = gridBootstrap.Grid;
 
         GridCoord coord = grid.WorldToCell(hit.point);
 
-        if (!grid.TryGetCell(coord, out RTSGridCell cell))
+        if (!grid.TryGetCell(coord, out GridCell cell))
         {
             Debug.Log($"Clicked outside grid at world position {hit.point}");
             return;
