@@ -9,9 +9,6 @@ using UnityEngine;
 [RequireComponent(typeof(Health))]
 public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
 {
-    [Header("Definition")]
-    [SerializeField] protected BuildingDefinition definition;
-
     [Header("Selection")]
     [SerializeField] private bool canBeSelected = true;
     [SerializeField] private Transform selectionPoint;
@@ -30,10 +27,10 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
 
     private bool removalNotified;
 
-    public BuildingDefinition Definition => definition;
     public Faction OwnerFaction => ownerFaction;
     public BuildingManager OwningBuildingManager => owningBuildingManager;
 
+    public BuildingDefinition Definition { get; private set; }
     public GridCoord FootprintOrigin { get; private set; }
     public int BuildingId => 0; // find a unique ID 
     public bool IsInitialized { get; private set; }
@@ -65,6 +62,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     }
 
     public virtual void Initialize(
+    BuildingDefinition definition,
     Faction ownerFaction,
     GameContext gameContext,
     BuildingManager owningBuildingManager,
@@ -74,12 +72,6 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
             return;
 
         CacheComponents();
-
-        this.ownerFaction = ownerFaction;
-        this.gameContext = gameContext;
-        this.owningBuildingManager = owningBuildingManager;
-
-        FootprintOrigin = footprintOrigin;
 
         if (definition == null)
         {
@@ -105,8 +97,15 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
             return;
         }
 
-        health.Initialize(definition.maxHealth);
+        Definition = definition;
 
+        this.ownerFaction = ownerFaction;
+        this.gameContext = gameContext;
+        this.owningBuildingManager = owningBuildingManager;
+
+        FootprintOrigin = footprintOrigin;
+
+        health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
         unitProduction?.Initialize(this);

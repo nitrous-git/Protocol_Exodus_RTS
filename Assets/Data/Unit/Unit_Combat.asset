@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 1
   displayName: Combat Unit
-  prefab: {fileID: 0}
+  prefab: {fileID: 854148928934221364, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
   cost:
     minerals: 50
     gas: 0

@@ -5,7 +5,7 @@ public sealed class BuildingDefinition : ScriptableObject
 {
     [Header("Identity")]
     public BuildingType buildingType;
-    public string displayName = "Building";
+    public string displayName;
 
     [Header("Prefab")]
     public BuildingBase prefab;
@@ -21,15 +21,15 @@ public sealed class BuildingDefinition : ScriptableObject
 
     public BuildingType Type => buildingType;
     public string DisplayName => displayName;
-    public Vector2Int FootprintSize => footprintSize;
     public BuildingBase Prefab => prefab;
     public Cost Cost => cost;
+    public Vector2Int FootprintSize => footprintSize;
+    public float MaxHealth => maxHealth;
 
     private void OnValidate()
     {
         footprintSize.x = Mathf.Max(1, footprintSize.x);
         footprintSize.y = Mathf.Max(1, footprintSize.y);
-
         maxHealth = Mathf.Max(1f, maxHealth);
     }
 }

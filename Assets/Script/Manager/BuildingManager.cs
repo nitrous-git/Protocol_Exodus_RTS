@@ -106,7 +106,7 @@ public sealed class BuildingManager
 
         BuildingBase building = Object.Instantiate(definition.Prefab, worldPosition, Quaternion.identity, buildingsRoot);
 
-        building.Initialize(OwnerFaction, gameContext, this, footprintOrigin);
+        building.Initialize(definition, OwnerFaction, gameContext, this, footprintOrigin);
 
         if (!building.IsInitialized)
         {

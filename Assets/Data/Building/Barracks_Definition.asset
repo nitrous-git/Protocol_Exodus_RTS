@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   buildingType: 0
   displayName: Barracks
-  prefab: {fileID: 0}
+  prefab: {fileID: 2214791904597345691, guid: 3bd5cf3a8a303a24ebecbe1f352fec67, type: 3}
   cost:
     minerals: 100
     gas: 0
