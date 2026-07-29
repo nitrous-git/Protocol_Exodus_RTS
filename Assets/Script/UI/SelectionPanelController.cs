@@ -98,7 +98,7 @@ public sealed class SelectionPanelController : MonoBehaviour
     private void ShowSingleUnitInfo(UnitBase unit)
     {
         string displayName = unit.Definition.DisplayName;
-        UnitHealth health = unit.Health;
+        Health health = unit.Health;
 
         infoBuilder.Clear();
 

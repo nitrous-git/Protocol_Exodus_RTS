@@ -25,54 +25,61 @@ public class GridClickDebugger : MonoBehaviour
         if (!debugClick)
             return;
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            TryDebugClick();
-        }
+        //if (Input.GetMouseButtonDown(0))
+        //{
+        //    TryDebugClick();
+        //}
     }
 
-    private void TryDebugClick()
-    {
-        if (gridBootstrap == null || gridBootstrap.Grid == null)
-        {
-            Debug.LogWarning("Grid not ready.");
-            return;
-        }
+    //private void TryDebugClick()
+    //{
+    //    if (gridBootstrap == null || gridBootstrap.Grid == null)
+    //    {
+    //        Debug.LogWarning("Grid not ready.");
+    //        return;
+    //    }
 
-        if (mainCamera == null)
-        {
-            Debug.LogWarning("Missing camera.");
-            return;
-        }
+    //    if (mainCamera == null)
+    //    {
+    //        Debug.LogWarning("Missing camera.");
+    //        return;
+    //    }
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+    //    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, terrainLayerMask))
-            return;
+    //    if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, terrainLayerMask))
+    //        return;
 
-        TerrainGrid grid = gridBootstrap.Grid;
+    //    TerrainGrid grid = gridBootstrap.Grid;
 
-        GridCoord coord = grid.WorldToCell(hit.point);
+    //    GridCoord coord = grid.WorldToCell(hit.point);
 
-        if (!grid.TryGetCell(coord, out GridCell cell))
-        {
-            Debug.Log($"Clicked outside grid at world position {hit.point}");
-            return;
-        }
+    //    //if (!grid.TryGetCell(coord, out GridCell cell))
+    //    //{
+    //    //    Debug.Log($"Clicked outside grid at world position {hit.point}");
+    //    //    return;
+    //    //}
 
-        Debug.Log(
-            $"Clicked cell {coord} | " +
-            $"World: {cell.WorldCenter} | " +
-            $"Height: {cell.Height:F2} | " +
-            $"Slope: {cell.Slope:F2} | " +
-            $"Walkable: {cell.Walkable} | " +
-            $"Buildable: {cell.Buildable} | " +
-            $"Occupied: {cell.Occupied} | " +
-            $"Reserved: {cell.Reserved}"
-        );
+    //    GridCell cell = GetCell(coord);
 
-        MoveMarker(cell.WorldCenter);
-    }
+    //    if (true)
+    //    {
+            
+    //    }
+
+    //    Debug.Log(
+    //        $"Clicked cell {coord} | " +
+    //        $"World: {cell.WorldCenter} | " +
+    //        $"Height: {cell.Height:F2} | " +
+    //        $"Slope: {cell.Slope:F2} | " +
+    //        $"Walkable: {cell.Walkable} | " +
+    //        $"Buildable: {cell.Buildable} | " +
+    //        $"Occupied: {cell.Occupied} | " +
+    //        $"Reserved: {cell.Reserved}"
+    //    );
+
+    //    MoveMarker(cell.WorldCenter);
+    //}
 
     private void MoveMarker(Vector3 position)
     {

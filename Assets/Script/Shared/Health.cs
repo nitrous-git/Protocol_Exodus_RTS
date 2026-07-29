@@ -1,9 +1,8 @@
 using System;
 using UnityEngine;
 
-public class UnitHealth : MonoBehaviour
+public class Health : MonoBehaviour
 {
-    private UnitBase owner;
     private float maxHealth;
     private float currentHealth;
     private bool initialized;
@@ -16,9 +15,8 @@ public class UnitHealth : MonoBehaviour
     public event Action OnDied;
     public event Action<float, float> OnHealthChanged;
 
-    public void Initialize(UnitBase owner, float maxHealth)
+    public void Initialize(float maxHealth)
     {
-        this.owner = owner;
         this.maxHealth = Mathf.Max(1f, maxHealth);
         currentHealth = this.maxHealth;
         initialized = true;

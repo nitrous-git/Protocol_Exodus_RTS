@@ -98,14 +98,15 @@ public class GameBuilder : MonoBehaviour
 
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
-        ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
-
         UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService);
+        BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot);
+        ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
 
         return new Faction(
             definition,
             controller,
             unitManager,
+            buildingManager,
             resourceManager,
             GameContext
         );

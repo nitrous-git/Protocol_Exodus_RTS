@@ -81,6 +81,10 @@ public class TerrainGrid
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
     public Vector3 CellToWorld(GridCoord coord)
     {
         float worldX = terrainOrigin.x + (coord.x + 0.5f) * CellSize;
@@ -103,68 +107,137 @@ public class TerrainGrid
 
     public bool IsInside(GridCoord coord)
     {
-        return coord.x >= 0 &&
-               coord.z >= 0 &&
-               coord.x < Width &&
-               coord.z < Height;
+        return coord.x >= 0 && coord.z >= 0 && coord.x < Width && coord.z < Height;
     }
 
     public GridCell GetCell(GridCoord coord)
     {
-        return cells[coord.x, coord.z];
-    }
-
-    public bool TryGetCell(GridCoord coord, out GridCell cell)
-    {
         if (!IsInside(coord))
-        {
-            cell = default;
-            return false;
-        }
+            return null;
 
-        cell = cells[coord.x, coord.z];
-        return true;
+        return cells[coord.x, coord.z];
     }
 
     public bool IsWalkable(GridCoord coord)
     {
-        if (!TryGetCell(coord, out GridCell cell))
-            return false;
+        GridCell cell = GetCell(coord);
 
-        return cell.IsFreeForMovement();
+        return cell != null && cell.IsFreeForMovement();
     }
 
     public bool IsBuildable(GridCoord coord)
     {
-        if (!TryGetCell(coord, out GridCell cell))
-            return false;
+        GridCell cell = GetCell(coord);
 
-        return cell.IsFreeForBuilding();
+        return cell != null && cell.IsFreeForBuilding();
     }
 
     public void SetOccupied(GridCoord coord, bool occupied, int buildingId = -1, int unitId = -1)
     {
-        if (!IsInside(coord))
+        GridCell cell = GetCell(coord);
+
+        if (cell == null)
             return;
 
-        GridCell cell = cells[coord.x, coord.z];
-
         cell.Occupied = occupied;
-
         cell.OccupyingBuildingId = occupied ? buildingId : -1;
         cell.OccupyingUnitId = occupied ? unitId : -1;
-
-        cells[coord.x, coord.z] = cell;
     }
 
     public void SetReserved(GridCoord coord, bool reserved)
     {
-        if (!IsInside(coord))
+        GridCell cell = GetCell(coord);
+
+        if (cell == null)
             return;
 
-        GridCell cell = cells[coord.x, coord.z];
         cell.Reserved = reserved;
-
-        cells[coord.x, coord.z] = cell;
     }
+
+    // ---------------------------------------------------------------------
+    // Placement 
+    // ---------------------------------------------------------------------
+
+    /// <summary>
+    /// Returns whether every cell in a rectangular footprint
+    /// is currently available for building placement.
+    /// </summary>
+    public bool CanPlaceFootprint(GridCoord origin, Vector2Int footprintSize)
+    {
+        if (footprintSize.x <= 0 || footprintSize.y <= 0)
+        {
+            return false;
+        }
+
+        for (int z = 0; z < footprintSize.y; z++)
+        {
+            for (int x = 0; x < footprintSize.x; x++)
+            {
+                GridCoord coord = new GridCoord(origin.x + x, origin.z + z);
+
+                GridCell cell = GetCell(coord);
+
+                if (cell == null)
+                    return false;
+
+                if (!cell.IsFreeForBuilding())
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Marks every cell in a building footprint as occupied.
+    /// Call only after validating the footprint.
+    /// </summary>
+    public void SetFootprintOccupied(GridCoord origin, Vector2Int footprintSize, int buildingId)
+    {
+        for (int z = 0; z < footprintSize.y; z++)
+        {
+            for (int x = 0; x < footprintSize.x; x++)
+            {
+                GridCoord coord = new GridCoord(origin.x + x, origin.z + z);
+
+                GridCell cell = GetCell(coord);
+
+                if (cell == null)
+                    continue;
+
+                cell.Occupied = true;
+                cell.OccupyingBuildingId = buildingId;
+                cell.OccupyingUnitId = -1;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clears footprint cells currently occupied by the specified building.
+    /// </summary>
+    public void ClearFootprintOccupied(GridCoord origin, Vector2Int footprintSize, int buildingId)
+    {
+        for (int z = 0; z < footprintSize.y; z++)
+        {
+            for (int x = 0; x < footprintSize.x; x++)
+            {
+                GridCoord coord = new GridCoord(origin.x + x, origin.z + z);
+
+                GridCell cell = GetCell(coord);
+
+                if (cell == null)
+                    continue;
+
+                if (cell.OccupyingBuildingId != buildingId)
+                    continue;
+
+                cell.Occupied = false;
+                cell.OccupyingBuildingId = -1;
+                cell.OccupyingUnitId = -1;
+            }
+        }
+    }
+
+
+
 }

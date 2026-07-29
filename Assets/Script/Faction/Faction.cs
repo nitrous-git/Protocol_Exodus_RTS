@@ -5,6 +5,7 @@ public sealed class Faction
     public FactionDefinition Definition { get; }
     public IFactionController Controller { get; }
     public UnitManager UnitManager { get; }
+    public BuildingManager BuildingManager { get; }
     public ResourceManager ResourceManager { get; }
 
     public string Name => Definition != null ? Definition.factionName : "Unnamed Faction";
@@ -15,15 +16,20 @@ public sealed class Faction
         FactionDefinition definition,
         IFactionController controller,
         UnitManager unitManager,
+        BuildingManager buildingManager,
         ResourceManager resourceManager,
         GameContext gameContext)
     {
         Definition = definition;
         Controller = controller;
+
         UnitManager = unitManager;
+        BuildingManager = buildingManager;  
         ResourceManager = resourceManager;
 
         UnitManager?.SetOwnerFaction(this);
+        BuildingManager?.SetOwnerFaction(this);
+
         Controller?.Initialize(this, gameContext);
     }
 
@@ -35,7 +41,9 @@ public sealed class Faction
 
     public void Tick(float deltaTime)
     {
+        BuildingManager.Tick(deltaTime);
         UnitManager?.Tick(deltaTime);
+        
         Controller?.Tick();
     }
 

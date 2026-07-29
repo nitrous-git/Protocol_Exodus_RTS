@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FootprintTestDebugger : MonoBehaviour
 {
-    [SerializeField] private TerrainGridSystem gridBootstrap;
+    [SerializeField] private TerrainGridSystem gridSystem;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask terrainLayerMask = ~0;
 
@@ -14,9 +14,8 @@ public class FootprintTestDebugger : MonoBehaviour
     [SerializeField] private bool drawFootprint = true;
     [SerializeField] private float yOffset = 0.2f;
 
+    private GridFootprintPlacement preview;
     private bool hasPreview;
-    private GridCoord previewTopLeft;
-    private bool previewValid;
 
     private void Awake()
     {
@@ -35,33 +34,44 @@ public class FootprintTestDebugger : MonoBehaviour
     {
         hasPreview = false;
 
-        if (gridBootstrap == null || gridBootstrap.Grid == null)
+        if (gridSystem == null ||
+            gridSystem.Grid == null ||
+            mainCamera == null)
+        {
             return;
+        }
 
-        if (mainCamera == null)
+        Ray ray = mainCamera.ScreenPointToRay(
+            Input.mousePosition);
+
+        if (!Physics.Raycast(
+                ray,
+                out RaycastHit hit,
+                1000f,
+                terrainLayerMask))
+        {
             return;
+        }
 
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        TerrainGrid grid = gridSystem.Grid;
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, terrainLayerMask))
-            return;
+        GridCoord centerCell =
+            grid.WorldToCell(hit.point);
 
-        TerrainGrid grid = gridBootstrap.Grid;
+        GridCoord previewOrigin =
+            GetFootprintOrigin(
+                centerCell,
+                footprintSize);
 
-        GridCoord centerCell = grid.WorldToCell(hit.point);
-        previewTopLeft = GetTopLeftFromCenter(centerCell, footprintSize);
-
-        previewValid = CanPlaceFootprint(
-            grid,
-            previewTopLeft,
-            footprintSize,
-            maxHeightDifference
-        );
+        bool previewValid =
+            grid.CanPlaceFootprint(
+                previewOrigin,
+                footprintSize);
 
         hasPreview = true;
     }
 
-    private GridCoord GetTopLeftFromCenter(GridCoord center, Vector2Int size)
+    private GridCoord GetFootprintOrigin(GridCoord center, Vector2Int size)
     {
         int startX = center.x - size.x / 2;
         int startZ = center.z - size.y / 2;
@@ -84,7 +94,9 @@ public class FootprintTestDebugger : MonoBehaviour
             {
                 GridCoord coord = new GridCoord(topLeft.x + x, topLeft.z + z);
 
-                if (!grid.TryGetCell(coord, out GridCell cell))
+                GridCell cell = grid.GetCell(coord);
+
+                if (cell == null)
                     return false;
 
                 if (!cell.IsFreeForBuilding())
@@ -100,37 +112,39 @@ public class FootprintTestDebugger : MonoBehaviour
         return heightDifference <= maxHeightDiff;
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!drawFootprint)
-            return;
+    //private void OnDrawGizmos()
+    //{
+    //    if (!drawFootprint)
+    //        return;
 
-        if (!hasPreview)
-            return;
+    //    if (!hasPreview)
+    //        return;
 
-        if (gridBootstrap == null || gridBootstrap.Grid == null)
-            return;
+    //    if (gridSystem == null || gridSystem.Grid == null)
+    //        return;
 
-        TerrainGrid grid = gridBootstrap.Grid;
+    //    TerrainGrid grid = gridSystem.Grid;
 
-        Gizmos.color = previewValid
-            ? new Color(0f, 1f, 0.2f, 0.9f)
-            : new Color(1f, 0f, 0.2f, 0.9f);
+    //    Gizmos.color = previewValid
+    //        ? new Color(0f, 1f, 0.2f, 0.9f)
+    //        : new Color(1f, 0f, 0.2f, 0.9f);
 
-        for (int z = 0; z < footprintSize.y; z++)
-        {
-            for (int x = 0; x < footprintSize.x; x++)
-            {
-                GridCoord coord = new GridCoord(previewTopLeft.x + x, previewTopLeft.z + z);
+    //    for (int z = 0; z < footprintSize.y; z++)
+    //    {
+    //        for (int x = 0; x < footprintSize.x; x++)
+    //        {
+    //            GridCoord coord = new GridCoord(previewTopLeft.x + x, previewTopLeft.z + z);
 
-                if (!grid.TryGetCell(coord, out GridCell cell))
-                    continue;
+    //            GridCell cell = grid.GetCell(coord);
 
-                Vector3 center = cell.WorldCenter + Vector3.up * yOffset;
-                Vector3 size = new Vector3(grid.CellSize, 0.05f, grid.CellSize);
+    //            if (cell == null)
+    //                return;
 
-                Gizmos.DrawWireCube(center, size);
-            }
-        }
-    }
+    //            Vector3 center = cell.WorldCenter + Vector3.up * yOffset;
+    //            Vector3 size = new Vector3(grid.CellSize, 0.05f, grid.CellSize);
+
+    //            Gizmos.DrawWireCube(center, size);
+    //        }
+    //    }
+    //}
 }

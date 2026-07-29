@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct GridCell
+public sealed class GridCell
 {
         public GridCoord Coord;
         public Vector3 WorldCenter;
@@ -14,20 +14,16 @@ public struct GridCell
         public bool Occupied;
         public bool Reserved;
 
-        public int OccupyingUnitId;
-        public int OccupyingBuildingId;
+        public int OccupyingUnitId = -1;
+        public int OccupyingBuildingId = -1;
 
         public bool IsFreeForMovement()
         {
-            return Walkable &&
-                   !Occupied &&
-                   !Reserved;
+            return Walkable && !Occupied && !Reserved;
         }
 
         public bool IsFreeForBuilding()
         {
-            return Buildable &&
-                   !Occupied &&
-                   !Reserved;
+            return Buildable && !Occupied && !Reserved;
         }
 }

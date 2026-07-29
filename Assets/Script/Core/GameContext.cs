@@ -4,10 +4,12 @@ using System.Linq;
 public sealed class GameContext
 {
     private readonly List<UnitBase> allUnits = new();
+    private readonly List<UnitBase> allBuildings = new();
     private readonly List<UnitBase> selectedUnits = new();
     private readonly List<ITargetable> allTargetables = new();
 
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
+    public IReadOnlyList<UnitBase> AllBuildings => allBuildings;
     public IReadOnlyList<UnitBase> SelectedUnits => selectedUnits;
     public IReadOnlyList<ITargetable> AllTargetables => allTargetables;
 
@@ -31,6 +33,9 @@ public sealed class GameContext
         PlayerFaction = faction;
     }
 
+    // ---------------------------------------------------------------------
+    // Registration 
+    // ---------------------------------------------------------------------
     public void RegisterUnit(UnitBase unit)
     {
         //if (unit == null) return;
@@ -49,6 +54,25 @@ public sealed class GameContext
         allUnits.Remove(unit);
         selectedUnits.Remove(unit);
         allTargetables.Remove(unit);
+    }
+
+    public void RegisterTargetable(ITargetable targetable)
+    {
+        if (targetable == null)
+            return;
+
+        if (!allTargetables.Contains(targetable))
+        {
+            allTargetables.Add(targetable);
+        }
+    }
+
+    public void UnregisterTargetable(ITargetable targetable)
+    {
+        if (targetable == null)
+            return;
+
+        allTargetables.Remove(targetable);
     }
 
     public void SelectUnit(UnitBase unit, bool append)
@@ -105,6 +129,7 @@ public sealed class GameContext
     {
         ClearSelectedUnits();
         allUnits.Clear();
+        allBuildings.Clear();
         allTargetables.Clear();
         FactionManager = null;
         PlayerFaction = null;
