@@ -140,7 +140,7 @@ public sealed class BuildingManager
             buildingList.Add(building);
         }
 
-        gameContext?.RegisterTargetable(building);
+        gameContext?.RegisterBuilding(building);
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public sealed class BuildingManager
         pendingRemovalList.Remove(building);
         buildingList.Remove(building);
 
-        gameContext?.UnregisterTargetable(building);
+        gameContext?.UnregisterBuilding(building);
 
         if (terrainGrid == null || building.Definition == null)
         {

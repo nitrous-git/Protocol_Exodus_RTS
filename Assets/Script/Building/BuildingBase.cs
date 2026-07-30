@@ -21,6 +21,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     protected BuildingManager owningBuildingManager;
 
     protected Health health;
+    protected BuildingView view;
     protected UnitProductionComponent unitProduction;
     protected SupplyProviderComponent supplyProvider;
     protected HeadquartersComponent headquarters;
@@ -47,6 +48,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     public UnitProductionComponent UnitProduction => unitProduction;
     public SupplyProviderComponent SupplyProvider => supplyProvider;
     public HeadquartersComponent Headquarters => headquarters;
+    public BuildingView View => view;
 
     protected virtual void Awake()
     {
@@ -56,6 +58,8 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     protected virtual void CacheComponents()
     {
         health = GetComponent<Health>();
+        view = GetComponent<BuildingView>();
+
         unitProduction = GetComponent<UnitProductionComponent>();
         supplyProvider = GetComponent<SupplyProviderComponent>();
         headquarters = GetComponent<HeadquartersComponent>();
@@ -108,6 +112,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
+        view?.Initialize(this);
         unitProduction?.Initialize(this);
         supplyProvider?.Initialize(this);
         headquarters?.Initialize(this);
@@ -130,9 +135,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     public virtual void SetSelected(bool selected)
     {
         IsSelected = canBeSelected && selected;
-
-        // Building selection visuals can be connected later
-        // through a BuildingView or selection-ring component.
+        view?.SetSelected(IsSelected);
     }
 
     public virtual void TakeDamage(DamageInfo damageInfo)

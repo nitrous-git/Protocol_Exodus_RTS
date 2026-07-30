@@ -49,13 +49,31 @@ public sealed class SelectionPanelController : MonoBehaviour
     {
         IReadOnlyList<UnitBase> selectedUnits = gameContext.SelectedUnits;
 
-        if (selectedUnits.Count == 0)
+        if (selectedUnits.Count > 0)
         {
-            ShowEconomyInfo();
+            ShowUnitInfo(selectedUnits);
             return;
         }
 
-        ShowUnitInfo(selectedUnits);
+        BuildingBase selectedBuilding = gameContext.SelectedBuilding;
+
+        if (selectedBuilding != null)
+        {
+            ShowBuildingInfo(selectedBuilding);
+            return;
+        }
+
+        // Later:
+        // IReadOnlyList<ResourceNode> selectedResources =
+        //     gameContext.SelectedResources;
+        //
+        // if (selectedResources.Count > 0)
+        // {
+        //     ShowResourceInfo(selectedResources);
+        //     return;
+        // }
+
+        ShowEconomyInfo();
     }
 
     // ---------------------------------------------------------------------
@@ -136,6 +154,41 @@ public sealed class SelectionPanelController : MonoBehaviour
         infoBuilder.Append("Count : ").Append(selectedUnits.Count);
 
         ApplyText("Multiple", infoBuilder.ToString());
+    }
+
+    // ---------------------------------------------------------------------
+    // Buildings
+    // ---------------------------------------------------------------------
+
+    private void ShowBuildingInfo(BuildingBase building)
+    {
+        BuildingDefinition definition = building.Definition;
+        Health health = building.Health;
+
+        string displayName = definition != null ? definition.DisplayName : building.name;
+
+        infoBuilder.Clear();
+
+        if (building.OwnerFaction != null)
+        {
+            infoBuilder.Append("Faction : ").AppendLine(building.OwnerFaction.Name);
+        }
+
+        if (definition != null)
+        {
+            infoBuilder.Append("Type : ").AppendLine(definition.Type.ToString());
+        }
+
+        if (health != null)
+        {
+            infoBuilder
+                .Append("Health : ")
+                .Append(Mathf.CeilToInt(health.CurrentHealth))
+                .Append(" / ")
+                .Append(Mathf.CeilToInt(health.MaxHealth));
+        }
+
+        ApplyText(displayName, infoBuilder.ToString());
     }
 
     // ---------------------------------------------------------------------
