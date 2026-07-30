@@ -86,9 +86,7 @@ public class SelectionManager : MonoBehaviour
     /// A gesture below the drag threshold becomes a single selection.
     /// A gesture above the threshold becomes a box selection.
     /// </summary>
-    public void EndSelection(
-        Vector2 screenPosition,
-        bool append)
+    public void EndSelection(Vector2 screenPosition, bool append)
     {
         if (!isSelectionActive)
             return;
