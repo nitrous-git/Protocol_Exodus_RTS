@@ -76,7 +76,13 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         isPlayerControlInitialized = true;
         selectionPointerCaptured = false;
 
-        buildingPlacementController = new BuildingPlacementController(terrainGrid, faction.BuildingManager, commandIssuer, buildingPlacementPreviewPrefab, interactionMarkersRoot);
+        buildingPlacementController = 
+            new BuildingPlacementController(
+                terrainGrid, 
+                faction.BuildingManager, 
+                commandIssuer, 
+                buildingPlacementPreviewPrefab, 
+                interactionMarkersRoot);
 
         currentInteractionMode = PlayerInteractionMode.Default;
         EnterInteractionMode(currentInteractionMode);
@@ -413,7 +419,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         EnterInteractionMode(currentInteractionMode);
     }
 
-    private void CancelCurrentInteraction()
+    public void CancelCurrentInteraction()
     {
         SetInteractionMode(PlayerInteractionMode.Default);
     }

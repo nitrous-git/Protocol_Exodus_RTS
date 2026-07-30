@@ -227,6 +227,9 @@ public sealed class CommandPanelController : MonoBehaviour
 
         currentMenu = CommandPanelMenu.Main;
 
+        PlayerFactionController controller = playerFaction.Controller as PlayerFactionController;
+        controller.CancelCurrentInteraction();
+
         RefreshCommands(forceRefresh: true);
     }
 

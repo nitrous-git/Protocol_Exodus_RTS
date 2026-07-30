@@ -13,12 +13,12 @@ public sealed class Faction
     public Color SelectionRingColor => Definition != null ? Definition.selectionRingColor : Color.white;
 
     public Faction(
-        FactionDefinition definition,
-        IFactionController controller,
-        UnitManager unitManager,
-        BuildingManager buildingManager,
-        ResourceManager resourceManager,
-        GameContext gameContext)
+    FactionDefinition definition,
+    IFactionController controller,
+    UnitManager unitManager,
+    BuildingManager buildingManager,
+    ResourceManager resourceManager,
+    GameContext gameContext)
     {
         Definition = definition;
         Controller = controller;
