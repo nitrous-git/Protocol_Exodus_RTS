@@ -204,9 +204,9 @@ public sealed class CommandPanelController : MonoBehaviour
     private void ShowBuildMenu()
     {
         // Visible but disabled until BuildingPlacement is implemented.
-        ConfigureGameplaySlot(CommandCenterSlot, "C", false, CommandPanelAction.PlaceBuilding(null));
-        ConfigureGameplaySlot(SupplyDepotSlot, "S", false, CommandPanelAction.PlaceBuilding(null));
-        ConfigureGameplaySlot(BarracksSlot, "B", false, CommandPanelAction.PlaceBuilding(null));
+        ConfigureGameplaySlot(CommandCenterSlot, "C", true, CommandPanelAction.PlaceBuilding(commandCenterDefinition));
+        ConfigureGameplaySlot(SupplyDepotSlot, "S", true, CommandPanelAction.PlaceBuilding(supplyDepotDefinition));
+        ConfigureGameplaySlot(BarracksSlot, "B", true, CommandPanelAction.PlaceBuilding(barracksDefinition));
         ConfigureLocalSlot(BackSlot, "X", true, CloseBuildMenu);
     }
 

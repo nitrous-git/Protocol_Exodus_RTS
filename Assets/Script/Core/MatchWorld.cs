@@ -28,6 +28,9 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private GameObject targetMarkerPrefab;
     [SerializeField] private Transform interactionMarkersRoot;
 
+    [Header("Building Placement")]
+    [SerializeField] private BuildingPlacementPreview buildingPlacementPreviewPrefab;
+
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
     public Transform ProjectilesRoot => projectilesRoot;
@@ -47,6 +50,8 @@ public sealed class MatchWorld : MonoBehaviour
     public Transform InteractionMarkersRoot => interactionMarkersRoot;
 
     public TerrainGrid TerrainGrid => terrainGridSystem != null ? terrainGridSystem.Grid : null;
+
+    public BuildingPlacementPreview BuildingPlacementPreviewPrefab => buildingPlacementPreviewPrefab;
 
     public void ResolveServices()
     {

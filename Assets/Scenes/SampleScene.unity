@@ -2701,7 +2701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchWorld
   pathfindingServiceComponent: {fileID: 1149530445}
-  terrainGridSystem: {fileID: 0}
+  terrainGridSystem: {fileID: 316370790}
   playerInputBindings:
     cameraNorthKey: 119
     cameraSouthKey: 115
@@ -2715,6 +2715,7 @@ MonoBehaviour:
     addToSelectionKey: 304
     alternateAddToSelectionKey: 303
     issueMoveOnSecondaryPointer: 1
+    cancelInteractionKey: 27
   selectionManager: {fileID: 648430995}
   commandIssuer: {fileID: 275599316}
   cameraController: {fileID: 1057549936}
@@ -2727,6 +2728,7 @@ MonoBehaviour:
   - {fileID: 476404814}
   targetMarkerPrefab: {fileID: 2965236448411335283, guid: e4c52fee894e9dd4a9b72e76be80b8c1, type: 3}
   interactionMarkersRoot: {fileID: 496525871}
+  buildingPlacementPreviewPrefab: {fileID: 3704768083345454987, guid: b2397fd794a89af44917b2679b37e8ba, type: 3}
 --- !u!1001 &1625794929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3062,9 +3064,9 @@ MonoBehaviour:
   - {fileID: 1473965403}
   - {fileID: 307045784}
   - {fileID: 1974634407}
-  commandCenterDefinition: {fileID: 0}
-  supplyDepotDefinition: {fileID: 0}
-  barracksDefinition: {fileID: 0}
+  commandCenterDefinition: {fileID: 11400000, guid: 18613a203f32f36499b4a2fbff3dc2cc, type: 2}
+  supplyDepotDefinition: {fileID: 11400000, guid: fa6c1f9ea4d343643ab36b0432a33b8f, type: 2}
+  barracksDefinition: {fileID: 11400000, guid: b429fb98eec60444f9e1767b7f17df26, type: 2}
 --- !u!1001 &1794528526
 PrefabInstance:
   m_ObjectHideFlags: 0

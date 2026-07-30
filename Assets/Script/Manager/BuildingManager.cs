@@ -102,7 +102,7 @@ public sealed class BuildingManager
         if (!resourcesSpent)
             return null;
 
-        Vector3 worldPosition = GetFootprintWorldCenter(footprintOrigin, definition.FootprintSize);
+        Vector3 worldPosition = terrainGrid.GetFootprintWorldCenter(footprintOrigin, definition.FootprintSize);
 
         BuildingBase building = Object.Instantiate(definition.Prefab, worldPosition, Quaternion.identity, buildingsRoot);
 
@@ -235,13 +235,13 @@ public sealed class BuildingManager
     /// The same calculation works for odd, even, square, and
     /// rectangular footprints.
     /// </summary>
-    private Vector3 GetFootprintWorldCenter(GridCoord footprintOrigin, Vector2Int footprintSize)
-    {
-        GridCoord finalCell = new GridCoord(footprintOrigin.x + footprintSize.x - 1, footprintOrigin.z + footprintSize.y - 1);
+    //private Vector3 GetFootprintWorldCenter(GridCoord footprintOrigin, Vector2Int footprintSize)
+    //{
+    //    GridCoord finalCell = new GridCoord(footprintOrigin.x + footprintSize.x - 1, footprintOrigin.z + footprintSize.y - 1);
 
-        Vector3 firstCellWorld = terrainGrid.CellToWorld(footprintOrigin);
-        Vector3 finalCellWorld = terrainGrid.CellToWorld(finalCell);
+    //    Vector3 firstCellWorld = terrainGrid.CellToWorld(footprintOrigin);
+    //    Vector3 finalCellWorld = terrainGrid.CellToWorld(finalCell);
 
-        return (firstCellWorld + finalCellWorld) * 0.5f;
-    }
+    //    return (firstCellWorld + finalCellWorld) * 0.5f;
+    //}
 }

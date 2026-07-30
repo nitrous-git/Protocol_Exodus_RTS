@@ -81,8 +81,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingBase
   canBeSelected: 1
-  selectionPoint: {fileID: 0}
-  aimPoint: {fileID: 0}
+  selectionPoint: {fileID: 6464553089838157634}
+  aimPoint: {fileID: 6464553089838157634}
 --- !u!114 &2850138055980978991
 MonoBehaviour:
   m_ObjectHideFlags: 0

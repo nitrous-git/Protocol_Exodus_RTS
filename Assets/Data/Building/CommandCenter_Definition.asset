@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   buildingType: 2
   displayName: Command Center
-  prefab: {fileID: 0}
+  prefab: {fileID: 6917330275444696290, guid: 558367b51ae805e449e9342fb5031ae2, type: 3}
   cost:
     minerals: 200
     gas: 0

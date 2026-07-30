@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   buildingType: 0
   displayName: Building
-  prefab: {fileID: 0}
+  prefab: {fileID: 8863197283789835300, guid: 668c7a7e8956c374ba83a0ab271823db, type: 3}
   cost:
     minerals: 100
     gas: 0

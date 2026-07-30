@@ -238,6 +238,20 @@ public class TerrainGrid
         }
     }
 
+    /// <summary>
+    /// Returns the center of the rectangular footprint in world space.
+    ///
+    /// The same calculation works for odd, even, square, and
+    /// rectangular footprints.
+    /// </summary>
+    public Vector3 GetFootprintWorldCenter(GridCoord footprintOrigin, Vector2Int footprintSize)
+    {
+        GridCoord finalCell = new GridCoord(footprintOrigin.x + footprintSize.x - 1, footprintOrigin.z + footprintSize.y - 1);
 
+        Vector3 firstCellWorld = CellToWorld(footprintOrigin);
+        Vector3 finalCellWorld = CellToWorld(finalCell);
+
+        return (firstCellWorld + finalCellWorld) * 0.5f;
+    }
 
 }
