@@ -70,4 +70,9 @@ public readonly struct CommandPanelAction
     {
         return new CommandPanelAction(CommandPanelActionType.CancelInteraction);
     }
+
+    public static CommandPanelAction ClearSelection()
+    {
+        return new CommandPanelAction(CommandPanelActionType.ClearSelection);
+    }
 }

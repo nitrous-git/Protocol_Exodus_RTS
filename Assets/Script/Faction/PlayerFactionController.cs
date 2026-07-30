@@ -160,6 +160,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 //TryCancelProduction();
                 break;
 
+            case CommandPanelActionType.ClearSelection:
+                ClearCurrentSelection();
+                break;
+
             case CommandPanelActionType.CancelInteraction:
                 CancelCurrentInteraction();
                 break;
@@ -168,6 +172,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 Debug.LogWarning($"Unsupported Command Panel action: {action.Type}");
                 break;
         }
+    }
+
+    private void ClearCurrentSelection()
+    {
+        CancelCurrentInteraction();
+        gameContext?.ClearSelection();
     }
 
     private void IssueHoldPosition()

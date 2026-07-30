@@ -20,9 +20,12 @@ public sealed class CommandPanelController : MonoBehaviour
     // 3 4 5
     // 6 7 8
 
+    // Unit command presentation
     private const int MoveSlot = 0;
     private const int HoldPositionSlot = 1;
     private const int AttackSlot = 2;
+
+    // No-selection presentation
     private const int BuildMenuSlot = 6;
 
     // Build Menu presentation
@@ -31,6 +34,12 @@ public sealed class CommandPanelController : MonoBehaviour
     private const int BarracksSlot = 2;
     private const int BackSlot = 8;
 
+    // Building command presentation
+    private const int TrainUnitSlot = 0;
+    private const int UpgradeSlot = 1;
+    private const int RallyPointSlot = 5;
+    private const int ClearSelectionSlot = 8;
+
     [Header("Command Grid")]
     [SerializeField] private CommandSlotView[] commandSlots = new CommandSlotView[SlotCount];
 
@@ -38,6 +47,10 @@ public sealed class CommandPanelController : MonoBehaviour
     [SerializeField] private BuildingDefinition commandCenterDefinition;
     [SerializeField] private BuildingDefinition supplyDepotDefinition;
     [SerializeField] private BuildingDefinition barracksDefinition;
+
+    [Header("Unit Definitions")]
+    [SerializeField] private UnitDefinition workerUnitDefinition;
+    [SerializeField] private UnitDefinition combatUnitDefinition;
 
     private Faction playerFaction;
     private GameContext gameContext;
@@ -114,6 +127,18 @@ public sealed class CommandPanelController : MonoBehaviour
                 ShowMultipleUnitCommands();
                 break;
 
+            case CommandPanelLayout.CommandCenter:
+                ShowCommandCenterCommands();
+                break;
+
+            case CommandPanelLayout.Barracks:
+                ShowBarracksCommands();
+                break;
+
+            case CommandPanelLayout.SupplyDepot:
+                ShowSupplyDepotCommands();
+                break;
+
             case CommandPanelLayout.Empty:
             case CommandPanelLayout.Uninitialized:
             default:
@@ -132,11 +157,19 @@ public sealed class CommandPanelController : MonoBehaviour
 
         IReadOnlyList<UnitBase> selectedUnits = gameContext.SelectedUnits;
 
-        if (selectedUnits == null || selectedUnits.Count == 0)
-        {
-            return CommandPanelLayout.NoSelection;
-        }
+        if (selectedUnits != null && selectedUnits.Count > 0)
+            return DetermineUnitLayout(selectedUnits);
 
+        BuildingBase selectedBuilding = gameContext.SelectedBuilding;
+
+        if (selectedBuilding != null)
+            return DetermineBuildingLayout(selectedBuilding);
+
+        return CommandPanelLayout.NoSelection;
+    }
+
+    private CommandPanelLayout DetermineUnitLayout(IReadOnlyList<UnitBase> selectedUnits)
+    {
         UnitBase firstSelectedUnit = null;
         int validSelectionCount = 0;
 
@@ -147,12 +180,16 @@ public sealed class CommandPanelController : MonoBehaviour
             if (unit == null)
                 continue;
 
-            // Enemy selections, mixed-faction selections and
-            // otherwise non-commandable selections show no commands.
+            // Enemy, mixed-faction, or otherwise non-commandable
+            // selections display no gameplay commands.
             if (!playerFaction.CanIssueCommandsTo(unit))
                 return CommandPanelLayout.Empty;
 
-            firstSelectedUnit ??= unit;
+            if (firstSelectedUnit == null)
+            {
+                firstSelectedUnit = unit;
+            }
+
             validSelectionCount++;
         }
 
@@ -172,6 +209,32 @@ public sealed class CommandPanelController : MonoBehaviour
 
             case UnitType.Combat:
                 return CommandPanelLayout.CombatUnit;
+
+            default:
+                return CommandPanelLayout.Empty;
+        }
+    }
+
+    private CommandPanelLayout DetermineBuildingLayout(BuildingBase selectedBuilding)
+    {
+        if (selectedBuilding.Definition == null)
+            return CommandPanelLayout.Empty;
+
+        // Enemy buildings remain selectable for information,
+        // but their commands are not available to this player.
+        if (selectedBuilding.OwnerFaction != playerFaction)
+            return CommandPanelLayout.Empty;
+
+        switch (selectedBuilding.Definition.Type)
+        {
+            case BuildingType.CommandCenter:
+                return CommandPanelLayout.CommandCenter;
+
+            case BuildingType.Barracks:
+                return CommandPanelLayout.Barracks;
+
+            case BuildingType.SupplyDepot:
+                return CommandPanelLayout.SupplyDepot;
 
             default:
                 return CommandPanelLayout.Empty;
@@ -263,22 +326,29 @@ public sealed class CommandPanelController : MonoBehaviour
     }
 
     // ---------------------------------------------------------------------
-    // Future building layouts
+    // Building layouts
     // ---------------------------------------------------------------------
 
-    //private void ShowBarracksCommands()
-    //{
-    //    ConfigureGameplaySlot(0, "C", CommandPanelAction.TrainUnit(combatUnitDefinition));
-    //    ConfigureGameplaySlot(5, "R", CommandPanelAction.SetRallyPoint());
-    //    ConfigureGameplaySlot(8, "X", CommandPanelAction.CancelProduction());
-    //}
+    private void ShowCommandCenterCommands()
+    {
+        ConfigureGameplaySlot(TrainUnitSlot, "W", false, CommandPanelAction.TrainUnit(workerUnitDefinition));
+        ConfigureDisabledSlot(UpgradeSlot, "U");
+        ConfigureGameplaySlot(RallyPointSlot, "R", false, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(ClearSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
+    }
 
-    //private void ShowCommandCenterCommands()
-    //{
-    //    ConfigureGameplaySlot(0, "W", CommandPanelAction.TrainUnit(workerUnitDefinition));
-    //    ConfigureGameplaySlot(5, "R", CommandPanelAction.SetRallyPoint());
-    //    ConfigureGameplaySlot(8, "X", CommandPanelAction.CancelProduction());
-    //}
+    private void ShowBarracksCommands()
+    {
+        ConfigureGameplaySlot(TrainUnitSlot, "C", false, CommandPanelAction.TrainUnit(combatUnitDefinition));
+        ConfigureDisabledSlot(UpgradeSlot, "U");
+        ConfigureGameplaySlot(RallyPointSlot, "R",false, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(ClearSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
+    }
+
+    private void ShowSupplyDepotCommands()
+    {
+        ConfigureGameplaySlot(ClearSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
+    }
 
     // ---------------------------------------------------------------------
     // Slot configuration
@@ -306,6 +376,17 @@ public sealed class CommandPanelController : MonoBehaviour
         slot.SetClickAction(interactable ? clickAction : null);
 
         slot.SetVisual(label, null, interactable);
+    }
+
+    private void ConfigureDisabledSlot(int slotIndex, string label)
+    {
+        CommandSlotView slot = GetSlot(slotIndex);
+
+        if (slot == null)
+            return;
+
+        slot.SetClickAction(null);
+        slot.SetVisual(label, null, false);
     }
 
     private void HandleGameplayAction(CommandPanelAction action)
@@ -377,8 +458,13 @@ public sealed class CommandPanelController : MonoBehaviour
         Uninitialized,
         Empty,
         NoSelection,
+
         WorkerUnit,
         CombatUnit,
-        MultipleUnits
+        MultipleUnits,
+
+        CommandCenter,
+        Barracks,
+        SupplyDepot
     }
 }
