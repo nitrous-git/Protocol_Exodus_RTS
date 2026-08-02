@@ -15,7 +15,7 @@ public class SupplyProviderComponent : MonoBehaviour
     public void Initialize(BuildingBase building)
     {
         this.building = building;
-        ApplySupply();
+        //ApplySupply();
     }
 
     public void Tick(float deltaTime){ }
@@ -52,5 +52,10 @@ public class SupplyProviderComponent : MonoBehaviour
     public void NotifyBuildingRemoved()
     {
         RemoveSupply();
+    }
+
+    public void Activate()
+    {
+        ApplySupply();
     }
 }

@@ -3067,6 +3067,8 @@ MonoBehaviour:
   commandCenterDefinition: {fileID: 11400000, guid: 18613a203f32f36499b4a2fbff3dc2cc, type: 2}
   supplyDepotDefinition: {fileID: 11400000, guid: fa6c1f9ea4d343643ab36b0432a33b8f, type: 2}
   barracksDefinition: {fileID: 11400000, guid: b429fb98eec60444f9e1767b7f17df26, type: 2}
+  workerUnitDefinition: {fileID: 0}
+  combatUnitDefinition: {fileID: 0}
 --- !u!1001 &1794528526
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -19,12 +19,16 @@ public sealed class BuildingDefinition : ScriptableObject
     [Header("Core Stats")]
     [Min(1f)] public float maxHealth = 100f;
 
+    [Header("Construction")]
+    [Min(0f)] public float constructionDuration = 10f;
+
     public BuildingType Type => buildingType;
     public string DisplayName => displayName;
     public BuildingBase Prefab => prefab;
     public Cost Cost => cost;
     public Vector2Int FootprintSize => footprintSize;
     public float MaxHealth => maxHealth;
+    public float ConstructionDuration => constructionDuration;
 
     private void OnValidate()
     {

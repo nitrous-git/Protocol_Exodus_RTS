@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8918421667923752177}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SelectionIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 2643498019775016448}
   - component: {fileID: 8637702230104670475}
   - component: {fileID: 3760813527917931538}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -153,7 +153,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6769424105715311712}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 248625997079654751}
   - component: {fileID: 4212533166801557003}
   - component: {fileID: 4235755338027165126}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243,7 +243,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 72792b731ed6bb04d869f4ebb6c2799f, type: 2}
+  - {fileID: 2100000, guid: 926d4fe2ac792d4498936c7fb4b64007, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 8056074009614297929}
   - component: {fileID: 1952995841886404707}
   - component: {fileID: 617398384577569622}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: CommandCenter_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -378,6 +378,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingView
   selectionIndicator: {fileID: 783189689948909196}
+  visualRoot: {fileID: 6769424105715311712}
+  underConstructionVisibility: 0.45
+  completionTransitionDuration: 0.5
+  completionTransitionCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!65 &617398384577569622
 BoxCollider:
   m_ObjectHideFlags: 0

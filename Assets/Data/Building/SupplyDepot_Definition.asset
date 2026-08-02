@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c802eb597fc2f4bb386ddcc5cf2a63, type: 3}
   m_Name: SupplyDepot_Definition
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
-  buildingType: 0
-  displayName: Building
+  buildingType: 1
+  displayName: Supply Depot
   prefab: {fileID: 8863197283789835300, guid: 668c7a7e8956c374ba83a0ab271823db, type: 3}
   cost:
     minerals: 100
@@ -21,3 +21,4 @@ MonoBehaviour:
     supply: 0
   footprintSize: {x: 2, y: 2}
   maxHealth: 100
+  constructionDuration: 6

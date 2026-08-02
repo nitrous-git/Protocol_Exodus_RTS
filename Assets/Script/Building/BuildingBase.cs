@@ -36,6 +36,9 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     public int BuildingId => 0; // find a unique ID 
     public bool IsInitialized { get; private set; }
 
+    public BuildingState State { get; private set; }
+    public float ConstructionElapsed { get; private set; }
+
     public bool IsSelected { get; private set; }
     public bool CanBeSelected => canBeSelected;
 
@@ -49,6 +52,9 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     public SupplyProviderComponent SupplyProvider => supplyProvider;
     public HeadquartersComponent Headquarters => headquarters;
     public BuildingView View => view;
+
+    public bool IsOperational => State == BuildingState.InOperation;
+    public bool IsUnderConstruction => State == BuildingState.UnderConstruction;
 
     protected virtual void Awake()
     {
@@ -117,6 +123,8 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         supplyProvider?.Initialize(this);
         headquarters?.Initialize(this);
 
+        BeginConstruction();
+
         IsInitialized = true;
 
         owningBuildingManager.RegisterBuilding(this);
@@ -126,6 +134,14 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     {
         if (!IsInitialized || !IsAlive)
             return;
+
+        view?.Tick(deltaTime);
+
+        if (State == BuildingState.UnderConstruction)
+        {
+            TickConstruction(deltaTime);
+            return;
+        }
 
         unitProduction?.Tick(deltaTime);
         supplyProvider?.Tick(deltaTime);
@@ -173,4 +189,58 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         supplyProvider?.NotifyBuildingRemoved();
         headquarters?.NotifyBuildingRemoved();
     }
+
+    // ---------------------------------------------------------------------
+    // Progress
+    // ---------------------------------------------------------------------
+
+    public float ConstructionProgress()
+    {
+        float duration = Definition != null ? Definition.ConstructionDuration : 0f;
+
+        if (duration <= 0f)
+            return 1f;
+
+        return Mathf.Clamp01(ConstructionElapsed / duration);
+
+    }
+
+    public float GetConstructionRemainingNormalized()
+    {   
+        return 1f - ConstructionProgress();
+    }
+
+    // ---------------------------------------------------------------------
+    // Construction lifecycle
+    // ---------------------------------------------------------------------
+
+    private void BeginConstruction()
+    {
+        State = BuildingState.UnderConstruction;
+        ConstructionElapsed = 0f;
+
+        view?.ShowUnderConstruction();
+    }
+
+    private void TickConstruction(float deltaTime)
+    {
+        ConstructionElapsed += deltaTime;
+
+        if (ConstructionElapsed < Definition.ConstructionDuration)
+            return;
+
+        CompleteConstruction();
+    }
+
+    private void CompleteConstruction()
+    {
+        if (State == BuildingState.InOperation)
+            return;
+
+        ConstructionElapsed = Definition.ConstructionDuration;
+        State = BuildingState.InOperation;
+        view?.TransitionToOperational();
+        supplyProvider?.Activate();
+    }
+
 }
