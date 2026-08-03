@@ -31,6 +31,9 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private GameObject activeMoveTargetMarker;
     private const float markerHeightOffset = 0.05f;
 
+    private BuildingPlacementController buildingPlacementController;
+    private BuildingDefinition pendingBuildingDefinition;
+
     public PlayerInteractionMode CurrentInteractionMode => currentInteractionMode;
 
     // ---------------------------------------------------------------------
@@ -53,8 +56,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     PlayerInputBindings inputBindings,
     SelectionManager selectionManager,
     CommandIssuer commandIssuer,
-    CameraController cameraController, 
+    CameraController cameraController,
+    TerrainGrid terrainGrid,
     GameObject targetMarkerPrefab,
+    BuildingPlacementPreview buildingPlacementPreviewPrefab,
     Transform interactionMarkersRoot)
     {
         this.inputBindings = inputBindings;
@@ -70,6 +75,14 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         isPlayerControlInitialized = true;
         selectionPointerCaptured = false;
+
+        buildingPlacementController = 
+            new BuildingPlacementController(
+                terrainGrid, 
+                faction.BuildingManager, 
+                commandIssuer, 
+                buildingPlacementPreviewPrefab, 
+                interactionMarkersRoot);
 
         currentInteractionMode = PlayerInteractionMode.Default;
         EnterInteractionMode(currentInteractionMode);
@@ -147,6 +160,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 //TryCancelProduction();
                 break;
 
+            case CommandPanelActionType.ClearSelection:
+                ClearCurrentSelection();
+                break;
+
             case CommandPanelActionType.CancelInteraction:
                 CancelCurrentInteraction();
                 break;
@@ -155,6 +172,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 Debug.LogWarning($"Unsupported Command Panel action: {action.Type}");
                 break;
         }
+    }
+
+    private void ClearCurrentSelection()
+    {
+        CancelCurrentInteraction();
+        gameContext?.ClearSelection();
     }
 
     private void IssueHoldPosition()
@@ -177,13 +200,24 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         SetInteractionMode(PlayerInteractionMode.MoveTargeting);
     }
 
-    private void BeginBuildingPlacement(BuildingDefinition buildingDefinition)
+    private void BeginBuildingPlacement(BuildingDefinition definition)
     {
-        if (buildingDefinition == null)
+        if (definition == null)
             return;
 
-        //pendingBuildingDefinition = buildingDefinition;
-        //SetInteractionMode(PlayerInteractionMode.BuildingPlacement);
+        if (buildingPlacementController == null)
+            return;
+
+        // The player may choose another building while already in placement mode.
+        if (currentInteractionMode == PlayerInteractionMode.BuildPlacement)
+        {
+            buildingPlacementController.Begin(definition);
+            return;
+        }
+
+        pendingBuildingDefinition = definition;
+
+        SetInteractionMode(PlayerInteractionMode.BuildPlacement);
     }
 
     private void TryTrainUnit(UnitDefinition unitDefinition)
@@ -211,6 +245,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
             case PlayerInteractionMode.MoveTargeting:
                 HandleMoveTargetingInteraction();
+                break;
+
+            case PlayerInteractionMode.BuildPlacement:
+                HandleBuildingPlacementInteraction();
                 break;
 
             default:
@@ -341,6 +379,43 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     }
 
     // ---------------------------------------------------------------------
+    // Building Placement interaction
+    // ---------------------------------------------------------------------
+
+    private void HandleBuildingPlacementInteraction()
+    {
+        if (buildingPlacementController == null)
+        {
+            CancelCurrentInteraction();
+            return;
+        }
+
+        bool pointerBlocked = IsWorldPointerBlocked();
+
+        buildingPlacementController.UpdatePlacement(mouseInputHandler.PointerPosition, pointerBlocked);
+
+        if (mouseInputHandler.SecondaryPressed)
+        {
+            CancelCurrentInteraction();
+            return;
+        }
+
+        if (!mouseInputHandler.PrimaryPressed)
+            return;
+
+        if (pointerBlocked)
+            return;
+
+        bool constructed = buildingPlacementController.TryConfirm();
+
+        if (!constructed)
+            return;
+
+        // One successful placement exits placement mode.
+        SetInteractionMode(PlayerInteractionMode.Default);
+    }
+
+    // ---------------------------------------------------------------------
     // Interaction-mode lifecycle
     // ---------------------------------------------------------------------
 
@@ -354,7 +429,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         EnterInteractionMode(currentInteractionMode);
     }
 
-    private void CancelCurrentInteraction()
+    public void CancelCurrentInteraction()
     {
         SetInteractionMode(PlayerInteractionMode.Default);
     }
@@ -370,6 +445,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             case PlayerInteractionMode.MoveTargeting:
                 EnterMoveTargeting();
                 break;
+
+            case PlayerInteractionMode.BuildPlacement:
+                EnterBuildingPlacement();
+                break;
         }
     }
 
@@ -384,6 +463,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             case PlayerInteractionMode.MoveTargeting:
                 ExitMoveTargeting();
                 break;
+
+            case PlayerInteractionMode.BuildPlacement:
+                ExitBuildingPlacement();
+                break;
         }
     }
 
@@ -391,13 +474,15 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     // Specific interaction lifecycle
     // ---------------------------------------------------------------------
 
+    // Default
     private void EnterDefaultInteraction() { }
 
     private void ExitDefaultInteraction()
     {
         CancelSelectionGesture();
     }
-
+    
+    // Move
     private void EnterMoveTargeting()
     {
         CancelSelectionGesture();
@@ -407,6 +492,22 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private void ExitMoveTargeting()
     {
         DestroyMoveTargetMarker();
+    }
+
+    // Building placement
+    private void EnterBuildingPlacement()
+    {
+        if (buildingPlacementController == null)
+            return;
+
+        buildingPlacementController.Begin(pendingBuildingDefinition);
+        pendingBuildingDefinition = null;
+    }
+
+    private void ExitBuildingPlacement()
+    {
+        pendingBuildingDefinition = null;
+        buildingPlacementController?.Cancel();
     }
 
     // ---------------------------------------------------------------------

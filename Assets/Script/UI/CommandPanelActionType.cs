@@ -18,6 +18,9 @@ public enum CommandPanelActionType
     CancelProduction,
     CancelConstruction,
 
+    // Selection control
+    ClearSelection,
+
     // Interaction control
     CancelInteraction
 }

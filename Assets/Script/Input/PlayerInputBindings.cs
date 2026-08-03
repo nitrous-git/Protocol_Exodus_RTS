@@ -24,6 +24,9 @@ public sealed class PlayerInputBindings
     [Header("Commands")]
     [SerializeField] private bool issueMoveOnSecondaryPointer = true;
 
+    [Header("Interaction")]
+    [SerializeField] private KeyCode cancelInteractionKey = KeyCode.Escape;
+
     public KeyCode CameraNorthKey => cameraNorthKey;
     public KeyCode CameraSouthKey => cameraSouthKey;
     public KeyCode CameraWestKey => cameraWestKey;
@@ -40,4 +43,6 @@ public sealed class PlayerInputBindings
     public KeyCode AlternateAddToSelectionKey => alternateAddToSelectionKey;
 
     public bool IssueMoveOnSecondaryPointer => issueMoveOnSecondaryPointer;
+
+    public KeyCode CancelInteractionKey => cancelInteractionKey;
 }

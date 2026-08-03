@@ -6,6 +6,7 @@ public sealed class MatchWorld : MonoBehaviour
 {
     [Header("Services")]
     [SerializeField] private MonoBehaviour pathfindingServiceComponent;
+    [SerializeField] private TerrainGridSystem terrainGridSystem;
 
     [Header("Input")]
     [SerializeField] private PlayerInputBindings playerInputBindings = new();
@@ -27,6 +28,9 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private GameObject targetMarkerPrefab;
     [SerializeField] private Transform interactionMarkersRoot;
 
+    [Header("Building Placement")]
+    [SerializeField] private BuildingPlacementPreview buildingPlacementPreviewPrefab;
+
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
     public Transform ProjectilesRoot => projectilesRoot;
@@ -45,12 +49,18 @@ public sealed class MatchWorld : MonoBehaviour
     public GameObject TargetMarkerPrefab => targetMarkerPrefab;
     public Transform InteractionMarkersRoot => interactionMarkersRoot;
 
+    public TerrainGrid TerrainGrid => terrainGridSystem != null ? terrainGridSystem.Grid : null;
+
+    public BuildingPlacementPreview BuildingPlacementPreviewPrefab => buildingPlacementPreviewPrefab;
+
     public void ResolveServices()
     {
         PathfindingService = pathfindingServiceComponent as IPathfindingService;
 
         if (PathfindingService == null)
             Debug.LogError("MatchWorld is missing a valid IPathfindingService component.");
+
+        terrainGridSystem.Initialize();
     }
 
     public void Initialize(

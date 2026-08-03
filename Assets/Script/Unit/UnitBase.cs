@@ -3,7 +3,7 @@ using System.Reflection.Metadata;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
-public class UnitBase : MonoBehaviour, IControllable, ITargetable
+public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 {
     [Header("Definition")]
     [SerializeField] protected UnitDefinition definition;
@@ -23,7 +23,7 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
     protected IUnitState currentState;
     protected CommandContext currentContext;
 
-    protected UnitHealth health;
+    protected Health health;
     protected UnitMotor motor;
     protected UnitSensor sensor;
     protected UnitView view;
@@ -43,7 +43,7 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
     public bool CanBeSelected => canBeSelected;
 
 
-    public UnitHealth Health => health;
+    public Health Health => health;
     public UnitMotor Motor => motor;
     public UnitSensor Sensor => sensor;
     public UnitView View => view;
@@ -61,7 +61,7 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
 
     protected virtual void CacheComponents()
     {
-        health = GetComponent<UnitHealth>();
+        health = GetComponent<Health>();
         motor = GetComponent<UnitMotor>();
         sensor = GetComponent<UnitSensor>();
         view = GetComponent<UnitView>();
@@ -97,7 +97,7 @@ public class UnitBase : MonoBehaviour, IControllable, ITargetable
             return;
         }
 
-        health.Initialize(this, definition.maxHealth);
+        health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
         motor?.Initialize(this, pathfindingService, definition.moveSpeed);

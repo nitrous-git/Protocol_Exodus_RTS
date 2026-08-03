@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Centralized reader for keyboard input belonging to a human player.
@@ -14,6 +15,8 @@ public sealed class KeyInputHandler
     public Vector2 CameraMovement { get; private set; }
 
     public bool AddToSelectionHeld { get; private set; }
+
+    public bool CancelInteractionPressed { get; private set; }
 
     public KeyInputHandler(PlayerInputBindings bindings)
     {
@@ -54,11 +57,14 @@ public sealed class KeyInputHandler
         CameraMovement = Vector2.ClampMagnitude(new Vector2(horizontal, vertical), 1f);
 
         AddToSelectionHeld = bindings.AdditiveSelectionEnabled && (Input.GetKey(bindings.AddToSelectionKey) || Input.GetKey(bindings.AlternateAddToSelectionKey));
+
+        CancelInteractionPressed = Input.GetKeyDown(bindings.CancelInteractionKey);
     }
 
     public void Reset()
     {
         CameraMovement = Vector2.zero;
         AddToSelectionHeld = false;
+        CancelInteractionPressed = false;
     }
 }

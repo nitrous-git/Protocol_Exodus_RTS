@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Displays player economy information when nothing is selected,
@@ -13,6 +14,11 @@ public sealed class SelectionPanelController : MonoBehaviour
     [Header("View")]
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text infoText;
+
+    [Header("Progress")]
+    [SerializeField] private GameObject progressRoot;
+    [SerializeField] private Slider progressSlider;
+    [SerializeField] private TMP_Text progressText;
 
     private readonly StringBuilder infoBuilder = new(256);
 
@@ -28,6 +34,9 @@ public sealed class SelectionPanelController : MonoBehaviour
     {
         this.playerFaction = playerFaction;
         this.gameContext = gameContext;
+
+        ConfigureProgressView();
+        HideProgress();
 
         isInitialized = true;
 
@@ -49,13 +58,31 @@ public sealed class SelectionPanelController : MonoBehaviour
     {
         IReadOnlyList<UnitBase> selectedUnits = gameContext.SelectedUnits;
 
-        if (selectedUnits.Count == 0)
+        if (selectedUnits.Count > 0)
         {
-            ShowEconomyInfo();
+            ShowUnitInfo(selectedUnits);
             return;
         }
 
-        ShowUnitInfo(selectedUnits);
+        BuildingBase selectedBuilding = gameContext.SelectedBuilding;
+
+        if (selectedBuilding != null)
+        {
+            ShowBuildingInfo(selectedBuilding);
+            return;
+        }
+
+        // Later:
+        // IReadOnlyList<ResourceNode> selectedResources =
+        //     gameContext.SelectedResources;
+        //
+        // if (selectedResources.Count > 0)
+        // {
+        //     ShowResourceInfo(selectedResources);
+        //     return;
+        // }
+
+        ShowEconomyInfo();
     }
 
     // ---------------------------------------------------------------------
@@ -64,6 +91,8 @@ public sealed class SelectionPanelController : MonoBehaviour
 
     private void ShowEconomyInfo()
     {
+        HideProgress();
+
         ResourceManager resourceManager = playerFaction.ResourceManager;
         UnitManager unitManager = playerFaction.UnitManager;
 
@@ -86,6 +115,8 @@ public sealed class SelectionPanelController : MonoBehaviour
 
     private void ShowUnitInfo(IReadOnlyList<UnitBase> selectedUnits)
     {
+        HideProgress();
+
         if (selectedUnits.Count == 1)
         {
             ShowSingleUnitInfo(selectedUnits[0]);
@@ -98,7 +129,7 @@ public sealed class SelectionPanelController : MonoBehaviour
     private void ShowSingleUnitInfo(UnitBase unit)
     {
         string displayName = unit.Definition.DisplayName;
-        UnitHealth health = unit.Health;
+        Health health = unit.Health;
 
         infoBuilder.Clear();
 
@@ -136,6 +167,109 @@ public sealed class SelectionPanelController : MonoBehaviour
         infoBuilder.Append("Count : ").Append(selectedUnits.Count);
 
         ApplyText("Multiple", infoBuilder.ToString());
+    }
+
+    // ---------------------------------------------------------------------
+    // Buildings
+    // ---------------------------------------------------------------------
+
+    private void ShowBuildingInfo(BuildingBase building)
+    {
+        BuildingDefinition definition = building.Definition;
+        Health health = building.Health;
+
+        string displayName = definition != null ? definition.DisplayName : building.name;
+
+        infoBuilder.Clear();
+
+        if (building.OwnerFaction != null)
+        {
+            infoBuilder.Append("Faction : ").AppendLine(building.OwnerFaction.Name);
+        }
+
+        if (definition != null)
+        {
+            infoBuilder.Append("Type : ").AppendLine(definition.Type.ToString());
+        }
+
+        if (health != null)
+        {
+            infoBuilder
+                .Append("Health : ")
+                .Append(Mathf.CeilToInt(health.CurrentHealth))
+                .Append(" / ")
+                .Append(Mathf.CeilToInt(health.MaxHealth));
+        }
+
+        ApplyText(displayName, infoBuilder.ToString());
+        RefreshBuildingProgress(building);
+    }
+
+    private void RefreshBuildingProgress(BuildingBase building)
+    {
+        if (building == null)
+        {
+            HideProgress();
+            return;
+        }
+
+        if (building.IsUnderConstruction)
+        {
+            float fraction = building.ConstructionProgress();
+            ShowProgress(fraction, "Completed in");
+            return;
+        }
+
+        HideProgress();
+    }
+
+    // ---------------------------------------------------------------------
+    // Progress Slider
+    // ---------------------------------------------------------------------
+
+    private void ConfigureProgressView()
+    {
+        if (progressSlider == null)
+            return;
+
+        progressSlider.minValue = 0f;
+        progressSlider.maxValue = 1f;
+        progressSlider.wholeNumbers = false;
+        progressSlider.interactable = false;
+    }
+
+    private void ShowProgress(float fraction, string label)
+    {
+        fraction = Mathf.Clamp01(fraction);
+
+        if (progressRoot != null && !progressRoot.activeSelf)
+        {
+            progressRoot.SetActive(true);
+        }
+
+        if (progressSlider != null)
+        {
+            progressSlider.value = fraction;
+        }
+
+        if (progressText != null)
+        {
+            int percentage = Mathf.RoundToInt(fraction * 100f);
+            string displayText = $"{label}: {percentage}%";
+
+            if (progressText.text != displayText)
+            {
+                progressText.text = displayText;
+            }
+        }
+    }
+
+    private void HideProgress()
+    {
+        if (progressRoot != null && progressRoot.activeSelf)
+        {
+            progressRoot.SetActive(false);
+        }
     }
 
     // ---------------------------------------------------------------------
