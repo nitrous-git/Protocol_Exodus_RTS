@@ -40,6 +40,8 @@ public sealed class CommandPanelController : MonoBehaviour
     private const int RallyPointSlot = 5;
     private const int ClearSelectionSlot = 8;
 
+    private bool lastSelectedBuildingOperational;
+
     [Header("Command Grid")]
     [SerializeField] private CommandSlotView[] commandSlots = new CommandSlotView[SlotCount];
 
@@ -94,9 +96,13 @@ public sealed class CommandPanelController : MonoBehaviour
     {
         CommandPanelLayout nextLayout = DetermineLayout();
 
-        bool layoutChanged = nextLayout != currentLayout;
+        BuildingBase selectedBuilding = gameContext.SelectedBuilding;
+        bool selectedBuildingOperational = selectedBuilding != null && selectedBuilding.IsOperational;
 
-        if (!layoutChanged && !forceRefresh)
+        bool layoutChanged = nextLayout != currentLayout;
+        bool operationalStateChanged = selectedBuildingOperational != lastSelectedBuildingOperational;
+
+        if (!layoutChanged && !operationalStateChanged && !forceRefresh)
             return;
 
         if (layoutChanged)
@@ -107,8 +113,13 @@ public sealed class CommandPanelController : MonoBehaviour
             currentMenu = CommandPanelMenu.Main;
         }
 
-        ClearAllSlots();
+        lastSelectedBuildingOperational = selectedBuildingOperational;
 
+        ClearAllSlots();
+        ShowCurrentLayoutCommands();
+    }
+
+    private void ShowCurrentLayoutCommands() {
         switch (currentLayout)
         {
             case CommandPanelLayout.NoSelection:
@@ -331,23 +342,26 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowCommandCenterCommands()
     {
-        ConfigureGameplaySlot(TrainUnitSlot, "W", false, CommandPanelAction.TrainUnit(workerUnitDefinition));
+        bool operational = CanOperateSelectedBuilding();
+        ConfigureGameplaySlot(TrainUnitSlot, "W", operational, CommandPanelAction.TrainUnit(workerUnitDefinition));
         ConfigureDisabledSlot(UpgradeSlot, "U");
-        ConfigureGameplaySlot(RallyPointSlot, "R", false, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(RallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(ClearSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
     }
 
     private void ShowBarracksCommands()
     {
-        ConfigureGameplaySlot(TrainUnitSlot, "C", false, CommandPanelAction.TrainUnit(combatUnitDefinition));
+        bool operational = CanOperateSelectedBuilding();
+        ConfigureGameplaySlot(TrainUnitSlot, "C", operational, CommandPanelAction.TrainUnit(combatUnitDefinition));
         ConfigureDisabledSlot(UpgradeSlot, "U");
-        ConfigureGameplaySlot(RallyPointSlot, "R",false, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(RallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(ClearSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
     }
 
     private void ShowSupplyDepotCommands()
     {
-        ConfigureGameplaySlot(ClearSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
+        bool operational = CanOperateSelectedBuilding();
+        ConfigureGameplaySlot(ClearSelectionSlot, "X", operational, CommandPanelAction.ClearSelection());
     }
 
     // ---------------------------------------------------------------------
@@ -362,7 +376,6 @@ public sealed class CommandPanelController : MonoBehaviour
             return;
 
         slot.SetClickAction(interactable ? () => HandleGameplayAction(action) : null);
-
         slot.SetVisual(label, null, interactable);
     }
 
@@ -374,7 +387,6 @@ public sealed class CommandPanelController : MonoBehaviour
             return;
 
         slot.SetClickAction(interactable ? clickAction : null);
-
         slot.SetVisual(label, null, interactable);
     }
 
@@ -438,6 +450,15 @@ public sealed class CommandPanelController : MonoBehaviour
     }
 
 #endif
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+    private bool CanOperateSelectedBuilding()
+    {
+        BuildingBase building = gameContext.SelectedBuilding;
+        return building != null && building.OwnerFaction == playerFaction && building.IsOperational && building.IsAlive;
+    }
 
     // ---------------------------------------------------------------------
     // Internal presentation state
