@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 1
   displayName: Combat Unit
-  icon: {fileID: 21300000, guid: a29a59460ff911a40b521e29b11da7d1, type: 3}
+  icon: {fileID: 21300000, guid: c95aa9b9869418d44b8e3474aa9274c0, type: 3}
   prefab: {fileID: 8320676107144926392, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
   cost:
     minerals: 50

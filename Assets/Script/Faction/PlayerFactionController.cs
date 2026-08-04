@@ -222,13 +222,23 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private void TryTrainUnit(UnitDefinition unitDefinition)
     {
-        if (unitDefinition == null)
+        if (currentInteractionMode != PlayerInteractionMode.Default)
             return;
 
-        // Later:
-        // 1. Resolve the selected player-owned production building.
-        // 2. Verify it supports this UnitDefinition.
-        // 3. Ask the building's production component to enqueue it.
+        if (faction == null || gameContext == null)
+            return;
+
+        BuildingBase selectedBuilding = gameContext.SelectedBuilding;
+        UnitProductionComponent production = selectedBuilding.UnitProduction;
+        bool enqueued = production.TryEnqueue(unitDefinition);
+
+        if (!enqueued)
+        {
+            Debug.LogWarning($"Training request rejected for {unitDefinition.DisplayName} at {selectedBuilding.name}.");
+            return;
+        }
+
+        Debug.Log($"Queued {unitDefinition.DisplayName} at {selectedBuilding.name}. Queue: {production.QueueCount}/ {production.QueueCapacity}");
     }
 
     // ---------------------------------------------------------------------

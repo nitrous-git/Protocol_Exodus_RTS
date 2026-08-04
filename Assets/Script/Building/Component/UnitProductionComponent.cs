@@ -227,7 +227,6 @@ public sealed class UnitProductionComponent : MonoBehaviour
         }
 
         productionQueue.Add(definition);
-
         return true;
     }
 

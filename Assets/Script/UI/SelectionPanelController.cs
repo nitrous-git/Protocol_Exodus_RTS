@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// </summary>
 public sealed class SelectionPanelController : MonoBehaviour
 {
-    [Header("View")]
+    [Header("Information")]
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text infoText;
 
@@ -19,6 +19,10 @@ public sealed class SelectionPanelController : MonoBehaviour
     [SerializeField] private GameObject progressRoot;
     [SerializeField] private Slider progressSlider;
     [SerializeField] private TMP_Text progressText;
+
+    [Header("Production Queue")]
+    [SerializeField] private GameObject productionQueueRoot;
+    [SerializeField] private Image[] productionQueueIcons = new Image[UnitProductionComponent.MaximumQueueSize];
 
     private readonly StringBuilder infoBuilder = new(256);
 
@@ -36,7 +40,7 @@ public sealed class SelectionPanelController : MonoBehaviour
         this.gameContext = gameContext;
 
         ConfigureProgressView();
-        HideProgress();
+        ShowDefaultPresentation();
 
         isInitialized = true;
 
@@ -53,6 +57,10 @@ public sealed class SelectionPanelController : MonoBehaviour
 
         Refresh();
     }
+
+    // ---------------------------------------------------------------------
+    // Refresh
+    // ---------------------------------------------------------------------
 
     private void Refresh()
     {
@@ -91,7 +99,7 @@ public sealed class SelectionPanelController : MonoBehaviour
 
     private void ShowEconomyInfo()
     {
-        HideProgress();
+        ShowDefaultPresentation();
 
         ResourceManager resourceManager = playerFaction.ResourceManager;
         UnitManager unitManager = playerFaction.UnitManager;
@@ -115,7 +123,7 @@ public sealed class SelectionPanelController : MonoBehaviour
 
     private void ShowUnitInfo(IReadOnlyList<UnitBase> selectedUnits)
     {
-        HideProgress();
+        ShowDefaultPresentation();
 
         if (selectedUnits.Count == 1)
         {
@@ -209,18 +217,114 @@ public sealed class SelectionPanelController : MonoBehaviour
     {
         if (building == null)
         {
-            HideProgress();
+            ShowDefaultPresentation();
             return;
         }
 
         if (building.IsUnderConstruction)
         {
-            float fraction = building.ConstructionProgress();
-            ShowProgress(fraction, "Completed in");
+            ShowConstructionPresentation(building);
             return;
         }
 
-        HideProgress();
+        UnitProductionComponent production = building.UnitProduction;
+
+        if (production != null && production.IsProducing)
+        {
+            ShowProductionPresentation(production);
+            return;
+        }
+
+        ShowDefaultPresentation();
+    }
+
+    private void ShowConstructionPresentation(BuildingBase building)
+    {
+        SetInfoTextVisible(true);
+        SetProductionQueueVisible(false);
+        ClearProductionQueueIcons();
+
+        ShowProgress(building.ConstructionProgress(), "Completed in");
+    }
+
+    private void ShowProductionPresentation(UnitProductionComponent production)
+    {
+        SetInfoTextVisible(false);
+        SetProductionQueueVisible(true);
+
+        RefreshProductionQueue(production);
+
+        ShowProgress(production.ProductionProgress(), "Spawn in");
+    }
+
+    private void RefreshProductionQueue(UnitProductionComponent production)
+    {
+        if (productionQueueIcons == null)
+            return;
+
+        for (int i = 0; i < productionQueueIcons.Length; i++)
+        {
+            Image iconImage = productionQueueIcons[i];
+
+            if (iconImage == null)
+                continue;
+
+            UnitDefinition queuedDefinition = production.GetQueuedDefinition(i);
+
+            Sprite nextSprite = queuedDefinition != null ? queuedDefinition.Icon : null;
+
+            if (iconImage.sprite != nextSprite)
+            {
+                iconImage.sprite = nextSprite;
+            }
+
+            bool shouldShowIcon = nextSprite != null;
+
+            if (iconImage.enabled != shouldShowIcon)
+            {
+                iconImage.enabled = shouldShowIcon;
+            }
+
+            if (shouldShowIcon)
+            {
+                iconImage.preserveAspect = true;
+            }
+        }
+    }
+
+    // Production presentation 
+    private void ClearProductionQueueIcons()
+    {
+        if (productionQueueIcons == null)
+            return;
+
+        for (int i = 0; i < productionQueueIcons.Length; i++)
+        {
+            Image iconImage = productionQueueIcons[i];
+
+            if (iconImage == null)
+                continue;
+
+            if (iconImage.sprite != null)
+            {
+                iconImage.sprite = null;
+            }
+
+            if (iconImage.enabled)
+            {
+                iconImage.enabled = false;
+            }
+        }
+    }
+
+    // Default Presentation
+    private void ShowDefaultPresentation()
+    {
+        SetInfoTextVisible(true);
+        SetProductionQueueVisible(false);
+        SetProgressVisible(false);
+
+        ClearProductionQueueIcons();
     }
 
     // ---------------------------------------------------------------------
@@ -311,4 +415,25 @@ public sealed class SelectionPanelController : MonoBehaviour
         return true;
     }
 
+    // Visibility helpers
+    private void SetInfoTextVisible(bool visible)
+    {
+        if (infoText != null)
+            infoText.gameObject.SetActive(visible);
+    }
+
+    private void SetProductionQueueVisible(bool visible)
+    {
+        if (productionQueueRoot != null)
+            productionQueueRoot.SetActive(visible);
+    }
+
+    private void SetProgressVisible(bool visible)
+    {
+        if (progressRoot != null)
+        {
+            progressRoot.SetActive(visible);
+            return;
+        }
+    }
 }

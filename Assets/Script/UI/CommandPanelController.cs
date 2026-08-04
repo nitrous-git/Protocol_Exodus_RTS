@@ -37,8 +37,8 @@ public sealed class CommandPanelController : MonoBehaviour
     // Building command presentation
     private const int TrainUnitSlot = 0;
     private const int UpgradeSlot = 1;
-    private const int RallyPointSlot = 5;
-    private const int ClearSelectionSlot = 8;
+    private const int SetRallyPointSlot = 5;
+    private const int CloseBuildingSelectionSlot = 8;
 
     private bool lastSelectedBuildingOperational;
 
@@ -345,8 +345,8 @@ public sealed class CommandPanelController : MonoBehaviour
         bool operational = CanOperateSelectedBuilding();
         ConfigureGameplaySlot(TrainUnitSlot, "W", operational, CommandPanelAction.TrainUnit(workerUnitDefinition));
         ConfigureDisabledSlot(UpgradeSlot, "U");
-        ConfigureGameplaySlot(RallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
-        ConfigureGameplaySlot(ClearSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
+        ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
     }
 
     private void ShowBarracksCommands()
@@ -354,21 +354,21 @@ public sealed class CommandPanelController : MonoBehaviour
         bool operational = CanOperateSelectedBuilding();
         ConfigureGameplaySlot(TrainUnitSlot, "C", operational, CommandPanelAction.TrainUnit(combatUnitDefinition));
         ConfigureDisabledSlot(UpgradeSlot, "U");
-        ConfigureGameplaySlot(RallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
-        ConfigureGameplaySlot(ClearSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
+        ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
     }
 
     private void ShowSupplyDepotCommands()
     {
         bool operational = CanOperateSelectedBuilding();
-        ConfigureGameplaySlot(ClearSelectionSlot, "X", operational, CommandPanelAction.ClearSelection());
+        ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", operational, CommandPanelAction.ClearSelection());
     }
 
     // ---------------------------------------------------------------------
     // Slot configuration
     // ---------------------------------------------------------------------
 
-    private void ConfigureGameplaySlot(int slotIndex, string label, bool interactable, CommandPanelAction action)
+    private void ConfigureGameplaySlot(int slotIndex, string label, bool interactable, CommandPanelAction action, Sprite icon = null)
     {
         CommandSlotView slot = GetSlot(slotIndex);
 
@@ -376,7 +376,7 @@ public sealed class CommandPanelController : MonoBehaviour
             return;
 
         slot.SetClickAction(interactable ? () => HandleGameplayAction(action) : null);
-        slot.SetVisual(label, null, interactable);
+        slot.SetVisual(label, icon, interactable);
     }
 
     private void ConfigureLocalSlot(int slotIndex, string label, bool interactable, UnityEngine.Events.UnityAction clickAction)
