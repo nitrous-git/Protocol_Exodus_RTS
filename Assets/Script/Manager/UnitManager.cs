@@ -10,16 +10,22 @@ public class UnitManager
     private readonly IPathfindingService pathfindingService;
 
     private int currentPopulation;
+    private int reservedPopulation;
+
+    private readonly Transform unitsRoot;
 
     public Faction OwnerFaction { get; private set; }
     public IReadOnlyList<UnitBase> UnitList => unitList;
+
     public int CurrentPopulation => currentPopulation;
+    public int ReservedPopulation => reservedPopulation;
+    public int OccupiedPopulation => currentPopulation + reservedPopulation;
 
-
-    public UnitManager(GameContext gameContext, IPathfindingService pathfindingService)
+    public UnitManager(GameContext gameContext, IPathfindingService pathfindingService, Transform unitsRoot)
     {
         this.gameContext = gameContext;
         this.pathfindingService = pathfindingService;
+        this.unitsRoot = unitsRoot;
     }
 
     public void Tick(float deltaTime)
@@ -77,8 +83,9 @@ public class UnitManager
         gameContext?.UnregisterUnit(unit);
     }
 
-
+    // ---------------------------------------------------------------------
     // Getter & Setter
+    // ---------------------------------------------------------------------
 
     public IReadOnlyList<UnitBase> getUnitList()
     {
@@ -95,7 +102,9 @@ public class UnitManager
         RecalculateCurrentPopulation();
     }
 
+    // ---------------------------------------------------------------------
     // Helpers
+    // ---------------------------------------------------------------------
 
     public UnitBase SpawnUnit(UnitBase prefab, Vector3 position, Quaternion rotation, Transform parent = null)
     {
@@ -105,8 +114,17 @@ public class UnitManager
             return null;
         }
 
-        UnitBase unit = Object.Instantiate(prefab, position, rotation, parent);
+        Transform resolvedParent = parent != null ? parent : unitsRoot;
+
+        UnitBase unit = Object.Instantiate(prefab, position, rotation, resolvedParent);
         unit.Initialize(OwnerFaction, gameContext, pathfindingService, this);
+
+        if (!unit.IsInitialized)
+        {
+            Debug.LogError($"UnitManager failed to initialize spawned unit {prefab.name}.");
+            Object.Destroy(unit.gameObject);
+            return null;
+        }
 
         return unit;
     }
@@ -149,4 +167,73 @@ public class UnitManager
             currentPopulation += GetPopulationCost(unitList[i]);
         }
     }
+
+    // ---------------------------------------------------------------------
+    // Population reservation
+    // ---------------------------------------------------------------------
+
+    public bool CanReservePopulation(int populationCost)
+    {
+        populationCost = Mathf.Max(0, populationCost);
+
+        if (populationCost == 0)
+            return true;
+
+        ResourceManager resourceManager = OwnerFaction != null ? OwnerFaction.ResourceManager : null;
+
+        if (resourceManager == null)
+            return false;
+
+        return OccupiedPopulation + populationCost <= resourceManager.MaxSupply;
+    }
+
+    public bool TryReservePopulation(int populationCost)
+    {
+        populationCost = Mathf.Max(0, populationCost);
+
+        if (!CanReservePopulation(populationCost))
+            return false;
+
+        reservedPopulation += populationCost;
+        return true;
+    }
+
+    public void ReleaseReservedPopulation(int populationCost)
+    {
+        if (populationCost <= 0)
+            return;
+
+        if (populationCost > reservedPopulation)
+        {
+            Debug.LogWarning($"Attempted to release {populationCost} reserved population, but only {reservedPopulation} is currently reserved.");
+        }
+
+        reservedPopulation = Mathf.Max(0, reservedPopulation - populationCost);
+    }
+
+    // Definition overload wrapper
+    public bool CanReservePopulation(UnitDefinition definition)
+    {
+        if (definition == null)
+            return false;
+
+        return CanReservePopulation(definition.Cost.Supply);
+    }
+
+    public bool TryReservePopulation(UnitDefinition definition)
+    {
+        if (definition == null)
+            return false;
+
+        return TryReservePopulation(definition.Cost.Supply);
+    }
+
+    public void ReleaseReservedPopulation(UnitDefinition definition)
+    {
+        if (definition == null)
+            return;
+
+        ReleaseReservedPopulation(definition.Cost.Supply);
+    }
+
 }

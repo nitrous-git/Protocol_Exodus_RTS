@@ -100,7 +100,7 @@ public class GameBuilder : MonoBehaviour
 
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
-        UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService);
+        UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService, matchWorld.UnitsRoot);
         BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot);
         ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
 

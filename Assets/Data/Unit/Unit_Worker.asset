@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 0
   displayName: Worker Unit
+  icon: {fileID: 21300000, guid: a29a59460ff911a40b521e29b11da7d1, type: 3}
   prefab: {fileID: 0}
   cost:
     minerals: 50
     gas: 0
     supply: 1
+  productionDuration: 6
   maxHealth: 100
   moveSpeed: 4
   visionRange: 12

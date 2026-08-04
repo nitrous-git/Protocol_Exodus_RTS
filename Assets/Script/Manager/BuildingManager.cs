@@ -17,6 +17,7 @@ public sealed class BuildingManager
     public Faction OwnerFaction { get; private set; }
 
     public IReadOnlyList<BuildingBase> BuildingList => buildingList;
+    public TerrainGrid TerrainGrid => terrainGrid;
 
     public BuildingManager(GameContext gameContext, TerrainGrid terrainGrid, Transform buildingsRoot)
     {

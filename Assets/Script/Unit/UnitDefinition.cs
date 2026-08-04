@@ -6,10 +6,15 @@ public class UnitDefinition : ScriptableObject
     [Header("Identity")]
     public UnitType unitType;
     public string displayName = "Unit";
-    public GameObject prefab;
+    public Sprite icon;
+
+    [Header("Prefab")]
+    public UnitBase prefab;
 
     [Header("Economy")]
     public Cost cost = Cost.Zero;
+
+    [Header("Production")] [Min(0f)] public float productionDuration = 5f;
 
     [Header("Core Stats")]
     [Min(1f)] public float maxHealth = 100f;
@@ -27,6 +32,23 @@ public class UnitDefinition : ScriptableObject
 
     public UnitType Type => unitType;
     public string DisplayName => displayName;
+    public Sprite Icon => icon;
+    public UnitBase Prefab => prefab;
     public Cost Cost => cost;
+    public float ProductionDuration => productionDuration;
+
+    private void OnValidate()
+    {
+        maxHealth = Mathf.Max(1f, maxHealth);
+        moveSpeed = Mathf.Max(0f, moveSpeed);
+        visionRange = Mathf.Max(0f, visionRange);
+
+        attackRange = Mathf.Max(0f, attackRange);
+        attackDamage = Mathf.Max(0f, attackDamage);
+        attackCooldown = Mathf.Max(0.01f, attackCooldown);
+
+        selectionRadius = Mathf.Max(0f, selectionRadius);
+        productionDuration = Mathf.Max(0f, productionDuration);
+    }
 }
 
