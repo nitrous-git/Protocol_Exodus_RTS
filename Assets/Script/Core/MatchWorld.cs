@@ -19,7 +19,7 @@ public sealed class MatchWorld : MonoBehaviour
     [Header("Runtime Roots")]
     [SerializeField] private Transform unitsRoot;
     [SerializeField] private Transform buildingsRoot;
-    [SerializeField] private Transform resourcesRoot;
+    [SerializeField] private Transform resourceNodesRoot;
     [SerializeField] private Transform projectilesRoot;
 
     [Header("Spawn Points")]
@@ -34,7 +34,7 @@ public sealed class MatchWorld : MonoBehaviour
 
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
-    public Transform ResourcesRoot => resourcesRoot;
+    public Transform ResourceNodesRoot => resourceNodesRoot;
     public Transform ProjectilesRoot => projectilesRoot;
     public IReadOnlyList<Transform> FactionSpawnPoints => factionSpawnPoints;
     public SelectionManager SelectionManager => selectionManager;
@@ -85,6 +85,8 @@ public sealed class MatchWorld : MonoBehaviour
         selectionManager?.Initialize(gameContext);
         commandIssuer?.Initialize(gameContext, playerFaction);
         cameraController?.Initialize();
+
+        ResourceNodeRepository?.Initialize(resourceNodesRoot);
     }
 
     public void TickInput(float deltaTime)
@@ -100,7 +102,6 @@ public sealed class MatchWorld : MonoBehaviour
 
         // Later:
         // FogOfWarController?.Tick(deltaTime);
-        // ProjectileRepository?.Tick(deltaTime);
         // VisibilitySystem?.Tick(deltaTime);
     }
 

@@ -280,7 +280,7 @@ MonoBehaviour:
   projectileCollisionRadius: 0.1
   projectileCollisionMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
 --- !u!1 &1694468401910329829
 GameObject:
   m_ObjectHideFlags: 0

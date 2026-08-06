@@ -80,15 +80,13 @@ public sealed class SelectionPanelController : MonoBehaviour
             return;
         }
 
-        // Later:
-        // IReadOnlyList<ResourceNode> selectedResources =
-        //     gameContext.SelectedResources;
-        //
-        // if (selectedResources.Count > 0)
-        // {
-        //     ShowResourceInfo(selectedResources);
-        //     return;
-        // }
+        ResourceNode selectedResourceNode = gameContext.SelectedResourceNode;
+
+        if (selectedResourceNode != null)
+        {
+            ShowResourceNodeInfo(selectedResourceNode);
+            return;
+        }
 
         ShowEconomyInfo();
     }
@@ -175,6 +173,25 @@ public sealed class SelectionPanelController : MonoBehaviour
         infoBuilder.Append("Count : ").Append(selectedUnits.Count);
 
         ApplyText("Multiple", infoBuilder.ToString());
+    }
+
+    // ---------------------------------------------------------------------
+    // ResourceNodes 
+    // ---------------------------------------------------------------------
+
+    private void ShowResourceNodeInfo(ResourceNode resourceNode)
+    {
+        infoBuilder.Clear();
+
+        infoBuilder.Append("Type : ").AppendLine(resourceNode.ResourceType.ToString());
+        infoBuilder
+             .Append("Amount : ")
+             .Append(resourceNode.RemainingAmount.ToString())
+             .Append(" / ")
+             .Append(resourceNode.InitialAmount.ToString())
+             .AppendLine(" ");
+
+        ApplyText("Resource", infoBuilder.ToString());
     }
 
     // ---------------------------------------------------------------------

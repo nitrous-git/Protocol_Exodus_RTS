@@ -6,7 +6,6 @@ using UnityEngine;
 /// Resource extraction removes stock from this node but does not directly
 /// credit a faction. Worker units will carry and deliver extracted resources.
 /// </summary>
-[DisallowMultipleComponent]
 [RequireComponent(typeof(Collider))]
 public sealed class ResourceNode : MonoBehaviour, ISelectable
 {
@@ -54,9 +53,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     ///
     /// Called by ResourceNodeRepository during match construction.
     /// </summary>
-    internal void Initialize(
-        ResourceNodeRepository repository,
-        GridCoord occupiedCell)
+    internal void Initialize(ResourceNodeRepository repository, GridCoord occupiedCell)
     {
         if (IsInitialized)
             return;

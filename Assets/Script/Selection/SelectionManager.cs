@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class SelectionManager : MonoBehaviour
@@ -314,6 +313,27 @@ public class SelectionManager : MonoBehaviour
         return null;
     }
 
+    private ResourceNode FindResourceNodeInBox(Rect selectionRect)
+    {
+        IReadOnlyList<ResourceNode> allResourceNodes = gameContext.AllResourceNodes;
+
+        // Only one building may be selected.
+        for (int i = 0; i < allResourceNodes.Count; i++)
+        {
+            ResourceNode resourceNode = allResourceNodes[i];
+
+            if (resourceNode == null || !resourceNode.CanBeSelected)
+                continue;
+
+            if (IsInsideSelectionRect(resourceNode.SelectionPosition, selectionRect))
+            {
+                return resourceNode;
+            }
+        }
+
+        return null;
+    }
+
     private bool IsInsideSelectionRect(Vector3 worldPosition, Rect selectionRect)
     {
         Vector3 screenPosition = worldCamera.WorldToScreenPoint(worldPosition);
@@ -409,9 +429,25 @@ public class SelectionManager : MonoBehaviour
 
         public bool TryHandle(SelectionQuery query, bool append)
         {
-            // ResourceNode does not exist yet in the Unity branch.
-            // This handler becomes functional when resource nodes are added.
-            return false;
+            ResourceNode resourceNode;
+
+            if (query.IsBoxSelection)
+            {
+                resourceNode = owner.FindResourceNodeInBox(query.ScreenRect);
+            }
+            else
+            {
+                resourceNode = owner.FindSelectableAtScreenPosition<ResourceNode>(query.ScreenPosition);
+            }
+
+            if (resourceNode == null)
+                return false;
+
+            // Append is intentionally ignored.
+            // ResourceNode are always a single exclusive selection.
+            owner.gameContext.SelectResourceNode(resourceNode);
+
+            return true;
         }
     }
 

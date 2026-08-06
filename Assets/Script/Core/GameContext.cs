@@ -155,7 +155,12 @@ public sealed class GameContext
 
     public void SelectUnit(UnitBase unit, bool append)
     {
-        if (unit == null || !unit.CanBeSelected) return;
+        if (unit == null || !unit.CanBeSelected) 
+            return;
+
+        // Units and buildings cannot coexist in the active selection.
+        ClearSelectedBuilding();
+        ClearSelectedResourceNode();
 
         if (!append)
             ClearSelectedUnits();

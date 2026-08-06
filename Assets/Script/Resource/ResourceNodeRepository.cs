@@ -14,7 +14,7 @@ public sealed class ResourceNodeRepository
     private readonly GameContext gameContext;
     private readonly TerrainGrid terrainGrid;
 
-    private Transform resourcesRoot;
+    private Transform resourceNodesRoot;
 
     public IReadOnlyList<ResourceNode> ResourceNodeList => resourceNodeList;
 
@@ -30,12 +30,12 @@ public sealed class ResourceNodeRepository
     /// Finds and registers the ResourceNode components manually placed
     /// beneath the Resources scene root.
     /// </summary>
-    public void Initialize(Transform resourcesRoot)
+    public void Initialize(Transform resourceNodesRoot)
     {
         if (IsInitialized)
             return;
 
-        if (resourcesRoot == null)
+        if (resourceNodesRoot == null)
         {
             Debug.LogError("ResourceNodeRepository cannot initialize because the Resources root is missing.");
             return;
@@ -47,9 +47,9 @@ public sealed class ResourceNodeRepository
             return;
         }
 
-        this.resourcesRoot = resourcesRoot;
+        this.resourceNodesRoot = resourceNodesRoot;
 
-        ResourceNode[] sceneNodes = resourcesRoot.GetComponentsInChildren<ResourceNode>(true);
+        ResourceNode[] sceneNodes = resourceNodesRoot.GetComponentsInChildren<ResourceNode>(true);
 
         for (int i = 0; i < sceneNodes.Length; i++)
         {

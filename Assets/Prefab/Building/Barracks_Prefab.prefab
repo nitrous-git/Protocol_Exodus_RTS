@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5919701468014591671}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: SelectionIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7957330404481415064}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,7 +79,7 @@ GameObject:
   - component: {fileID: 5877049187381141355}
   - component: {fileID: 8735928527446767233}
   - component: {fileID: 8266505807414708790}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Barracks_Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 6730930272423401001}
   - component: {fileID: 6819734029521818688}
   - component: {fileID: 3584069170075085547}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -333,7 +333,7 @@ GameObject:
   - component: {fileID: 7821317539300504522}
   - component: {fileID: 2910566314993015102}
   - component: {fileID: 4604916772370010365}
-  m_Layer: 7
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
