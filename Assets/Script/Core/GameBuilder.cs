@@ -52,8 +52,11 @@ public class GameBuilder : MonoBehaviour
     private void BuildMatch()
     {
         GameContext = new GameContext();
-        ResourceNodeRepository = new ResourceNodeRepository(GameContext);
-       
+
+        // Nodes reserve their cells after TerrainGrid (after ResolveServices()) 
+        ResourceNodeRepository = new ResourceNodeRepository(GameContext, matchWorld.TerrainGrid); 
+        GameContext.SetResourceNodeRepository(ResourceNodeRepository);
+
         ProjectileManager = new ProjectileManager(matchWorld.ProjectilesRoot);
         GameContext.SetProjectileManager(ProjectileManager);
 

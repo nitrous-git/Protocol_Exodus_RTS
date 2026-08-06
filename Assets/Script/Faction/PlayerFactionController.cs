@@ -53,14 +53,14 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     /// initialization because AI controllers do not require these systems.
     /// </summary>
     public void InitializePlayerControl(
-    PlayerInputBindings inputBindings,
-    SelectionManager selectionManager,
-    CommandIssuer commandIssuer,
-    CameraController cameraController,
-    TerrainGrid terrainGrid,
-    GameObject targetMarkerPrefab,
-    BuildingPlacementPreview buildingPlacementPreviewPrefab,
-    Transform interactionMarkersRoot)
+        PlayerInputBindings inputBindings,
+        SelectionManager selectionManager,
+        CommandIssuer commandIssuer,
+        CameraController cameraController,
+        TerrainGrid terrainGrid,
+        GameObject targetMarkerPrefab,
+        BuildingPlacementPreview buildingPlacementPreviewPrefab,
+        Transform interactionMarkersRoot)
     {
         this.inputBindings = inputBindings;
         this.selectionManager = selectionManager;
