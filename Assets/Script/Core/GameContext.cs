@@ -5,21 +5,26 @@ public sealed class GameContext
 {
     private readonly List<UnitBase> allUnits = new();
     private readonly List<BuildingBase> allBuildings = new();
+    private readonly List<ResourceNode> allResourceNodes = new();
     private readonly List<ITargetable> allTargetables = new();
 
     private readonly List<UnitBase> selectedUnits = new();
     private BuildingBase selectedBuilding;
+    private ResourceNode selectedResourceNode;
 
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
     public IReadOnlyList<BuildingBase> AllBuildings => allBuildings;
+    public IReadOnlyList<ResourceNode> AllResourceNodes => allResourceNodes;
     public IReadOnlyList<ITargetable> AllTargetables => allTargetables;
 
     public IReadOnlyList<UnitBase> SelectedUnits => selectedUnits;
     public BuildingBase SelectedBuilding => selectedBuilding;
+    public ResourceNode SelectedResourceNode => selectedResourceNode;
 
     public FactionManager FactionManager { get; private set; }
     public Faction PlayerFaction { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
+    public ResourceNodeRepository ResourceNodeRepository { get; private set; }
 
     public void SetFactionManager(FactionManager factionManager)
     {
@@ -34,6 +39,11 @@ public sealed class GameContext
     public void SetPlayerFaction(Faction faction)
     {
         PlayerFaction = faction;
+    }
+
+    public void SetResourceNodeRepository(ResourceNodeRepository resourceNodeRepository)
+    {
+        ResourceNodeRepository = resourceNodeRepository;
     }
 
     // ---------------------------------------------------------------------
@@ -93,6 +103,30 @@ public sealed class GameContext
     }
 
     // ---------------------------------------------------------------------
+    // Resource Node registration
+    // ---------------------------------------------------------------------
+
+    public void RegisterResourceNode(ResourceNode resourceNode)
+    {
+        if (resourceNode == null)
+            return;
+
+        if (!allResourceNodes.Contains(resourceNode))
+            allResourceNodes.Add(resourceNode);
+    }
+
+    public void UnregisterResourceNode(ResourceNode resourceNode)
+    {
+        if (resourceNode == null)
+            return;
+
+        allResourceNodes.Remove(resourceNode);
+
+        if (selectedResourceNode == resourceNode)
+            ClearSelectedResourceNode();
+    }
+
+    // ---------------------------------------------------------------------
     // Targetable registration
     // ---------------------------------------------------------------------
 
@@ -139,6 +173,7 @@ public sealed class GameContext
 
         // Units and buildings cannot coexist in the active selection.
         ClearSelectedBuilding();
+        ClearSelectedResourceNode();
 
         if (!append)
             ClearSelectedUnits();
@@ -185,6 +220,7 @@ public sealed class GameContext
         // A building selection always replaces the previous category.
         ClearSelectedUnits();
         ClearSelectedBuilding();
+        ClearSelectedResourceNode();
 
         selectedBuilding = building;
         selectedBuilding.SetSelected(true);
@@ -200,6 +236,32 @@ public sealed class GameContext
     }
 
     // ---------------------------------------------------------------------
+    // Building selection
+    // ---------------------------------------------------------------------
+
+    public void SelectResourceNode(ResourceNode resourceNode)
+    {
+        if (resourceNode == null || !resourceNode.CanBeSelected)
+            return;
+
+        ClearSelectedUnits();
+        ClearSelectedBuilding();
+        ClearSelectedResourceNode();
+
+        selectedResourceNode = resourceNode;
+        selectedResourceNode.SetSelected(true);
+    }
+
+    public void ClearSelectedResourceNode()
+    {
+        if (selectedResourceNode == null)
+            return;
+
+        selectedResourceNode.SetSelected(false);
+        selectedResourceNode = null;
+    }
+
+    // ---------------------------------------------------------------------
     // General selection
     // ---------------------------------------------------------------------
 
@@ -207,9 +269,7 @@ public sealed class GameContext
     {
         ClearSelectedUnits();
         ClearSelectedBuilding();
-
-        // Later:
-        // ClearSelectedResources();
+        ClearSelectedResourceNode();
     }
 
     // ---------------------------------------------------------------------
@@ -223,9 +283,11 @@ public sealed class GameContext
         allUnits.Clear();
         allBuildings.Clear();
         allTargetables.Clear();
+        allResourceNodes.Clear();
 
         FactionManager = null;
         PlayerFaction = null;
         ProjectileManager = null;
+        ResourceNodeRepository = null;
     }
 }

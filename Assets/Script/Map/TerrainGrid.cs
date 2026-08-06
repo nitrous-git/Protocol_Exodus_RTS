@@ -75,7 +75,8 @@ public class TerrainGrid
                     Reserved = false,
 
                     OccupyingUnitId = -1,
-                    OccupyingBuildingId = -1
+                    OccupyingBuildingId = -1,
+                    OccupyingResourceNodeId = -1
                 };
             }
         }
@@ -132,7 +133,7 @@ public class TerrainGrid
         return cell != null && cell.IsFreeForBuilding();
     }
 
-    public void SetOccupied(GridCoord coord, bool occupied, int buildingId = -1, int unitId = -1)
+    public void SetOccupied(GridCoord coord, bool occupied, int buildingId = -1, int unitId = -1, int resourceNodeId = -1)
     {
         GridCell cell = GetCell(coord);
 
@@ -142,6 +143,7 @@ public class TerrainGrid
         cell.Occupied = occupied;
         cell.OccupyingBuildingId = occupied ? buildingId : -1;
         cell.OccupyingUnitId = occupied ? unitId : -1;
+        cell.OccupyingResourceNodeId = occupied ? resourceNodeId : -1;  
     }
 
     public void SetReserved(GridCoord coord, bool reserved)
@@ -208,6 +210,7 @@ public class TerrainGrid
                 cell.Occupied = true;
                 cell.OccupyingBuildingId = buildingId;
                 cell.OccupyingUnitId = -1;
+                cell.OccupyingResourceNodeId = -1;
             }
         }
     }
@@ -234,6 +237,7 @@ public class TerrainGrid
                 cell.Occupied = false;
                 cell.OccupyingBuildingId = -1;
                 cell.OccupyingUnitId = -1;
+                cell.OccupyingResourceNodeId = -1;
             }
         }
     }

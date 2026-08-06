@@ -578,6 +578,7 @@ Transform:
   m_Children:
   - {fileID: 1893217313}
   - {fileID: 196520087}
+  - {fileID: 1875275123}
   - {fileID: 1221676278}
   - {fileID: 496525871}
   m_Father: {fileID: 1559407553}
@@ -3465,6 +3466,7 @@ MonoBehaviour:
   cameraController: {fileID: 1057549936}
   unitsRoot: {fileID: 1893217313}
   buildingsRoot: {fileID: 196520087}
+  resourcesRoot: {fileID: 0}
   projectilesRoot: {fileID: 1221676278}
   factionSpawnPoints:
   - {fileID: 480938121}
@@ -4401,6 +4403,37 @@ MonoBehaviour:
   minimapPanel: {fileID: 1144536113}
   selectionPanel: {fileID: 1371911580}
   commandPanel: {fileID: 1788038492}
+--- !u!1 &1875275122
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1875275123}
+  m_Layer: 0
+  m_Name: ResourcesRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1875275123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875275122}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 195413928}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1893217312
 GameObject:
   m_ObjectHideFlags: 0
