@@ -87,9 +87,6 @@ public sealed class MatchWorld : MonoBehaviour
 
     public void TickInput(float deltaTime)
     {
-        //selectionManager?.TickInput(deltaTime);
-        //commandIssuer?.TickInput(deltaTime);
-        //cameraController?.TickInput(deltaTime);
         PlayerFaction?.TickInput(deltaTime);
     }
 

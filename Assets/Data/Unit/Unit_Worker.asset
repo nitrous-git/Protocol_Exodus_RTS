@@ -15,7 +15,7 @@ MonoBehaviour:
   unitType: 0
   displayName: Worker Unit
   icon: {fileID: 21300000, guid: a29a59460ff911a40b521e29b11da7d1, type: 3}
-  prefab: {fileID: 0}
+  prefab: {fileID: 204807699964892743, guid: f75ebfbc71144e841be965dab66d54f1, type: 3}
   cost:
     minerals: 50
     gas: 0

@@ -18,3 +18,10 @@ MonoBehaviour:
   startingMinerals: 150
   startingGas: 35
   startingMaxSupply: 10
+  combatUnitColor: {r: 0.8117647, g: 0.08627451, b: 0.02745098, a: 1}
+  workerUnitColor: {r: 0.8490566, g: 0.04405483, b: 0.7939615, a: 1}
+  barracksColor: {r: 1, g: 0.06101584, b: 0.042452812, a: 1}
+  commandCenterColor: {r: 0.8287493, g: 0, b: 0.8679245, a: 1}
+  supplyDepotColor: {r: 0.74222636, g: 0.36196154, b: 0.9245283, a: 1}
+  selectionRing_BuildingColor: {r: 0.8018868, g: 0.38203096, b: 0.78024465, a: 0.5176471}
+  selectionRing_UnitColor: {r: 0.6431373, g: 0.25882354, b: 0.25882354, a: 0.5529412}
