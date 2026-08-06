@@ -128,13 +128,17 @@ public sealed class ResourceNodeRepository
             return false;
         }
 
+        // Snap the scene-authored resource node to the exact
+        // center of its resolved grid cell.
+        node.transform.position = gridCell.WorldCenter;
+
         node.Initialize(this, occupiedCell);
 
         if (!node.IsInitialized)
             return false;
 
         resourceNodeList.Add(node);
-        terrainGrid.SetOccupied(occupiedCell, true, node.ResourceNodeId);
+        terrainGrid.SetOccupied(occupiedCell, true, resourceNodeId: node.ResourceNodeId);
         gameContext?.RegisterResourceNode(node);
 
         return true;
