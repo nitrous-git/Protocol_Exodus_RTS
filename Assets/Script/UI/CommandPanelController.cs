@@ -24,6 +24,8 @@ public sealed class CommandPanelController : MonoBehaviour
     private const int MoveSlot = 0;
     private const int HoldPositionSlot = 1;
     private const int AttackSlot = 2;
+    private const int GatherSlot = 4;
+    private const int RepairSlot = 5; 
 
     // No-selection presentation
     private const int BuildMenuSlot = 6;
@@ -316,10 +318,8 @@ public sealed class CommandPanelController : MonoBehaviour
         ConfigureGameplaySlot(MoveSlot,"M", true, CommandPanelAction.Move());
         ConfigureGameplaySlot(HoldPositionSlot,"H", true, CommandPanelAction.HoldPosition());
         ConfigureGameplaySlot(AttackSlot,"A", false, CommandPanelAction.Attack());
-
-        // Later:
-        // Repair
-        // Gather
+        ConfigureGameplaySlot(GatherSlot, "G", false, CommandPanelAction.Gather());
+        ConfigureGameplaySlot(RepairSlot, "R", false, CommandPanelAction.Repair());
     }
 
     private void ShowCombatUnitCommands()

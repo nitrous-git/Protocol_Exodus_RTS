@@ -20,7 +20,7 @@ MonoBehaviour:
     minerals: 50
     gas: 0
     supply: 1
-  productionDuration: 6
+  productionDuration: 2
   maxHealth: 100
   moveSpeed: 4
   visionRange: 12

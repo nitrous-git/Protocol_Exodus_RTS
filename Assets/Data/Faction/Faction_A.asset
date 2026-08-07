@@ -15,9 +15,9 @@ MonoBehaviour:
   factionName: Faction_A
   factionColor: {r: 0.028596058, g: 0.6981132, b: 0, a: 1}
   selectionRingColor: {r: 0.37246352, g: 0.509434, b: 0.37455174, a: 0.7019608}
-  startingMinerals: 500
-  startingGas: 5
-  startingMaxSupply: 10
+  startingMinerals: 2000
+  startingGas: 2000
+  startingMaxSupply: 15
   combatUnitColor: {r: 0.02745098, g: 0.69803923, b: 0, a: 1}
   workerUnitColor: {r: 0.72342265, g: 0.8773585, b: 0.27727836, a: 1}
   barracksColor: {r: 1, g: 0.7064719, b: 0, a: 1}

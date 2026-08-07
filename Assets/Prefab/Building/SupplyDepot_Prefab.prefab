@@ -158,6 +158,7 @@ GameObject:
   - component: {fileID: 2070459899683323548}
   - component: {fileID: 4280580310234674057}
   - component: {fileID: 5465557013281797530}
+  - component: {fileID: 1490214555928611028}
   m_Layer: 8
   m_Name: SupplyDepot_Prefab
   m_TagString: Untagged
@@ -283,6 +284,22 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.7623444, y: 1.257324, z: 1.7733154}
   m_Center: {x: 0.053024292, y: 0.54370284, z: 0.02909851}
+--- !u!208 &1490214555928611028
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7847814920312169688}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &8409461212596292646
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,4 +21,4 @@ MonoBehaviour:
     supply: 0
   footprintSize: {x: 4, y: 4}
   maxHealth: 250
-  constructionDuration: 15
+  constructionDuration: 2

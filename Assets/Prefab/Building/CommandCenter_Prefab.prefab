@@ -302,6 +302,7 @@ GameObject:
   - component: {fileID: 8056074009614297929}
   - component: {fileID: 1952995841886404707}
   - component: {fileID: 617398384577569622}
+  - component: {fileID: 7720317139920470492}
   m_Layer: 8
   m_Name: CommandCenter_Prefab
   m_TagString: Untagged
@@ -438,3 +439,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.7106285, y: 1.5578748, z: 3.6292114}
   m_Center: {x: -0.018800735, y: 0.69397825, z: 0.029067993}
+--- !u!208 &7720317139920470492
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9076321141854414463}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 1.5, y: 1.5, z: 1.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
