@@ -180,26 +180,28 @@ public static class PlacementUtil
         initialDepth = Mathf.Max(0, initialDepth);
         maxExtraDepth = Mathf.Max(0, maxExtraDepth);
 
-        List<GridCoord> candidates = new();
+        GridCoord target = preferredCell ?? GetFootprintCenterCell(footprintOrigin, footprintSize);
 
         int finalDepth = initialDepth + maxExtraDepth;
 
         for (int depth = initialDepth; depth <= finalDepth; depth++)
         {
-            List<GridCoord> ring = GetAllFreePlacementsOnRing(grid, footprintOrigin, footprintSize, depth, additionalValidator);
-            candidates.AddRange(ring);
+            List<GridCoord> candidates = GetAllFreePlacementsOnRing(grid, footprintOrigin, footprintSize, depth, additionalValidator);
+
+            if (candidates.Count == 0)
+                continue;
+
+            return SelectBestCandidate(
+                grid,
+                candidates,
+                target,
+                policy,
+                openRadius,
+                openWeight,
+                distanceWeight);
         }
 
-        GridCoord target = preferredCell ?? GetFootprintCenterCell(footprintOrigin, footprintSize);
-
-        return SelectBestCandidate(
-            grid,
-            candidates,
-            target,
-            policy,
-            openRadius,
-            openWeight,
-            distanceWeight);
+        return null;
     }
 
     // ---------------------------------------------------------------------

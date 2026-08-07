@@ -160,7 +160,7 @@ public class GameBuilder : MonoBehaviour
 
         for (int i = 0; i < startingWorkerCount; i++)
         {
-            Vector3 spawnPosition = origin + GetStartingUnitOffset(i + 1);
+            Vector3 spawnPosition = origin + GetStartingUnitOffset(i);
 
             faction.UnitManager.SpawnUnit(
                 combatUnitPrefab,
@@ -173,9 +173,6 @@ public class GameBuilder : MonoBehaviour
 
     private Vector3 GetStartingUnitOffset(int index)
     {
-        if (index == 0)
-            return Vector3.zero;
-
         int rowSize = 3;
         int row = index / rowSize;
         int column = index % rowSize;

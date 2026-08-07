@@ -12,11 +12,11 @@ public sealed class WorkerResourceComponent : MonoBehaviour
     [Header("Cargo")] 
     [SerializeField, Min(1)] private int carryCapacity = 10;
 
-    [Header("Gathering")]
-    [SerializeField, Min(1)] private int gatherAmountPerCycle = 1;
-    [SerializeField, Min(0.05f)] private float gatherInterval = 0.5f;
+    [Header("Resource Action")]
+    [SerializeField, Min(1)] private int resourceAmountPerCycle = 1;
+    [SerializeField, Min(0.05f)] private float resourceActionInterval = 0.5f;
 
-    private float gatherElapsed;
+    private float actionElapsed;
 
     private bool hasAssignedResourceType;
     private ResourceType assignedResourceType;
@@ -43,7 +43,7 @@ public sealed class WorkerResourceComponent : MonoBehaviour
     public void AssignNode(ResourceNode node)
     {
         AssignedNode = node;
-        gatherElapsed = 0f;
+        actionElapsed = 0f;
 
         if (node == null)
             return;
@@ -56,12 +56,12 @@ public sealed class WorkerResourceComponent : MonoBehaviour
     {
         AssignedNode = null;
         hasAssignedResourceType = false;
-        gatherElapsed = 0f;
+        actionElapsed = 0f;
     }
 
-    public void ResetGatherCycle()
+    public void ResetActionCycle()
     {
-        gatherElapsed = 0f;
+        actionElapsed = 0f;
     }
 
     /// <summary>
@@ -72,29 +72,18 @@ public sealed class WorkerResourceComponent : MonoBehaviour
     /// </summary>
     public int TickGather(ResourceNode node, float deltaTime)
     {
-        if (node == null)
+        if (node == null || !node.IsInitialized || node.IsDepleted || IsFull)
+        {
             return 0;
-
-        if (!node.IsInitialized || node.IsDepleted)
-            return 0;
-
-        if (IsFull)
-            return 0;
+        }
 
         // One cargo load cannot contain mixed resource types.
         if (HasCargo && CargoType != node.ResourceType)
             return 0;
 
-        gatherElapsed += Mathf.Max(0f, deltaTime);
+        int completedCycles = AdvanceActionTimer(deltaTime);
 
-        if (gatherElapsed < gatherInterval)
-            return 0;
-
-        int completedCycles = Mathf.FloorToInt(gatherElapsed / gatherInterval);
-
-        gatherElapsed -= completedCycles * gatherInterval;
-
-        int requestedAmount = Mathf.Min(FreeCapacity, completedCycles * gatherAmountPerCycle);
+        int requestedAmount = Mathf.Min(FreeCapacity, completedCycles * resourceAmountPerCycle);
 
         if (requestedAmount <= 0)
             return 0;
@@ -113,29 +102,44 @@ public sealed class WorkerResourceComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// Deposits the entire cargo load into the faction economy.
+    /// Advances the delivery timer and deposits resources
+    /// for each completed action cycle.
     ///
-    /// Returns the delivered amount.
+    /// Returns the amount delivered during this tick.
     /// </summary>
-    public int DeliverCargo(ResourceManager resourceManager)
+    public int TickDeliver(ResourceManager resourceManager, float deltaTime)
     {
         if (resourceManager == null || !HasCargo)
             return 0;
 
-        int deliveredAmount = CargoAmount;
+        int completedCycles = AdvanceActionTimer(deltaTime);
 
+        if (completedCycles <= 0)
+            return 0;
+
+        int deliveredAmount = Mathf.Min(CargoAmount, completedCycles * resourceAmountPerCycle);
         resourceManager.AddResources(CargoType, deliveredAmount);
-
-        CargoAmount = 0;
-        gatherElapsed = 0f;
+        CargoAmount -= deliveredAmount;
 
         return deliveredAmount;
+    }
+
+    private int AdvanceActionTimer(float deltaTime)
+    {
+        actionElapsed += Mathf.Max(0f, deltaTime);
+
+        if (actionElapsed < resourceActionInterval)
+            return 0;
+
+        int completedCycles = Mathf.FloorToInt(actionElapsed / resourceActionInterval);
+        actionElapsed -= completedCycles * resourceActionInterval;
+        return completedCycles;
     }
 
     private void OnValidate()
     {
         carryCapacity = Mathf.Max(1, carryCapacity);
-        gatherAmountPerCycle = Mathf.Max(1, gatherAmountPerCycle);
-        gatherInterval = Mathf.Max(0.05f, gatherInterval);
+        resourceAmountPerCycle = Mathf.Max(1, resourceAmountPerCycle);
+        resourceActionInterval = Mathf.Max(0.05f, resourceActionInterval);
     }
 }

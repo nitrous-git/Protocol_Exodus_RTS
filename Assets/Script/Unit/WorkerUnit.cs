@@ -137,6 +137,12 @@ public sealed class WorkerUnit : UnitBase
 
         GridCoord preferredCell = terrainGrid.WorldToCell(Position);
 
+        Debug.Log(
+        $"INTERACTION QUERY | " +
+        $"origin=({footprintOrigin.x},{footprintOrigin.z}) | " +
+        $"size=({footprintSize.x},{footprintSize.y}) | " +
+        $"preferred=({preferredCell.x},{preferredCell.z})");
+
         GridCoord? interactionCell =
             PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
                 terrainGrid,
@@ -152,6 +158,13 @@ public sealed class WorkerUnit : UnitBase
 
         if (!interactionCell.HasValue)
             return null;
+
+        if (interactionCell.HasValue)
+        {
+            Debug.Log(
+                $"INTERACTION RESULT | " +
+                $"({interactionCell.Value.x},{interactionCell.Value.z})");
+        }
 
         return terrainGrid.CellToWorld(interactionCell.Value);
     }

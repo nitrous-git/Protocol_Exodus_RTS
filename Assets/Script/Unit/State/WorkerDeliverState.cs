@@ -26,6 +26,8 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
             return;
         }
 
+        resourceComponent.ResetActionCycle();
+
         dropOffBuilding = unit.FindClosestResourceDropOff();
 
         if (dropOffBuilding == null)
@@ -67,18 +69,12 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
         if (!unit.Motor.HasArrived)
             return;
 
-        ResourceManager factionResources = unit.OwnerFaction?.ResourceManager;
+        ResourceManager resourceManager = unit.OwnerFaction?.ResourceManager;
 
-        int deliveredAmount = unit.ResourceComponent.DeliverCargo(factionResources);
+        unit.ResourceComponent.TickDeliver(resourceManager, deltaTime);
 
-        if (deliveredAmount <= 0)
-        {
-            Debug.LogWarning($"{unit.name} could not deliver its cargo.");
-            unit.IssueCommand(CommandType.Idle, CommandContext.None());
+        if (unit.ResourceComponent.HasCargo)
             return;
-        }
-
-        Debug.Log($"{unit.name} delivered {deliveredAmount} resources.");
 
         ResumeGatheringOrIdle(unit);
     }
