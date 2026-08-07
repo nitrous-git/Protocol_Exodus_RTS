@@ -306,7 +306,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         if (IsWorldPointerBlocked())
             return;
 
-        commandIssuer?.TryIssueMoveCommandFromScreen(mouseInputHandler.PointerPosition);
+        commandIssuer?.TryIssueDefaultCommandFromScreen(mouseInputHandler.PointerPosition);
     }
 
     private void HandleDefaultInteraction()

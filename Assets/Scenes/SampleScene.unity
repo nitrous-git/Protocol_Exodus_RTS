@@ -827,6 +827,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groupDestinationSpacing: 1.25
+  resourceNodeMask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &307045784 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7984294825184300291, guid: 80c193f5b821d0d4783deeb3605e166c, type: 3}

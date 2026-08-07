@@ -10,6 +10,9 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private LayerMask groundMask = ~0;
     [SerializeField] private float groupDestinationSpacing = 5f;
 
+    [Header("Context Commands")]
+    [SerializeField] private LayerMask resourceNodeMask = ~0;
+
     private List<UnitBase> commandableUnits = new List<UnitBase>();
 
     private GameContext gameContext;
@@ -31,6 +34,84 @@ public class CommandIssuer : MonoBehaviour
     {
         if (worldCamera == null)
             worldCamera = Camera.main;
+    }
+
+    // ---------------------------------------------------------------------
+    // Default contextual command
+    // ---------------------------------------------------------------------
+
+    public bool TryIssueDefaultCommandFromScreen(Vector2 screenPosition)
+    {
+        ResourceNode resourceNode = FindResourceNodeFromScreen(screenPosition);
+
+        if (resourceNode != null && TryIssueGatherCommand(resourceNode))
+        {
+            return true;
+        }
+
+        return TryIssueMoveCommandFromScreen(screenPosition);
+    }
+
+    // ---------------------------------------------------------------------
+    // Gather
+    // ---------------------------------------------------------------------
+
+    public bool TryIssueGatherCommand(ResourceNode resourceNode)
+    {
+        if (!CanIssueCommands())
+            return false;
+
+        if (resourceNode == null || !resourceNode.IsInitialized || resourceNode.IsDepleted)
+        {
+            return false;
+        }
+
+        CollectCommandableSelectedUnits();
+
+        bool issuedAnyCommand = false;
+
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            if (commandableUnits[i] is not WorkerUnit worker)
+                continue;
+
+            worker.IssueCommand(CommandType.Gather, CommandContext.Gather(resourceNode));
+            issuedAnyCommand = true;
+        }
+
+        return issuedAnyCommand;
+    }
+
+    private ResourceNode FindResourceNodeFromScreen(Vector2 screenPosition)
+    {
+        if (!CanIssueCommands() || worldCamera == null)
+            return null;
+
+        Ray ray = worldCamera.ScreenPointToRay(screenPosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 10000f, resourceNodeMask, QueryTriggerInteraction.Collide);
+
+        ResourceNode closestNode = null;
+        float closestDistance = float.PositiveInfinity;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+
+            ResourceNode resourceNode = hit.collider.GetComponentInParent<ResourceNode>();
+
+            if (resourceNode == null || !resourceNode.IsInitialized || resourceNode.IsDepleted)
+            {
+                continue;
+            }
+
+            if (hit.distance >= closestDistance)
+                continue;
+
+            closestDistance = hit.distance;
+            closestNode = resourceNode;
+        }
+
+        return closestNode;
     }
 
     // ---------------------------------------------------------------------
@@ -103,24 +184,6 @@ public class CommandIssuer : MonoBehaviour
 
         return issuedAnyCommand;
     }
-
-
-    //public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
-    //{
-    //    if (!CanIssueCommands() || worldCamera == null)
-    //        return false;
-
-    //    Ray ray = worldCamera.ScreenPointToRay(screenPosition);
-    //    RaycastHit hit;
-
-    //    if (!Physics.Raycast(ray, out hit, 10000f, groundMask))
-    //    {
-    //        return false;
-    //    }
-
-    //    IssueMoveCommand(hit.point);
-    //    return true;
-    //}
 
     // ---------------------------------------------------------------------
     // Immediate commands

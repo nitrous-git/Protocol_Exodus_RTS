@@ -1,15 +1,19 @@
 using UnityEngine;
 
-// weird implementation, compare to Java again later
+// weird struct implementation, compare to Java again later
 public struct CommandContext
 {
     public Vector3 WorldPosition;
     public Vector2Int GridCell;
+
     public ITargetable Target;
+    public ResourceNode ResourceNode;
 
     public bool HasWorldPosition;
     public bool HasGridCell;
+
     public bool HasTarget => Target != null;
+    public bool HasResourceNode => ResourceNode != null;
 
     public static CommandContext None()
     {
@@ -30,6 +34,14 @@ public struct CommandContext
         return new CommandContext
         {
             Target = target
+        };
+    }
+
+    public static CommandContext Gather(ResourceNode resourceNode)
+    {
+        return new CommandContext
+        {
+            ResourceNode = resourceNode
         };
     }
 

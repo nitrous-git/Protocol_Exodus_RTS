@@ -78,4 +78,25 @@ public sealed class ResourceManager
 
         MaxSupply = Math.Max(0, MaxSupply - amount);
     }
+
+    // Generic resources depositing
+    public void AddResources(ResourceType resourceType, int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        switch (resourceType)
+        {
+            case ResourceType.Minerals:
+                AddMinerals(amount);
+                break;
+
+            case ResourceType.Gas:
+                AddGas(amount);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(resourceType), resourceType, "Unsupported resource type.");
+        }
+    }
 }
