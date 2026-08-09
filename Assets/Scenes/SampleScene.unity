@@ -729,6 +729,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1875275123}
     m_Modifications:
+    - target: {fileID: 1310287950296996035, guid: b2355461074b4064187b2aea69ce7d5f, type: 3}
+      propertyPath: initialAmount
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 2187492419237210628, guid: b2355461074b4064187b2aea69ce7d5f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 45.49
@@ -827,6 +831,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groupDestinationSpacing: 1.25
+  resourceNodeMask:
+    serializedVersion: 2
+    m_Bits: 512
+  contextCommandMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &307045784 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7984294825184300291, guid: 80c193f5b821d0d4783deeb3605e166c, type: 3}

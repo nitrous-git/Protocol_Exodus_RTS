@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: 7067046502054525744}
   - component: {fileID: 8056074009614297929}
   - component: {fileID: 1952995841886404707}
+  - component: {fileID: 1589900879160718235}
   - component: {fileID: 617398384577569622}
   - component: {fileID: 7720317139920470492}
   m_Layer: 8
@@ -418,6 +419,18 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1589900879160718235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9076321141854414463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b68b96c052ec9aa49a274e013155f429, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HeadquartersComponent
 --- !u!65 &617398384577569622
 BoxCollider:
   m_ObjectHideFlags: 0

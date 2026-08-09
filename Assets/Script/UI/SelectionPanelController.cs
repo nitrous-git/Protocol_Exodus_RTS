@@ -148,7 +148,26 @@ public sealed class SelectionPanelController : MonoBehaviour
              .Append(Mathf.CeilToInt(health.MaxHealth).ToString())
              .AppendLine(" ");
 
-        infoBuilder.Append("State : ").AppendLine(unit.CurrentStateName);
+        if (unit is WorkerUnit worker)
+        {
+            WorkerResourceComponent resourceComponent = worker.ResourceComponent;
+
+            if (resourceComponent != null)
+            {
+                infoBuilder
+                    .Append("Cargo : ")
+                    .Append(resourceComponent.CargoAmount)
+                    .Append(" / ")
+                    .Append(resourceComponent.CarryCapacity)
+                    .AppendLine();
+
+                infoBuilder
+                    .Append("Cargo Type : ")
+                    .AppendLine(resourceComponent.HasCargo ? resourceComponent.CargoType.ToString() : "None");
+            }
+        }
+
+        //infoBuilder.Append("State : ").AppendLine(unit.CurrentStateName);
 
         ApplyText(displayName, infoBuilder.ToString());
     }

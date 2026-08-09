@@ -1,14 +1,38 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+internal readonly struct DefaultCommandTarget
+{
+    public readonly ResourceNode ResourceNode;
+    public readonly BuildingBase Building;
+    public readonly UnitBase Unit;
+
+    public DefaultCommandTarget(
+        ResourceNode resourceNode,
+        BuildingBase building,
+        UnitBase unit)
+    {
+        ResourceNode = resourceNode;
+        Building = building;
+        Unit = unit;
+    }
+}
+
 public class CommandIssuer : MonoBehaviour
 {
+
+
     [Header("References")]
     [SerializeField] private Camera worldCamera;
 
     [Header("Move Command")]
     [SerializeField] private LayerMask groundMask = ~0;
     [SerializeField] private float groupDestinationSpacing = 5f;
+
+    [Header("Context Commands")]
+    [SerializeField] private LayerMask resourceNodeMask = ~0;
+
+    [SerializeField] private LayerMask contextCommandMask = ~0;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
 
@@ -31,6 +55,179 @@ public class CommandIssuer : MonoBehaviour
     {
         if (worldCamera == null)
             worldCamera = Camera.main;
+    }
+
+    // ---------------------------------------------------------------------
+    // Default contextual command
+    // ---------------------------------------------------------------------
+
+    public bool TryIssueDefaultCommandFromScreen(Vector2 screenPosition)
+    {
+        if (!CanIssueCommands() || worldCamera == null)
+            return false;
+
+        DefaultCommandTarget target = ResolveDefaultCommandTarget(screenPosition);
+
+        // Worker -> ResourceNode
+        if (target.ResourceNode != null && TryIssueGatherCommand(target.ResourceNode))
+        {
+            return true;
+        }
+
+        // Worker carrying cargo -> own CommandCenter
+        if (target.Building != null && TryIssueDeliverCommand(target.Building))
+        {
+            return true;
+        }
+
+        // Later:
+        //
+        // if (target.Building != null &&
+        //     TryIssueRepairCommand(target.Building))
+        // {
+        //     return true;
+        // }
+        //
+        // if (TryIssueAttackCommand(target))
+        // {
+        //     return true;
+        // }
+
+        // Nothing contextual applied.
+        return TryIssueMoveCommandFromScreen(screenPosition);
+    }
+
+    private DefaultCommandTarget ResolveDefaultCommandTarget(Vector2 screenPosition)
+    {
+        if (worldCamera == null)
+            return default;
+
+        Ray ray = worldCamera.ScreenPointToRay(screenPosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 10000f, contextCommandMask, QueryTriggerInteraction.Collide);
+
+        float closestDistance = float.PositiveInfinity;
+
+        DefaultCommandTarget closestTarget = default;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+
+            ResourceNode resourceNode = hit.collider.GetComponentInParent<ResourceNode>();
+            BuildingBase building = hit.collider.GetComponentInParent<BuildingBase>();
+            UnitBase unit = hit.collider.GetComponentInParent<UnitBase>();
+
+            if (resourceNode == null && building == null && unit == null)
+            {
+                continue;
+            }
+
+            if (hit.distance >= closestDistance)
+                continue;
+
+            closestDistance = hit.distance;
+            closestTarget = new DefaultCommandTarget(resourceNode, building, unit);
+        }
+
+        return closestTarget;
+    }
+
+    // ---------------------------------------------------------------------
+    // Gather
+    // ---------------------------------------------------------------------
+
+    public bool TryIssueGatherCommand(ResourceNode resourceNode)
+    {
+        if (!CanIssueCommands())
+            return false;
+
+        if (resourceNode == null || !resourceNode.IsInitialized || resourceNode.IsDepleted)
+        {
+            return false;
+        }
+
+        CollectCommandableSelectedUnits();
+
+        bool issuedAnyCommand = false;
+
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            if (commandableUnits[i] is not WorkerUnit worker)
+                continue;
+
+            worker.IssueCommand(CommandType.Gather, CommandContext.Gather(resourceNode));
+            issuedAnyCommand = true;
+        }
+
+        return issuedAnyCommand;
+    }
+
+    private ResourceNode FindResourceNodeFromScreen(Vector2 screenPosition)
+    {
+        if (!CanIssueCommands() || worldCamera == null)
+            return null;
+
+        Ray ray = worldCamera.ScreenPointToRay(screenPosition);
+        RaycastHit[] hits = Physics.RaycastAll(ray, 10000f, resourceNodeMask, QueryTriggerInteraction.Collide);
+
+        ResourceNode closestNode = null;
+        float closestDistance = float.PositiveInfinity;
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            RaycastHit hit = hits[i];
+
+            ResourceNode resourceNode = hit.collider.GetComponentInParent<ResourceNode>();
+
+            if (resourceNode == null || !resourceNode.IsInitialized || resourceNode.IsDepleted)
+            {
+                continue;
+            }
+
+            if (hit.distance >= closestDistance)
+                continue;
+
+            closestDistance = hit.distance;
+            closestNode = resourceNode;
+        }
+
+        return closestNode;
+    }
+
+    // ---------------------------------------------------------------------
+    // Deliver
+    // ---------------------------------------------------------------------
+
+    public bool TryIssueDeliverCommand(BuildingBase building)
+    {
+        if (!CanIssueCommands())
+            return false;
+
+        if (!IsValidResourceDropOff(building))
+            return false;
+
+        CollectCommandableSelectedUnits();
+
+        bool issuedAnyCommand = false;
+
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            if (commandableUnits[i] is not WorkerUnit worker)
+                continue;
+
+            WorkerResourceComponent resourceComponent = worker.ResourceComponent;
+
+            if (resourceComponent == null || !resourceComponent.HasCargo)
+            {
+                continue;
+            }
+
+            worker.IssueCommand(CommandType.Deliver, CommandContext.DeliverTo(building));
+
+            issuedAnyCommand = true;
+        }
+
+        return issuedAnyCommand;
     }
 
     // ---------------------------------------------------------------------
@@ -103,24 +300,6 @@ public class CommandIssuer : MonoBehaviour
 
         return issuedAnyCommand;
     }
-
-
-    //public bool TryIssueMoveCommandFromScreen(Vector2 screenPosition)
-    //{
-    //    if (!CanIssueCommands() || worldCamera == null)
-    //        return false;
-
-    //    Ray ray = worldCamera.ScreenPointToRay(screenPosition);
-    //    RaycastHit hit;
-
-    //    if (!Physics.Raycast(ray, out hit, 10000f, groundMask))
-    //    {
-    //        return false;
-    //    }
-
-    //    IssueMoveCommand(hit.point);
-    //    return true;
-    //}
 
     // ---------------------------------------------------------------------
     // Immediate commands
@@ -196,4 +375,15 @@ public class CommandIssuer : MonoBehaviour
     {
         return isActiveAndEnabled && gameContext != null && issuingFaction != null;
     }
+
+    private bool IsValidResourceDropOff(BuildingBase building)
+    {
+        return building != null &&
+               building.IsInitialized &&
+               building.IsAlive &&
+               building.IsOperational &&
+               building.OwnerFaction == issuingFaction &&
+               building.Headquarters != null;
+    }
+
 }
