@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourceNode
   resourceType: 0
-  initialAmount: 1500
+  initialAmount: 20
   canBeSelected: 1
   selectionPoint: {fileID: 1570217322662878810}
   selectionVisual: {fileID: 2553279242604546186}

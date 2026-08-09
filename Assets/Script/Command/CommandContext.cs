@@ -45,6 +45,14 @@ public struct CommandContext
         };
     }
 
+    public static CommandContext DeliverTo(BuildingBase building)
+    {
+        return new CommandContext
+        {
+            Target = building
+        };
+    }
+
     public static CommandContext Cell(Vector2Int gridCell)
     {
         return new CommandContext

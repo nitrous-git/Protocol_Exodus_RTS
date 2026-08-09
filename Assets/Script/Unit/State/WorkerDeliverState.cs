@@ -6,9 +6,15 @@ using UnityEngine;
 /// </summary>
 public class WorkerDeliverState : UnitState<WorkerUnit>
 {
-    private BuildingBase dropOffBuilding;
+    private readonly BuildingBase requestedDropOff;
 
+    private BuildingBase dropOffBuilding;
     private bool pathRequested;
+
+    public WorkerDeliverState(BuildingBase requestedDropOff = null)
+    {
+        this.requestedDropOff = requestedDropOff;
+    }
 
     protected override void OnEnterTyped(WorkerUnit unit)
     {
@@ -28,7 +34,14 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
 
         resourceComponent.ResetActionCycle();
 
-        dropOffBuilding = unit.FindClosestResourceDropOff();
+        if (IsDropOffAvailable(requestedDropOff, unit.OwnerFaction))
+        {
+            dropOffBuilding = requestedDropOff;
+        }
+        else
+        {
+            dropOffBuilding = unit.FindClosestResourceDropOff();
+        }
 
         if (dropOffBuilding == null)
         {
@@ -56,7 +69,7 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
 
     protected override void TickTyped(WorkerUnit unit, float deltaTime)
     {
-        if (!IsDropOffAvailable(dropOffBuilding))
+        if (!IsDropOffAvailable(dropOffBuilding, unit.OwnerFaction))
         {
             // Re-enter delivery so another headquarters can be selected.
             unit.IssueCommand(CommandType.Deliver, CommandContext.None());
@@ -83,14 +96,14 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
     // Helper methods
     // ---------------------------------------------------------------------
 
-    private static bool IsDropOffAvailable(BuildingBase building)
-    {
-        return building != null &&
-               building.IsInitialized &&
-               building.IsAlive &&
-               building.IsOperational &&
-               building.Headquarters != null;
-    }
+    //private static bool IsDropOffAvailable(BuildingBase building)
+    //{
+    //    return building != null &&
+    //           building.IsInitialized &&
+    //           building.IsAlive &&
+    //           building.IsOperational &&
+    //           building.Headquarters != null;
+    //}
 
     private static void ResumeGatheringOrIdle(WorkerUnit unit)
     {
@@ -110,4 +123,13 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
         unit.IssueCommand(CommandType.Idle, CommandContext.None());
     }
 
+    private static bool IsDropOffAvailable(BuildingBase building, Faction faction)
+    {
+        return building != null &&
+               building.IsInitialized &&
+               building.IsAlive &&
+               building.IsOperational &&
+               building.OwnerFaction == faction &&
+               building.Headquarters != null;
+    }
 }

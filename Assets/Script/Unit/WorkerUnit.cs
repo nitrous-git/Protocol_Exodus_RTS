@@ -35,7 +35,7 @@ public sealed class WorkerUnit : UnitBase
                 break;
 
             case CommandType.Deliver:
-                SetState(new WorkerDeliverState());
+                SetState(new WorkerDeliverState(context.Target as BuildingBase));
                 break;
 
             case CommandType.Idle:
