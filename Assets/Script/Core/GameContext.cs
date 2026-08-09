@@ -25,6 +25,11 @@ public sealed class GameContext
     public Faction PlayerFaction { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
+    public GridReservationSystem GridReservationSystem { get; private set; }
+
+    // ---------------------------------------------------------------------
+    // Setter
+    // ---------------------------------------------------------------------
 
     public void SetFactionManager(FactionManager factionManager)
     {
@@ -46,6 +51,11 @@ public sealed class GameContext
         ResourceNodeRepository = resourceNodeRepository;
     }
 
+    public void SetGridReservationSystem(GridReservationSystem gridReservationSystem)
+    {
+        GridReservationSystem = gridReservationSystem;
+    }
+
     // ---------------------------------------------------------------------
     // Unit registration
     // ---------------------------------------------------------------------
@@ -65,6 +75,8 @@ public sealed class GameContext
     {
         if (unit == null)
             return;
+
+        GridReservationSystem?.ReleaseAll(unit);
 
         allUnits.Remove(unit);
 
@@ -289,10 +301,12 @@ public sealed class GameContext
         allBuildings.Clear();
         allTargetables.Clear();
         allResourceNodes.Clear();
+        GridReservationSystem?.Clear();
 
         FactionManager = null;
         PlayerFaction = null;
         ProjectileManager = null;
         ResourceNodeRepository = null;
+        GridReservationSystem = null;
     }
 }

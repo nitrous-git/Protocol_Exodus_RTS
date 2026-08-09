@@ -103,45 +103,38 @@ public sealed class WorkerUnit : UnitBase
         return ResourceNodeRepository?.FindClosestAvailableNode(resourceComponent.AssignedResourceType, Position);
     }
 
-    public Vector3? GetInteractionPosition(ResourceNode resourceNode)
+    // ---------------------------------------------------------------------
+    // Reservation
+    // ---------------------------------------------------------------------
+
+    public GridCoord? ReserveInteractionCell(ResourceNode resourceNode)
     {
         if (resourceNode == null)
             return null;
 
-        return GetInteractionPosition(resourceNode.OccupiedCell, Vector2Int.one);
+        return ReserveInteractionCell(resourceNode.OccupiedCell, Vector2Int.one);
     }
 
-    public Vector3? GetInteractionPosition(BuildingBase building)
+    public GridCoord? ReserveInteractionCell(BuildingBase building)
     {
         if (building == null || building.Definition == null)
-        {
             return null;
-        }
 
-        return GetInteractionPosition(building.FootprintOrigin, building.Definition.FootprintSize);
+        return ReserveInteractionCell(building.FootprintOrigin, building.Definition.FootprintSize);
     }
 
     /// <summary>
-    /// Finds a free cell outside an occupied footprint.
-    ///
-    /// The first searched ring is directly adjacent to the footprint.
-    /// Additional rings provide a fallback when the adjacent cells
-    /// are unavailable.
+    /// Finds and reserves a free interaction cell around a footprint.
     /// </summary>
-    private Vector3? GetInteractionPosition(GridCoord footprintOrigin, Vector2Int footprintSize)
+    private GridCoord? ReserveInteractionCell(GridCoord footprintOrigin, Vector2Int footprintSize)
     {
         TerrainGrid terrainGrid = TerrainGrid;
+        GridReservationSystem reservationSystem = gameContext?.GridReservationSystem;
 
-        if (terrainGrid == null)
+        if (terrainGrid == null || reservationSystem == null)
             return null;
 
         GridCoord preferredCell = terrainGrid.WorldToCell(Position);
-
-        Debug.Log(
-        $"INTERACTION QUERY | " +
-        $"origin=({footprintOrigin.x},{footprintOrigin.z}) | " +
-        $"size=({footprintSize.x},{footprintSize.y}) | " +
-        $"preferred=({preferredCell.x},{preferredCell.z})");
 
         GridCoord? interactionCell =
             PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
@@ -159,13 +152,84 @@ public sealed class WorkerUnit : UnitBase
         if (!interactionCell.HasValue)
             return null;
 
-        if (interactionCell.HasValue)
-        {
-            Debug.Log(
-                $"INTERACTION RESULT | " +
-                $"({interactionCell.Value.x},{interactionCell.Value.z})");
-        }
+        bool reserved = reservationSystem.TryReserve(interactionCell.Value, this, GridReservationType.Destination);
 
-        return terrainGrid.CellToWorld(interactionCell.Value);
+        if (!reserved)
+            return null;
+
+        Debug.Log($"{name} reserved interaction cell ({interactionCell.Value.x}, {interactionCell.Value.z})");
+
+        return interactionCell;
     }
+
+    public void ReleaseInteractionCell(GridCoord interactionCell)
+    {
+        gameContext?.GridReservationSystem?.Release(interactionCell, this);
+    }
+
+    //public Vector3? GetInteractionPosition(ResourceNode resourceNode)
+    //{
+    //    if (resourceNode == null)
+    //        return null;
+
+    //    return GetInteractionPosition(resourceNode.OccupiedCell, Vector2Int.one);
+    //}
+
+    //public Vector3? GetInteractionPosition(BuildingBase building)
+    //{
+    //    if (building == null || building.Definition == null)
+    //    {
+    //        return null;
+    //    }
+
+    //    return GetInteractionPosition(building.FootprintOrigin, building.Definition.FootprintSize);
+    //}
+
+    ///// <summary>
+    ///// Finds a free cell outside an occupied footprint.
+    /////
+    ///// The first searched ring is directly adjacent to the footprint.
+    ///// Additional rings provide a fallback when the adjacent cells
+    ///// are unavailable.
+    ///// </summary>
+    //private Vector3? GetInteractionPosition(GridCoord footprintOrigin, Vector2Int footprintSize)
+    //{
+    //    TerrainGrid terrainGrid = TerrainGrid;
+
+    //    if (terrainGrid == null)
+    //        return null;
+
+    //    GridCoord preferredCell = terrainGrid.WorldToCell(Position);
+
+    //    Debug.Log(
+    //    $"INTERACTION QUERY | " +
+    //    $"origin=({footprintOrigin.x},{footprintOrigin.z}) | " +
+    //    $"size=({footprintSize.x},{footprintSize.y}) | " +
+    //    $"preferred=({preferredCell.x},{preferredCell.z})");
+
+    //    GridCoord? interactionCell =
+    //        PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
+    //            terrainGrid,
+    //            footprintOrigin,
+    //            footprintSize,
+    //            initialDepth: 1,
+    //            maxExtraDepth: 2,
+    //            preferredCell,
+    //            PlacementUtil.PlacementPolicy.Closest,
+    //            openRadius: 1,
+    //            openWeight: 2,
+    //            distanceWeight: 1);
+
+    //    if (!interactionCell.HasValue)
+    //        return null;
+
+    //    if (interactionCell.HasValue)
+    //    {
+    //        Debug.Log(
+    //            $"INTERACTION RESULT | " +
+    //            $"({interactionCell.Value.x},{interactionCell.Value.z})");
+    //    }
+
+    //    return terrainGrid.CellToWorld(interactionCell.Value);
+    //}
 }
