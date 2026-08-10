@@ -59,7 +59,7 @@ public class UnitMotor : MonoBehaviour
             return false;
         }
 
-        bool foundPath = pathfindingService.TryFindPath(transform.position, destination, path);
+        bool foundPath = pathfindingService.TryFindPath(owner, transform.position, destination, path);
 
         if (!foundPath)
         {

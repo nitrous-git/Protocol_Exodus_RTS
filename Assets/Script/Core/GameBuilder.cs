@@ -56,6 +56,7 @@ public class GameBuilder : MonoBehaviour
 
         GridReservationSystem = new GridReservationSystem(matchWorld.TerrainGrid);
         GameContext.SetGridReservationSystem(GridReservationSystem);
+        matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid, GridReservationSystem);
 
         // Nodes reserve their cells after TerrainGrid (after ResolveServices()) 
         ResourceNodeRepository = new ResourceNodeRepository(GameContext, matchWorld.TerrainGrid); 
