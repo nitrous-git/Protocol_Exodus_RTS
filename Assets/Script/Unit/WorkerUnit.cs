@@ -7,7 +7,7 @@ public sealed class WorkerUnit : UnitBase
     private WorkerResourceComponent resourceComponent;
 
     public WorkerResourceComponent ResourceComponent => resourceComponent;
-    public TerrainGrid TerrainGrid => ownerFaction?.BuildingManager?.TerrainGrid;
+    //public TerrainGrid TerrainGrid => ownerFaction?.BuildingManager?.TerrainGrid;
     public ResourceNodeRepository ResourceNodeRepository => gameContext?.ResourceNodeRepository;
 
     protected override void CacheComponents()
@@ -164,7 +164,7 @@ public sealed class WorkerUnit : UnitBase
 
     public void ReleaseInteractionCell(GridCoord interactionCell)
     {
-        gameContext?.GridReservationSystem?.Release(interactionCell, this);
+        gameContext?.GridReservationSystem?.Release(interactionCell, this, GridReservationType.Destination);
     }
 
     //public Vector3? GetInteractionPosition(ResourceNode resourceNode)

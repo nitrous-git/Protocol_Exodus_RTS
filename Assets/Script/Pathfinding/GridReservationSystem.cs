@@ -5,14 +5,29 @@ public sealed class GridReservationSystem
     private sealed class GridReservation
     {
         public UnitBase Owner { get; }
-        public GridReservationType Type { get; }
+        private readonly HashSet<GridReservationType> types = new();
 
-        public GridReservation(
-            UnitBase owner,
-            GridReservationType type)
+        public bool HasAnyType => types.Count > 0;
+
+        public GridReservation(UnitBase owner, GridReservationType type)
         {
             Owner = owner;
-            Type = type;
+            types.Add(type);
+        }
+
+        public void AddType(GridReservationType type)
+        {
+            types.Add(type);
+        }
+
+        public void RemoveType(GridReservationType type)
+        {
+            types.Remove(type);
+        }
+
+        public bool HasType(GridReservationType type)
+        {
+            return types.Contains(type);
         }
     }
 
@@ -41,7 +56,11 @@ public sealed class GridReservationSystem
         // The cell is already managed by the reservation system.
         if (reservationsByCell.TryGetValue(coord, out GridReservation existingReservation))
         {
-            return existingReservation.Owner == owner && existingReservation.Type == type;
+            if (existingReservation.Owner != owner)
+                return false;
+
+            existingReservation.AddType(type);
+            return true;
         }
 
         // TerrainGrid handles:
@@ -72,7 +91,7 @@ public sealed class GridReservationSystem
     /// <summary>
     /// Releases a reservation if it belongs to the specified unit.
     /// </summary>
-    public void Release(GridCoord coord, UnitBase owner)
+    public void Release(GridCoord coord, UnitBase owner, GridReservationType type)
     {
         if (terrainGrid == null || owner == null)
             return;
@@ -83,6 +102,11 @@ public sealed class GridReservationSystem
         }
 
         if (reservation.Owner != owner)
+            return;
+
+        reservation.RemoveType(type);
+
+        if (reservation.HasAnyType)
             return;
 
         reservationsByCell.Remove(coord);
@@ -130,7 +154,7 @@ public sealed class GridReservationSystem
     }
 
     public bool IsReservedBy(GridCoord coord, UnitBase owner)
-    {
+    {        
         if (!reservationsByCell.TryGetValue(coord, out GridReservation reservation))
         {
             return false;

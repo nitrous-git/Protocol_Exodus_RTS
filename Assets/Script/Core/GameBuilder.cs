@@ -54,6 +54,7 @@ public class GameBuilder : MonoBehaviour
     {
         GameContext = new GameContext();
 
+        GameContext.SetTerrainGrid(matchWorld.TerrainGrid);
         GridReservationSystem = new GridReservationSystem(matchWorld.TerrainGrid);
         GameContext.SetGridReservationSystem(GridReservationSystem);
         matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid, GridReservationSystem);
@@ -109,7 +110,7 @@ public class GameBuilder : MonoBehaviour
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
         UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService, matchWorld.UnitsRoot);
-        BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot);
+        BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot); // we can evetually remove TerrainGrid and simply get it from the GameContext
         ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
 
         return new Faction(

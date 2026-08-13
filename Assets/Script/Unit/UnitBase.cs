@@ -38,6 +38,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
     public bool IsSelected { get; private set; }
     public bool IsInitialized { get; private set; }
+    public int UnitId { get; private set; } = -1;
 
     public bool CanReceiveCommands => canReceiveCommands;
     public bool CanBeSelected => canBeSelected;
@@ -53,6 +54,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public Transform AimPoint => aimPoint != null ? aimPoint : transform;
 
     public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
+
+    public TerrainGrid TerrainGrid => gameContext?.TerrainGrid;
 
     protected virtual void Awake()
     {
@@ -71,6 +74,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     {
         if (IsInitialized)
             return;
+
+        UnitId = gameContext.AllocateUnitId();
 
         CacheComponents();
 

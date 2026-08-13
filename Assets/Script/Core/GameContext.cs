@@ -12,6 +12,8 @@ public sealed class GameContext
     private BuildingBase selectedBuilding;
     private ResourceNode selectedResourceNode;
 
+    private int nextUnitId = 1;
+
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
     public IReadOnlyList<BuildingBase> AllBuildings => allBuildings;
     public IReadOnlyList<ResourceNode> AllResourceNodes => allResourceNodes;
@@ -21,6 +23,7 @@ public sealed class GameContext
     public BuildingBase SelectedBuilding => selectedBuilding;
     public ResourceNode SelectedResourceNode => selectedResourceNode;
 
+    public TerrainGrid TerrainGrid { get; private set; }
     public FactionManager FactionManager { get; private set; }
     public Faction PlayerFaction { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
@@ -49,6 +52,11 @@ public sealed class GameContext
     public void SetResourceNodeRepository(ResourceNodeRepository resourceNodeRepository)
     {
         ResourceNodeRepository = resourceNodeRepository;
+    }
+
+    public void SetTerrainGrid(TerrainGrid terrainGrid)
+    {
+        TerrainGrid = terrainGrid;
     }
 
     public void SetGridReservationSystem(GridReservationSystem gridReservationSystem)
@@ -308,5 +316,19 @@ public sealed class GameContext
         ProjectileManager = null;
         ResourceNodeRepository = null;
         GridReservationSystem = null;
+
+        nextUnitId = 1;
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    public int AllocateUnitId()
+    {
+        int unitId = nextUnitId;
+        nextUnitId++;
+
+        return unitId;
     }
 }
