@@ -7,7 +7,7 @@ public class UnitMotor : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float rotationSpeed = 12f;
-    [SerializeField] private float waypointReachFraction = 0.2f;
+    [SerializeField] private float waypointReachFraction = 0.25f;
 
     [Header("Ground Following")]
     [SerializeField] private bool followTerrainHeight = true;
@@ -123,6 +123,12 @@ public class UnitMotor : MonoBehaviour
 
     private void MoveTowardsTarget(Vector3 target)
     {
+        if (HasReachedTarget(target))
+        {
+            CompleteWaypoint(target);
+            return;
+        }
+
         Vector3 desiredVelocity = CalculateDesiredVelocity(target);
 
         ApplyVelocity(desiredVelocity, target);
@@ -138,7 +144,7 @@ public class UnitMotor : MonoBehaviour
         Vector3 direction = target - transform.position;
         direction.y = 0f;
 
-        if (direction.sqrMagnitude <= 0.0001f)
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
             return Vector3.zero;
 
         return direction.normalized * moveSpeed;
