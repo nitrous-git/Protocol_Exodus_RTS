@@ -830,7 +830,6 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
-  groupDestinationSpacing: 1.25
   resourceNodeMask:
     serializedVersion: 2
     m_Bits: 512
@@ -3067,6 +3066,10 @@ PrefabInstance:
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8705514527196098318, guid: 68b3c1279824f914580267a9e176b089, type: 3}
+      propertyPath: initialAmount
+      value: 1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -5,6 +5,8 @@ public sealed class FormationDestinationAllocator
     private readonly TerrainGrid terrainGrid;
     private readonly GridReservationSystem reservationSystem;
 
+    private int spacing = 3;
+
     public FormationDestinationAllocator(TerrainGrid terrainGrid, GridReservationSystem reservationSystem)
     {
         this.terrainGrid = terrainGrid;
@@ -59,10 +61,10 @@ public sealed class FormationDestinationAllocator
 
         int unitsInRow = Mathf.Min(columns, unitCount - row * columns);
 
-        int startX = formationCenter.x - unitsInRow / 2;
-        int startZ = formationCenter.z - rows / 2;
+        int startX = formationCenter.x - ((unitsInRow - 1) * spacing) / 2;
+        int startZ = formationCenter.z - ((rows - 1) * spacing) / 2;
 
-        return new GridCoord(startX + indexInRow, startZ + row);
+        return new GridCoord(startX + indexInRow * spacing, startZ + row * spacing);
     }
 
     private GridCoord? TryAllocateAround(
@@ -79,7 +81,7 @@ public sealed class FormationDestinationAllocator
                 if (!isEdge)
                     continue;
 
-                GridCoord candidate = new GridCoord(center.x + x, center.z + z);
+                GridCoord candidate = new GridCoord(center.x + x * spacing, center.z + z * spacing);
 
                 if (reservationSystem.TryReserve(candidate, unit, GridReservationType.Destination))
                 {
