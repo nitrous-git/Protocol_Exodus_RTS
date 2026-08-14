@@ -24,6 +24,7 @@ public class GameBuilder : MonoBehaviour
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public GridReservationSystem GridReservationSystem { get; private set; }
+    public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
     public Faction PlayerFaction { get; private set; }
     
     private void Awake()
@@ -55,8 +56,13 @@ public class GameBuilder : MonoBehaviour
         GameContext = new GameContext();
 
         GameContext.SetTerrainGrid(matchWorld.TerrainGrid);
+
         GridReservationSystem = new GridReservationSystem(matchWorld.TerrainGrid);
         GameContext.SetGridReservationSystem(GridReservationSystem);
+
+        DestinationAllocationSystem = new DestinationAllocationSystem(matchWorld.TerrainGrid, GridReservationSystem);
+        GameContext.SetDestinationAllocationSystem(DestinationAllocationSystem);
+
         matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid, GridReservationSystem);
 
         // Nodes reserve their cells after TerrainGrid (after ResolveServices()) 

@@ -29,6 +29,7 @@ public sealed class GameContext
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public GridReservationSystem GridReservationSystem { get; private set; }
+    public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
 
     // ---------------------------------------------------------------------
     // Setter
@@ -62,6 +63,11 @@ public sealed class GameContext
     public void SetGridReservationSystem(GridReservationSystem gridReservationSystem)
     {
         GridReservationSystem = gridReservationSystem;
+    }
+
+    public void SetDestinationAllocationSystem(DestinationAllocationSystem destinationAllocationSystem)
+    {
+        DestinationAllocationSystem = destinationAllocationSystem;
     }
 
     // ---------------------------------------------------------------------
@@ -316,6 +322,7 @@ public sealed class GameContext
         ProjectileManager = null;
         ResourceNodeRepository = null;
         GridReservationSystem = null;
+        DestinationAllocationSystem = null;
 
         nextUnitId = 1;
     }

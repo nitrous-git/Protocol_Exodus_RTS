@@ -55,6 +55,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
     public TerrainGrid TerrainGrid => gameContext?.TerrainGrid;
     private GridReservationSystem GridReservationSystem => gameContext?.GridReservationSystem;
+    public DestinationAllocationSystem DestinationAllocationSystem => gameContext?.DestinationAllocationSystem;    
 
     protected virtual void Awake()
     {
@@ -145,7 +146,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         switch (commandType)
         {
             case CommandType.Move:
-                SetState(new MoveState(context.WorldPosition));
+                SetState(new MoveState(context.WorldPosition, context.FormationSlotIndex, context.FormationUnitCount));
                 break;
 
             case CommandType.HoldPosition:
@@ -155,7 +156,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
             case CommandType.Idle:
             default:
-                //SetState(new IdleState()); 
+                SetState(new IdleState()); 
                 break;  
         }
     }
@@ -200,6 +201,11 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         motor?.Stop();
         SetSelected(false);
         owningUnitManager?.RequestRemoveUnit(this);
+    }
+
+    public virtual void ReleaseDestination(GridCoord destinationCell)
+    {
+        GridReservationSystem?.Release(destinationCell, this, GridReservationType.Destination);
     }
 
     protected virtual void OnDestroy()

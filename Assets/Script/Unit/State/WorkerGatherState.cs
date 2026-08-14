@@ -47,7 +47,8 @@ public class WorkerGatherState : UnitState<WorkerUnit>
             return;
         }
 
-        reservedInteractionCell = unit.ReserveInteractionCell(targetNode);
+        //reservedInteractionCell = unit.ReserveInteractionCell(targetNode);
+        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, targetNode.OccupiedCell, Vector2Int.one);
 
         if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
         {
@@ -100,7 +101,8 @@ public class WorkerGatherState : UnitState<WorkerUnit>
         if (!reservedInteractionCell.HasValue)
             return;
 
-        unit.ReleaseInteractionCell(reservedInteractionCell.Value);
+        //unit.ReleaseInteractionCell(reservedInteractionCell.Value);
+        unit.ReleaseDestination(reservedInteractionCell.Value);
         reservedInteractionCell = null;
     }
 

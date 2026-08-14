@@ -64,7 +64,7 @@ public class CombatUnit : UnitBase
         switch (commandType)
         {
             case CommandType.Move:
-                SetState(new MoveState(context.WorldPosition));
+                SetState(new MoveState(context.WorldPosition, context.FormationSlotIndex, context.FormationUnitCount));
                 break;
 
             case CommandType.Attack:

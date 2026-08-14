@@ -2,27 +2,49 @@ using UnityEngine;
 
 public class MoveState : UnitState<UnitBase>
 {
-    private readonly Vector3 destination;
+    private Vector3 formationCenter;
+    public int formationSlotIndex;
+    public int formationUnitCount;
+
+    private GridCoord? reservedDestinationCell;
     private bool pathRequested;
 
-    public MoveState(Vector3 destination)
+    public MoveState(Vector3 formationCenter, int formationSlotIndex, int formationUnitCount)
     {
-        this.destination = destination;
+        this.formationCenter = formationCenter;
+        this.formationSlotIndex = formationSlotIndex;
+        this.formationUnitCount = formationUnitCount;
     }
 
     protected override void OnEnterTyped(UnitBase unit)
     {
-        if (unit.Motor == null)
+        if (unit.Motor == null ||
+            unit.TerrainGrid == null ||
+            unit.DestinationAllocationSystem == null)
+        {
+            unit.IssueCommand(CommandType.Idle, CommandContext.None());
+
+            return;
+        }
+
+        GridCoord centerCell = unit.TerrainGrid.WorldToCell(formationCenter);
+
+        reservedDestinationCell = unit.DestinationAllocationSystem.Formation.TryAllocate(unit, centerCell, formationSlotIndex, formationUnitCount);
+
+        if (!reservedDestinationCell.HasValue)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
             return;
         }
 
+        Vector3 destination = unit.TerrainGrid.CellToWorld(reservedDestinationCell.Value);
+
         pathRequested = unit.Motor.MoveTo(destination);
-        //Debug.Log("pathRequested is " + pathRequested);
 
         if (!pathRequested)
+        {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
+        }
     }
 
     protected override void TickTyped(UnitBase unit)
@@ -31,6 +53,17 @@ public class MoveState : UnitState<UnitBase>
             return;
 
         if (unit.Motor == null || unit.Motor.HasArrived)
+        {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
+        }
+    }
+
+    protected override void OnExitTyped(UnitBase unit)
+    {
+        if (!reservedDestinationCell.HasValue)
+            return;
+
+        unit.ReleaseDestination(reservedDestinationCell.Value);
+        reservedDestinationCell = null;
     }
 }
