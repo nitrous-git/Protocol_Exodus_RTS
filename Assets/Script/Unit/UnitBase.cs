@@ -28,21 +28,19 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     protected UnitSensor sensor;
     protected UnitView view;
 
-
     public UnitDefinition Definition => definition;
     public Faction OwnerFaction => ownerFaction;
 
     public CommandType CurrentCommand { get; protected set; } = CommandType.Idle;
     public string CurrentStateName => currentState != null ? currentState.GetType().Name : "None";
 
-
     public bool IsSelected { get; private set; }
     public bool IsInitialized { get; private set; }
     public int UnitId { get; private set; } = -1;
 
+
     public bool CanReceiveCommands => canReceiveCommands;
     public bool CanBeSelected => canBeSelected;
-
 
     public Health Health => health;
     public UnitMotor Motor => motor;
@@ -56,6 +54,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
 
     public TerrainGrid TerrainGrid => gameContext?.TerrainGrid;
+    private GridReservationSystem GridReservationSystem => gameContext?.GridReservationSystem;
 
     protected virtual void Awake()
     {
@@ -70,7 +69,10 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         view = GetComponent<UnitView>();
     }
 
-    public virtual void Initialize(Faction ownerFaction, GameContext gameContext, IPathfindingService pathfindingService, UnitManager owningUnitManager)
+    public virtual void Initialize(Faction ownerFaction, 
+                                GameContext gameContext, 
+                                IPathfindingService pathfindingService, 
+                                UnitManager owningUnitManager)
     {
         if (IsInitialized)
             return;
@@ -82,7 +84,6 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         this.ownerFaction = ownerFaction;
         this.gameContext = gameContext;
         this.owningUnitManager = owningUnitManager;
-
 
         if (definition == null)
         {
@@ -105,7 +106,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
-        motor?.Initialize(this, pathfindingService, definition.moveSpeed);
+        motor?.Initialize(this, pathfindingService, TerrainGrid, GridReservationSystem, definition.moveSpeed);
         sensor?.Initialize(this, gameContext);
         view?.Initialize(this);
 
