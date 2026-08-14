@@ -107,7 +107,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
-        motor?.Initialize(this, pathfindingService, TerrainGrid, GridReservationSystem, definition.moveSpeed);
+        motor?.Initialize(this, pathfindingService, TerrainGrid, definition.moveSpeed);
         sensor?.Initialize(this, gameContext);
         view?.Initialize(this);
 
