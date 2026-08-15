@@ -8,6 +8,7 @@ public class WorkerGatherState : UnitState<WorkerUnit>
 {
     private readonly ResourceNode targetNode;
 
+    private GridCoord? reservedInteractionCell;
     private bool pathRequested;
 
     public WorkerGatherState(ResourceNode targetNode)
@@ -46,15 +47,17 @@ public class WorkerGatherState : UnitState<WorkerUnit>
             return;
         }
 
-        Vector3? interactionPosition = unit.GetInteractionPosition(targetNode);
+        //reservedInteractionCell = unit.ReserveInteractionCell(targetNode);
+        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, targetNode.OccupiedCell, Vector2Int.one);
 
-        if (!interactionPosition.HasValue || unit.Motor == null)
+        if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
             return;
         }
 
-        pathRequested = unit.Motor.MoveTo(interactionPosition.Value);
+        Vector3 interactionPosition = unit.TerrainGrid.CellToWorld(reservedInteractionCell.Value);
+        pathRequested = unit.Motor.MoveTo(interactionPosition);
 
         if (!pathRequested)
         {
@@ -91,6 +94,16 @@ public class WorkerGatherState : UnitState<WorkerUnit>
 
             ContinueWithReplacementOrIdle(unit);
         }
+    }
+
+    protected override void OnExitTyped(WorkerUnit unit)
+    {
+        if (!reservedInteractionCell.HasValue)
+            return;
+
+        //unit.ReleaseInteractionCell(reservedInteractionCell.Value);
+        unit.ReleaseDestination(reservedInteractionCell.Value);
+        reservedInteractionCell = null;
     }
 
     // ---------------------------------------------------------------------

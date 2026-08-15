@@ -9,6 +9,7 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
     private readonly BuildingBase requestedDropOff;
 
     private BuildingBase dropOffBuilding;
+    private GridCoord? reservedInteractionCell;
     private bool pathRequested;
 
     public WorkerDeliverState(BuildingBase requestedDropOff = null)
@@ -50,21 +51,33 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
             return;
         }
 
-        Vector3? interactionPosition = unit.GetInteractionPosition(dropOffBuilding);
+        //reservedInteractionCell = unit.ReserveInteractionCell(dropOffBuilding);
+        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, dropOffBuilding.FootprintOrigin, dropOffBuilding.Definition.FootprintSize);
 
-        if (!interactionPosition.HasValue || unit.Motor == null)
+        if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
             return;
         }
 
-        pathRequested = unit.Motor.MoveTo(interactionPosition.Value);
+        Vector3 interactionPosition = unit.TerrainGrid.CellToWorld(reservedInteractionCell.Value);
+        pathRequested = unit.Motor.MoveTo(interactionPosition);
 
         if (!pathRequested)
         {
             Debug.LogWarning($"{unit.name} could not reach {dropOffBuilding.name}.");
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
         }
+    }
+
+    protected override void OnExitTyped(WorkerUnit unit)
+    {
+        if (!reservedInteractionCell.HasValue)
+            return;
+
+        //unit.ReleaseInteractionCell(reservedInteractionCell.Value);
+        unit.ReleaseDestination(reservedInteractionCell.Value);
+        reservedInteractionCell = null;
     }
 
     protected override void TickTyped(WorkerUnit unit, float deltaTime)

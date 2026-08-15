@@ -5,6 +5,8 @@ public struct CommandContext
 {
     public Vector3 WorldPosition;
     public Vector2Int GridCell;
+    public int FormationSlotIndex;
+    public int FormationUnitCount;
 
     public ITargetable Target;
     public ResourceNode ResourceNode;
@@ -20,12 +22,15 @@ public struct CommandContext
         return new CommandContext();
     }
 
-    public static CommandContext MoveTo(Vector3 worldPosition)
+    public static CommandContext MoveTo(Vector3 worldPosition, int formationSlotIndex = 0, int formationUnitCount = 1)
     {
         return new CommandContext
         {
             WorldPosition = worldPosition,
-            HasWorldPosition = true
+            HasWorldPosition = true,
+
+            FormationSlotIndex = formationSlotIndex,
+            FormationUnitCount = formationUnitCount
         };
     }
 

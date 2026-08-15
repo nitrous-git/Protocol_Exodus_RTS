@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 3885665960780267862}
   - component: {fileID: 8320676107144926392}
   - component: {fileID: 8722576877704496946}
+  - component: {fileID: 7882903073998612123}
   - component: {fileID: 8468495209835931738}
   - component: {fileID: 4390117011144613798}
   - component: {fileID: 7993322293757587222}
@@ -166,23 +167,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7963e4316e01c840b4a6b51ca1aba4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMotor
-  stoppingDistance: 0.15
   rotationSpeed: 12
+  waypointReachFraction: 0.2
   followTerrainHeight: 1
   useNavMeshHeight: 0
   terrain: {fileID: 0}
   baseHeightOffset: 0
   navMeshSampleRadius: 2
   navMeshAreaMask: -1
-  useLocalSeparation: 1
-  separationRadius: 0.9
-  separationWeight: 1.25
-  unitMask:
-    serializedVersion: 2
-    m_Bits: 128
   drawPathGizmos: 1
   gizmoSampleSpacing: 0.5
   gizmoHeightOffset: 0.05
+--- !u!114 &7882903073998612123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854148928934221364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b77f252b23ad834429a15c679e454713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalSteeringSystem
+  separationPadding: 0.15
+  separationWeight: 1
 --- !u!114 &8468495209835931738
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -7,10 +7,7 @@ internal readonly struct DefaultCommandTarget
     public readonly BuildingBase Building;
     public readonly UnitBase Unit;
 
-    public DefaultCommandTarget(
-        ResourceNode resourceNode,
-        BuildingBase building,
-        UnitBase unit)
+    public DefaultCommandTarget(ResourceNode resourceNode, BuildingBase building, UnitBase unit)
     {
         ResourceNode = resourceNode;
         Building = building;
@@ -20,18 +17,12 @@ internal readonly struct DefaultCommandTarget
 
 public class CommandIssuer : MonoBehaviour
 {
-
-
     [Header("References")]
     [SerializeField] private Camera worldCamera;
 
-    [Header("Move Command")]
-    [SerializeField] private LayerMask groundMask = ~0;
-    [SerializeField] private float groupDestinationSpacing = 5f;
-
     [Header("Context Commands")]
+    [SerializeField] private LayerMask groundMask = ~0;
     [SerializeField] private LayerMask resourceNodeMask = ~0;
-
     [SerializeField] private LayerMask contextCommandMask = ~0;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
@@ -291,9 +282,11 @@ public class CommandIssuer : MonoBehaviour
             if (controllable == null)
                 continue;
 
-            Vector3 destination = destinationCenter + GetSimpleDestinationOffset(i, commandableCount);
-;
-            controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+            //Vector3 destination = destinationCenter + GetSimpleDestinationOffset(i, commandableCount);
+            //controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+
+            CommandContext context = CommandContext.MoveTo(destinationCenter, i, commandableCount);
+            controllable.IssueCommand(CommandType.Move, context);
 
             issuedAnyCommand = true;
         }
@@ -360,16 +353,16 @@ public class CommandIssuer : MonoBehaviour
     // Helpers
     // ---------------------------------------------------------------------
 
-    private Vector3 GetSimpleDestinationOffset(int index, int count)
-    {
-        if (count <= 1)
-            return Vector3.zero;
+    //private Vector3 GetSimpleDestinationOffset(int index, int count)
+    //{
+    //    if (count <= 1)
+    //        return Vector3.zero;
 
-        float angle = index * 137.5f * Mathf.Deg2Rad;
-        float radius = Mathf.Sqrt(index + 1) * groupDestinationSpacing;
+    //    float angle = index * 137.5f * Mathf.Deg2Rad;
+    //    float radius = Mathf.Sqrt(index + 1) * groupDestinationSpacing;
 
-        return new Vector3(Mathf.Cos(angle) * radius,0f, Mathf.Sin(angle) * radius);
-    }
+    //    return new Vector3(Mathf.Cos(angle) * radius,0f, Mathf.Sin(angle) * radius);
+    //}
 
     private bool CanIssueCommands()
     {

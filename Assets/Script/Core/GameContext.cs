@@ -12,6 +12,8 @@ public sealed class GameContext
     private BuildingBase selectedBuilding;
     private ResourceNode selectedResourceNode;
 
+    private int nextUnitId = 1;
+
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
     public IReadOnlyList<BuildingBase> AllBuildings => allBuildings;
     public IReadOnlyList<ResourceNode> AllResourceNodes => allResourceNodes;
@@ -21,10 +23,17 @@ public sealed class GameContext
     public BuildingBase SelectedBuilding => selectedBuilding;
     public ResourceNode SelectedResourceNode => selectedResourceNode;
 
+    public TerrainGrid TerrainGrid { get; private set; }
     public FactionManager FactionManager { get; private set; }
     public Faction PlayerFaction { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
+    public GridNavigationStateSystem GridNavigationStateSystem { get; private set; }
+    public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
+
+    // ---------------------------------------------------------------------
+    // Setter
+    // ---------------------------------------------------------------------
 
     public void SetFactionManager(FactionManager factionManager)
     {
@@ -46,6 +55,21 @@ public sealed class GameContext
         ResourceNodeRepository = resourceNodeRepository;
     }
 
+    public void SetTerrainGrid(TerrainGrid terrainGrid)
+    {
+        TerrainGrid = terrainGrid;
+    }
+
+    public void SetGridNavigationStateSystem(GridNavigationStateSystem gridNavigationStateSystem)
+    {
+        GridNavigationStateSystem = gridNavigationStateSystem;
+    }
+
+    public void SetDestinationAllocationSystem(DestinationAllocationSystem destinationAllocationSystem)
+    {
+        DestinationAllocationSystem = destinationAllocationSystem;
+    }
+
     // ---------------------------------------------------------------------
     // Unit registration
     // ---------------------------------------------------------------------
@@ -65,6 +89,8 @@ public sealed class GameContext
     {
         if (unit == null)
             return;
+
+        GridNavigationStateSystem?.ReleaseAll(unit);
 
         allUnits.Remove(unit);
 
@@ -289,10 +315,27 @@ public sealed class GameContext
         allBuildings.Clear();
         allTargetables.Clear();
         allResourceNodes.Clear();
+        GridNavigationStateSystem?.Clear();
 
         FactionManager = null;
         PlayerFaction = null;
         ProjectileManager = null;
         ResourceNodeRepository = null;
+        GridNavigationStateSystem = null;
+        DestinationAllocationSystem = null;
+
+        nextUnitId = 1;
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    public int AllocateUnitId()
+    {
+        int unitId = nextUnitId;
+        nextUnitId++;
+
+        return unitId;
     }
 }

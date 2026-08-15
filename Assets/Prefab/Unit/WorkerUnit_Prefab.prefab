@@ -253,11 +253,13 @@ GameObject:
   - component: {fileID: 583417987654207828}
   - component: {fileID: 204807699964892743}
   - component: {fileID: 5379725304188765889}
+  - component: {fileID: 2438042040762353408}
   - component: {fileID: 2341184154849509513}
   - component: {fileID: 2436331971969999347}
   - component: {fileID: 9004886187007545113}
   - component: {fileID: 3369494952317327516}
   - component: {fileID: 5453793218716764834}
+  - component: {fileID: 3477888173588771050}
   m_Layer: 7
   m_Name: WorkerUnit_Prefab
   m_TagString: Untagged
@@ -313,23 +315,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7963e4316e01c840b4a6b51ca1aba4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMotor
-  stoppingDistance: 0.15
   rotationSpeed: 12
+  waypointReachFraction: 0.2
   followTerrainHeight: 1
   useNavMeshHeight: 0
   terrain: {fileID: 0}
   baseHeightOffset: 0
   navMeshSampleRadius: 2
   navMeshAreaMask: -1
-  useLocalSeparation: 1
-  separationRadius: 0.9
-  separationWeight: 1.25
-  unitMask:
-    serializedVersion: 2
-    m_Bits: 128
   drawPathGizmos: 1
   gizmoSampleSpacing: 0.5
   gizmoHeightOffset: 0.05
+--- !u!114 &2438042040762353408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171947316837335529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b77f252b23ad834429a15c679e454713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalSteeringSystem
+  separationPadding: 0.15
+  separationWeight: 1
 --- !u!114 &2341184154849509513
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,3 +418,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitSensor
   sensorInterval: 0.2
+--- !u!114 &3477888173588771050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6171947316837335529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 054a52711d5f8764eaef97ce89092bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorkerResourceComponent
+  carryCapacity: 10
+  resourceAmountPerCycle: 1
+  resourceActionInterval: 0.5

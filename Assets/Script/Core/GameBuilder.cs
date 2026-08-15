@@ -23,8 +23,10 @@ public class GameBuilder : MonoBehaviour
     public FactionManager FactionManager { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
+    public GridNavigationStateSystem GridNavigationStateSystem { get; private set; }
+    public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
     public Faction PlayerFaction { get; private set; }
-
+    
     private void Awake()
     {
         ResolveSceneReferences();
@@ -52,6 +54,16 @@ public class GameBuilder : MonoBehaviour
     private void BuildMatch()
     {
         GameContext = new GameContext();
+
+        GameContext.SetTerrainGrid(matchWorld.TerrainGrid);
+
+        GridNavigationStateSystem = new GridNavigationStateSystem(matchWorld.TerrainGrid);
+        GameContext.SetGridNavigationStateSystem(GridNavigationStateSystem);
+
+        DestinationAllocationSystem = new DestinationAllocationSystem(matchWorld.TerrainGrid, GridNavigationStateSystem);
+        GameContext.SetDestinationAllocationSystem(DestinationAllocationSystem);
+
+        matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid, GridNavigationStateSystem);
 
         // Nodes reserve their cells after TerrainGrid (after ResolveServices()) 
         ResourceNodeRepository = new ResourceNodeRepository(GameContext, matchWorld.TerrainGrid); 
@@ -104,7 +116,7 @@ public class GameBuilder : MonoBehaviour
     private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
     {
         UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService, matchWorld.UnitsRoot);
-        BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot);
+        BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot); // we can evetually remove TerrainGrid and simply get it from the GameContext
         ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
 
         return new Faction(

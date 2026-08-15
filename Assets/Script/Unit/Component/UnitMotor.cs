@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -5,8 +6,8 @@ using UnityEngine.AI;
 public class UnitMotor : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float stoppingDistance = 0.15f;
     [SerializeField] private float rotationSpeed = 12f;
+    [SerializeField] private float waypointReachFraction = 0.25f;
 
     [Header("Ground Following")]
     [SerializeField] private bool followTerrainHeight = true;
@@ -16,20 +17,19 @@ public class UnitMotor : MonoBehaviour
     [SerializeField] private float navMeshSampleRadius = 2f;
     [SerializeField] private int navMeshAreaMask = NavMesh.AllAreas;
 
-    [Header("Local Avoidance")]
-    [SerializeField] private bool useLocalSeparation = true;
-    [SerializeField] private float separationRadius = 0.9f;
-    [SerializeField] private float separationWeight = 1.25f;
-    [SerializeField] private LayerMask unitMask;
-
     [Header("Debug")]
     [SerializeField] private bool drawPathGizmos = true;
     [SerializeField] private float gizmoSampleSpacing = 0.5f;
     [SerializeField] private float gizmoHeightOffset = 0.05f;
 
+    private TerrainGrid terrainGrid;
+
     private UnitBase owner;
     private IPathfindingService pathfindingService;
+    private GridNavigationStateSystem navigationState;
+    private LocalSteeringSystem localSteeringSystem;
     private float moveSpeed;
+    private Vector3 currentVelocity;
 
     private readonly List<Vector3> path = new List<Vector3>();
     private int pathIndex;
@@ -38,48 +38,29 @@ public class UnitMotor : MonoBehaviour
     public bool HasPath { get { return hasPath; } }
     public bool HasArrived { get { return !hasPath; } }
 
-    public void Initialize(UnitBase owner, IPathfindingService pathfindingService, float moveSpeed)
+    public Vector3 CurrentVelocity => currentVelocity;
+
+    public void Initialize(UnitBase owner, 
+        IPathfindingService pathfindingService, 
+        TerrainGrid terrainGrid,
+        GridNavigationStateSystem navigationState,
+        LocalSteeringSystem localSteeringSystem,
+        float moveSpeed)
     {
         this.owner = owner;
         this.pathfindingService = pathfindingService;
+        this.navigationState = navigationState;
+        this.localSteeringSystem = localSteeringSystem;
         this.moveSpeed = moveSpeed;
+        this.terrainGrid = terrainGrid;
 
         if (terrain == null)
             terrain = Terrain.activeTerrain;
 
         SnapToGround();
-    }
+        //SnapToCurrentCellCenter();
 
-    public bool MoveTo(Vector3 destination)
-    {
-        if (pathfindingService == null)
-        {
-            Debug.LogError(name + " cannot move because no IPathfindingService is available.");
-            Stop();
-            return false;
-        }
-
-        bool foundPath = pathfindingService.TryFindPath(transform.position, destination, path);
-
-        if (!foundPath)
-        {
-            Stop();
-            return false;
-        }
-
-        SnapPathToGround();
-
-        pathIndex = 0;
-        hasPath = true;
-        SkipReachedCorners();
-        return true;
-    }
-
-    public void Stop()
-    {
-        path.Clear();
-        pathIndex = 0;
-        hasPath = false;
+        UpdateUnitOccupancy();
     }
 
     public void Tick()
@@ -90,57 +71,209 @@ public class UnitMotor : MonoBehaviour
         FollowPath();
     }
 
+
+    // ---------------------------------------------------------------------
+    // Movement
+    // ---------------------------------------------------------------------
+
+    public bool MoveTo(Vector3 destination)
+    {
+        return TryBuildPath(destination);
+    }
+
+    public void Stop()
+    {
+        ClearPath();
+    }
+
+    // ---------------------------------------------------------------------
+    // Path
+    // ---------------------------------------------------------------------
+
+    private bool TryBuildPath(Vector3 destination)
+    {
+        if (pathfindingService == null)
+        {
+            Debug.LogError(name + " cannot move because no IPathfindingService is available.");
+            ClearPath();
+            return false;
+        }
+
+        path.Clear();
+
+        bool foundPath = pathfindingService.TryFindPath(owner, transform.position, destination, path);
+
+        if (!foundPath)
+        {
+            ClearPath();
+            return false;
+        }
+
+        SnapPathToGround(path);
+
+        pathIndex = 0;
+        hasPath = path.Count > 0;
+
+        return true;
+    }
+
     private void FollowPath()
     {
-        if (pathIndex >= path.Count)
+        if (!hasPath || pathIndex >= path.Count)
         {
-            Stop();
+            ClearPath();
             return;
         }
+
+        AdvanceIntermediateWaypoints();
 
         Vector3 target = path[pathIndex];
 
-        Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
-        Vector3 targetFlat = new Vector3(target.x, 0f, target.z);
+        MoveTowardsTarget(target);
+    }
 
-        Vector3 toTargetFlat = targetFlat - currentFlat;
-
-        if (toTargetFlat.magnitude <= stoppingDistance)
+    private void MoveTowardsTarget(Vector3 target)
+    {
+        if (HasReachedTarget(target))
         {
-            pathIndex++;
-            SkipReachedCorners();
-
-            if (pathIndex >= path.Count)
-                Stop();
-
+            CompleteWaypoint(target);
             return;
         }
 
-        Vector3 desiredDirection = (targetFlat - currentFlat).normalized;
-        Vector3 separationDirection = GetSeparationDirection();
+        Vector3 preferredVelocity = CalculateDesiredVelocity(target);
+        Vector3 finalVelocity = preferredVelocity;
 
-        Vector3 finalDirection = desiredDirection + separationDirection * separationWeight;
+        if (localSteeringSystem != null)
+        {
+            finalVelocity = localSteeringSystem.CalculateVelocity(preferredVelocity, moveSpeed);
+        }
 
-        if (finalDirection.sqrMagnitude <= 0.0001f)
-            finalDirection = desiredDirection;
+        ApplyVelocity(finalVelocity, target);
 
-        finalDirection.Normalize();
+        if (HasReachedTarget(target))
+        {
+            CompleteWaypoint(target);
+        }
+    }
 
-        Vector3 nextFlat = currentFlat + finalDirection * moveSpeed * Time.deltaTime;
+    private Vector3 CalculateDesiredVelocity(Vector3 target)
+    {
+        Vector3 direction = target - transform.position;
+        direction.y = 0f;
 
-        Vector3 nextPosition = new Vector3(
-            nextFlat.x,
-            transform.position.y,
-            nextFlat.z
-        );
+        if (direction.sqrMagnitude <= Mathf.Epsilon)
+            return Vector3.zero;
 
+        return direction.normalized * moveSpeed;
+    }
+
+    private void ApplyVelocity(Vector3 velocity, Vector3 target)
+    {
+        Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 targetFlat = new Vector3(target.x, 0f, target.z);
+
+        float moveDistance = velocity.magnitude * Time.deltaTime;
+        float targetDistance = Vector3.Distance(currentFlat, targetFlat);
+
+        Vector3 nextFlat;
+
+        if (moveDistance >= targetDistance)
+        {
+            nextFlat = targetFlat;
+        }
+        else
+        {
+            nextFlat = currentFlat + velocity * Time.deltaTime;
+        }
+
+        Vector3 nextPosition = new Vector3(nextFlat.x, transform.position.y, nextFlat.z);
         nextPosition = ProjectPositionToGround(nextPosition);
 
-        Vector3 movementDirection = nextPosition - transform.position;
-
+        Vector3 previousPosition = transform.position;
         transform.position = nextPosition;
-        RotateTowardsMovement(movementDirection);
+
+        if (Time.deltaTime > Mathf.Epsilon)
+        {
+            currentVelocity = (nextPosition - previousPosition) / Time.deltaTime;
+            currentVelocity.y = 0f;
+        }
+        else
+        {
+            currentVelocity = Vector3.zero;
+        }
+
+        UpdateUnitOccupancy();
+
+        RotateTowardsMovement(nextPosition - previousPosition);
     }
+
+
+    private void CompleteWaypoint(Vector3 target)
+    {
+        SnapToTarget(target);
+
+        pathIndex++;
+
+        if (pathIndex >= path.Count)
+        {
+            ClearPath();
+        }
+    }
+
+    private void AdvanceIntermediateWaypoints()
+    {
+        while (pathIndex < path.Count - 1)
+        {
+            if (!IsWithinWaypointReach(path[pathIndex]))
+                return;
+
+            pathIndex++;
+        }
+    }
+
+    private bool HasReachedTarget(Vector3 target)
+    {
+        Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 targetFlat = new Vector3(target.x, 0f, target.z);
+
+        return (targetFlat - currentFlat).sqrMagnitude <= 0.000001f;
+    }
+
+    private bool IsWithinWaypointReach(Vector3 waypoint)
+    {
+        Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 waypointFlat = new Vector3(waypoint.x, 0f, waypoint.z);
+
+        float reachDistance = WaypointReachDistance();
+
+        return (waypointFlat - currentFlat).sqrMagnitude <= reachDistance * reachDistance;
+    }
+
+    private float WaypointReachDistance()
+    {
+        if (terrainGrid == null)
+            return 0.25f;
+        
+        return terrainGrid.CellSize * waypointReachFraction;
+    }
+
+    private void SnapToTarget(Vector3 target)
+    {
+        transform.position = ProjectPositionToGround(target);
+        UpdateUnitOccupancy();
+    }
+
+    private void ClearPath()
+    {
+        path.Clear();
+        pathIndex = 0;
+        hasPath = false;
+        currentVelocity = Vector3.zero;
+    }
+
+    // ---------------------------------------------------------------------
+    // Ground Projection
+    // ---------------------------------------------------------------------
 
     private Vector3 ProjectPositionToGround(Vector3 position)
     {
@@ -169,78 +302,17 @@ public class UnitMotor : MonoBehaviour
         transform.position = ProjectPositionToGround(transform.position);
     }
 
-    private void SnapPathToGround()
+    private void SnapPathToGround(List<Vector3> points)
     {
-        for (int i = 0; i < path.Count; i++)
+        for (int i = 0; i < points.Count; i++)
         {
-            path[i] = ProjectPositionToGround(path[i]);
+            points[i] = ProjectPositionToGround(points[i]);
         }
     }
 
-    private Vector3 GetSeparationDirection()
-    {
-        if (!useLocalSeparation)
-            return Vector3.zero;
-
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            separationRadius,
-            unitMask
-        );
-
-        Vector3 separation = Vector3.zero;
-        int count = 0;
-
-        for (int i = 0; i < hits.Length; i++)
-        {
-            Collider hit = hits[i];
-
-            if (hit == null)
-                continue;
-
-            UnitBase otherUnit = hit.GetComponentInParent<UnitBase>();
-
-            if (otherUnit == null || otherUnit == owner)
-                continue;
-
-            Vector3 away = transform.position - otherUnit.transform.position;
-            away.y = 0f;
-
-            float distance = away.magnitude;
-
-            if (distance <= 0.001f)
-                continue;
-
-            float strength = 1f - Mathf.Clamp01(distance / separationRadius);
-
-            separation += away.normalized * strength;
-            count++;
-        }
-
-        if (count <= 0)
-            return Vector3.zero;
-
-        return separation.normalized;
-    }
-
-    private void SkipReachedCorners()
-    {
-        while (pathIndex < path.Count)
-        {
-            Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
-            Vector3 cornerFlat = new Vector3(path[pathIndex].x, 0f, path[pathIndex].z);
-
-            float distance = Vector3.Distance(currentFlat, cornerFlat);
-
-            if (distance > stoppingDistance)
-                break;
-
-            pathIndex++;
-        }
-
-        if (pathIndex >= path.Count)
-            Stop();
-    }
+    // ---------------------------------------------------------------------
+    // Visual
+    // ---------------------------------------------------------------------
 
     private void RotateTowardsMovement(Vector3 movementDirection)
     {
@@ -250,13 +322,33 @@ public class UnitMotor : MonoBehaviour
             return;
 
         Quaternion targetRotation = Quaternion.LookRotation(movementDirection.normalized, Vector3.up);
-
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime
-        );
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
+
+    private void SnapToCurrentCellCenter(GridCoord currentCell)
+    {
+        Vector3 center = terrainGrid.CellToWorld(currentCell);
+        transform.position = ProjectPositionToGround(center);
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    private void UpdateUnitOccupancy()
+    {
+        if (owner == null || terrainGrid == null || navigationState == null)
+        {
+            return;
+        }
+
+        GridCoord currentCell = terrainGrid.WorldToCell(transform.position);
+        navigationState.UpdateUnitOccupancy(owner, currentCell);
+    }
+
+    // ---------------------------------------------------------------------
+    // Debug
+    // ---------------------------------------------------------------------
 
     private void OnDrawGizmos()
     {
@@ -268,7 +360,7 @@ public class UnitMotor : MonoBehaviour
         for (int i = 0; i < path.Count; i++)
         {
             Vector3 point = GetGizmoGroundPoint(path[i]);
-            Gizmos.DrawSphere(point, 0.45f);
+            Gizmos.DrawSphere(point, 0.15f);
 
             if (i < path.Count - 1)
                 DrawGroundedGizmoLine(path[i], path[i + 1]);
@@ -319,4 +411,26 @@ public class UnitMotor : MonoBehaviour
 
         return grounded + Vector3.up * gizmoHeightOffset;
     }
+
+
+    private void DrawCellGizmo(GridCoord cell, Color color)
+    {
+        if (!terrainGrid.IsInside(cell))
+            return;
+
+        Vector3 center = terrainGrid.CellToWorld(cell);
+        center.y += gizmoHeightOffset;
+
+        Vector3 size = new Vector3(terrainGrid.CellSize * 0.9f, 0.05f, terrainGrid.CellSize * 0.9f);
+
+        Color fillColor = color;
+        fillColor.a = 0.25f;
+
+        Gizmos.color = fillColor;
+        Gizmos.DrawCube(center, size);
+
+        Gizmos.color = color;
+        Gizmos.DrawWireCube(center, size);
+    }
+
 }

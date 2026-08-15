@@ -830,7 +830,6 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
-  groupDestinationSpacing: 1.25
   resourceNodeMask:
     serializedVersion: 2
     m_Bits: 512
@@ -2504,6 +2503,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1149530444}
+  - {fileID: 1587563178}
   m_Father: {fileID: 1559407553}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1084719833
@@ -2631,7 +2631,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.13333334
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: ff60012f6f267fd488011ad0e3b4cc52, type: 2}
+  m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
 --- !u!1 &1098673803
 GameObject:
@@ -3066,6 +3066,10 @@ PrefabInstance:
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8705514527196098318, guid: 68b3c1279824f914580267a9e176b089, type: 3}
+      propertyPath: initialAmount
+      value: 1000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3529,7 +3533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee36bff6f173a604f9bd0bf7bdbd86b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchWorld
-  pathfindingServiceComponent: {fileID: 1149530445}
+  pathfindingServiceComponent: {fileID: 1587563179}
   terrainGridSystem: {fileID: 316370790}
   playerInputBindings:
     cameraNorthKey: 119
@@ -3723,6 +3727,51 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1587563177
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1587563178}
+  - component: {fileID: 1587563179}
+  m_Layer: 0
+  m_Name: GridAStarPathfindingService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1587563178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587563177}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1074590053}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1587563179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1587563177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0aae5aebe520f245bbc1e26454471ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridAStarPathfindingService
+  unitOccupancyPenalty: 25
 --- !u!1001 &1625794929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4184,7 +4233,7 @@ MonoBehaviour:
   FactionB_Definition: {fileID: 11400000, guid: e3acd9b9c4d96fa46943014c5ba01390, type: 2}
   FactionC_Definition: {fileID: 11400000, guid: f7bfc0e744381e2408d4229ff5c91076, type: 2}
   combatUnitPrefab: {fileID: 8320676107144926392, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
-  startingWorkerCount: 9
+  startingWorkerCount: 16
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:
@@ -4942,7 +4991,7 @@ Transform:
   m_GameObject: {fileID: 1989332473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 53.2, y: 0, z: 112.1}
+  m_LocalPosition: {x: 62.8, y: 0, z: 100.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
