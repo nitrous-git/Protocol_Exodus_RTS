@@ -29,3 +29,4 @@ MonoBehaviour:
   attackDamage: 10
   attackCooldown: 1
   selectionRadius: 0.5
+  navigationRadius: 0.55

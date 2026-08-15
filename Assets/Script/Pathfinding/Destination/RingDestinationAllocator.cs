@@ -3,12 +3,12 @@ using UnityEngine;
 public sealed class RingDestinationAllocator
 {
     public readonly TerrainGrid terrainGrid;
-    private readonly GridReservationSystem reservationSystem;
+    private readonly GridNavigationStateSystem navigationState;
 
-    public RingDestinationAllocator(TerrainGrid terrainGrid, GridReservationSystem reservationSystem)
+    public RingDestinationAllocator(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState)
     { 
         this.terrainGrid = terrainGrid;
-        this.reservationSystem = reservationSystem; 
+        this.navigationState = navigationState; 
     }
 
     /// <summary>
@@ -24,7 +24,7 @@ public sealed class RingDestinationAllocator
         int maxExtraDepth = 2,
         GridCoord? preferredCell = null)
     {
-        if (unit == null || terrainGrid == null || reservationSystem == null)
+        if (unit == null || terrainGrid == null || navigationState == null)
         {
             return null;
         }
@@ -47,7 +47,7 @@ public sealed class RingDestinationAllocator
         if (!destinationCell.HasValue)
             return null;
 
-        bool reserved = reservationSystem.TryReserve(destinationCell.Value, unit, GridReservationType.Destination);
+        bool reserved = navigationState.TryReserveDestination(destinationCell.Value, unit);
 
         if (!reserved)
             return null;

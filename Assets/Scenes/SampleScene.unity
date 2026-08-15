@@ -2631,7 +2631,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.13333334
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: ff60012f6f267fd488011ad0e3b4cc52, type: 2}
+  m_NavMeshData: {fileID: 0}
   m_BuildHeightMesh: 0
 --- !u!1 &1098673803
 GameObject:
@@ -3771,6 +3771,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0aae5aebe520f245bbc1e26454471ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridAStarPathfindingService
+  unitOccupancyPenalty: 25
 --- !u!1001 &1625794929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4232,7 +4233,7 @@ MonoBehaviour:
   FactionB_Definition: {fileID: 11400000, guid: e3acd9b9c4d96fa46943014c5ba01390, type: 2}
   FactionC_Definition: {fileID: 11400000, guid: f7bfc0e744381e2408d4229ff5c91076, type: 2}
   combatUnitPrefab: {fileID: 8320676107144926392, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
-  startingWorkerCount: 9
+  startingWorkerCount: 16
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:
@@ -4990,7 +4991,7 @@ Transform:
   m_GameObject: {fileID: 1989332473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 53.2, y: 0, z: 112.1}
+  m_LocalPosition: {x: 62.8, y: 0, z: 100.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

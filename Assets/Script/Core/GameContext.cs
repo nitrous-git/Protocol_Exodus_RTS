@@ -28,7 +28,7 @@ public sealed class GameContext
     public Faction PlayerFaction { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
-    public GridReservationSystem GridReservationSystem { get; private set; }
+    public GridNavigationStateSystem GridNavigationStateSystem { get; private set; }
     public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
 
     // ---------------------------------------------------------------------
@@ -60,9 +60,9 @@ public sealed class GameContext
         TerrainGrid = terrainGrid;
     }
 
-    public void SetGridReservationSystem(GridReservationSystem gridReservationSystem)
+    public void SetGridNavigationStateSystem(GridNavigationStateSystem gridNavigationStateSystem)
     {
-        GridReservationSystem = gridReservationSystem;
+        GridNavigationStateSystem = gridNavigationStateSystem;
     }
 
     public void SetDestinationAllocationSystem(DestinationAllocationSystem destinationAllocationSystem)
@@ -90,7 +90,7 @@ public sealed class GameContext
         if (unit == null)
             return;
 
-        GridReservationSystem?.ReleaseAll(unit);
+        GridNavigationStateSystem?.ReleaseAll(unit);
 
         allUnits.Remove(unit);
 
@@ -315,13 +315,13 @@ public sealed class GameContext
         allBuildings.Clear();
         allTargetables.Clear();
         allResourceNodes.Clear();
-        GridReservationSystem?.Clear();
+        GridNavigationStateSystem?.Clear();
 
         FactionManager = null;
         PlayerFaction = null;
         ProjectileManager = null;
         ResourceNodeRepository = null;
-        GridReservationSystem = null;
+        GridNavigationStateSystem = null;
         DestinationAllocationSystem = null;
 
         nextUnitId = 1;

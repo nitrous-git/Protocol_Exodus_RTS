@@ -3,14 +3,14 @@ using UnityEngine;
 public sealed class FormationDestinationAllocator
 {
     private readonly TerrainGrid terrainGrid;
-    private readonly GridReservationSystem reservationSystem;
+    private readonly GridNavigationStateSystem navigationState;
 
     private int spacing = 3;
 
-    public FormationDestinationAllocator(TerrainGrid terrainGrid, GridReservationSystem reservationSystem)
+    public FormationDestinationAllocator(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState)
     {
         this.terrainGrid = terrainGrid;
-        this.reservationSystem = reservationSystem;
+        this.navigationState = navigationState;
     }
 
     public GridCoord? TryAllocate(
@@ -22,7 +22,7 @@ public sealed class FormationDestinationAllocator
     {
         if (unit == null ||
             terrainGrid == null ||
-            reservationSystem == null ||
+            navigationState == null ||
             unitCount <= 0 ||
             slotIndex < 0 ||
             slotIndex >= unitCount)
@@ -32,7 +32,7 @@ public sealed class FormationDestinationAllocator
 
         GridCoord preferredCell = GetPreferredSlot(formationCenter, slotIndex, unitCount);
 
-        if (reservationSystem.TryReserve(preferredCell, unit, GridReservationType.Destination))
+        if (navigationState.TryReserveDestination(preferredCell, unit))
         {
             return preferredCell;
         }
@@ -83,7 +83,7 @@ public sealed class FormationDestinationAllocator
 
                 GridCoord candidate = new GridCoord(center.x + x * spacing, center.z + z * spacing);
 
-                if (reservationSystem.TryReserve(candidate, unit, GridReservationType.Destination))
+                if (navigationState.TryReserveDestination(candidate, unit))
                 {
                     return candidate;
                 }

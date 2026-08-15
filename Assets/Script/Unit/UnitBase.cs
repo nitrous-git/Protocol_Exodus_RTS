@@ -27,6 +27,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     protected UnitMotor motor;
     protected UnitSensor sensor;
     protected UnitView view;
+    protected LocalSteeringSystem localSteeringSystem;
 
     public UnitDefinition Definition => definition;
     public Faction OwnerFaction => ownerFaction;
@@ -47,6 +48,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public UnitSensor Sensor => sensor;
     public UnitView View => view;
 
+
     public Vector3 Position => transform.position;
     public bool IsAlive => health != null && health.IsAlive;
     public Transform AimPoint => aimPoint != null ? aimPoint : transform;
@@ -54,7 +56,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
 
     public TerrainGrid TerrainGrid => gameContext?.TerrainGrid;
-    private GridReservationSystem GridReservationSystem => gameContext?.GridReservationSystem;
+    private GridNavigationStateSystem GridNavigationStateSystem => gameContext?.GridNavigationStateSystem;
     public DestinationAllocationSystem DestinationAllocationSystem => gameContext?.DestinationAllocationSystem;    
 
     protected virtual void Awake()
@@ -68,6 +70,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         motor = GetComponent<UnitMotor>();
         sensor = GetComponent<UnitSensor>();
         view = GetComponent<UnitView>();
+        localSteeringSystem = GetComponent<LocalSteeringSystem>(); 
     }
 
     public virtual void Initialize(Faction ownerFaction, 
@@ -107,7 +110,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
-        motor?.Initialize(this, pathfindingService, TerrainGrid, definition.moveSpeed);
+        localSteeringSystem?.Initialize(this, gameContext.AllUnits);
+        motor?.Initialize(this, pathfindingService, TerrainGrid, GridNavigationStateSystem, localSteeringSystem, definition.moveSpeed);
         sensor?.Initialize(this, gameContext);
         view?.Initialize(this);
 
@@ -199,13 +203,16 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     protected virtual void HandleDied()
     {
         motor?.Stop();
+
+        GridNavigationStateSystem?.ReleaseAll(this);
+
         SetSelected(false);
         owningUnitManager?.RequestRemoveUnit(this);
     }
 
     public virtual void ReleaseDestination(GridCoord destinationCell)
     {
-        GridReservationSystem?.Release(destinationCell, this, GridReservationType.Destination);
+        GridNavigationStateSystem?.ReleaseDestination(destinationCell, this);
     }
 
     protected virtual void OnDestroy()

@@ -14,7 +14,8 @@ public class UnitDefinition : ScriptableObject
     [Header("Economy")]
     public Cost cost = Cost.Zero;
 
-    [Header("Production")] [Min(0f)] public float productionDuration = 5f;
+    [Header("Production")] 
+    [Min(0f)] public float productionDuration = 5f;
 
     [Header("Core Stats")]
     [Min(1f)] public float maxHealth = 100f;
@@ -30,12 +31,16 @@ public class UnitDefinition : ScriptableObject
     [Header("Selection")]
     public float selectionRadius = 0.5f;
 
+    [Header("Navigation")]
+    [Min(0.05f)] public float navigationRadius = 12.45f;
+
     public UnitType Type => unitType;
     public string DisplayName => displayName;
     public Sprite Icon => icon;
     public UnitBase Prefab => prefab;
     public Cost Cost => cost;
     public float ProductionDuration => productionDuration;
+    public float NavigationRadius => navigationRadius;
 
     private void OnValidate()
     {
@@ -48,6 +53,7 @@ public class UnitDefinition : ScriptableObject
         attackCooldown = Mathf.Max(0.01f, attackCooldown);
 
         selectionRadius = Mathf.Max(0f, selectionRadius);
+        navigationRadius = Mathf.Max(0.05f, NavigationRadius);
         productionDuration = Mathf.Max(0f, productionDuration);
     }
 }

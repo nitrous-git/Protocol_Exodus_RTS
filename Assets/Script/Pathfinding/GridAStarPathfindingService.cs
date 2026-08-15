@@ -8,9 +8,6 @@ using UnityEngine;
 /// </summary>
 public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingService
 {
-    private const int StraightCost = 10;
-    private const int DiagonalCost = 14;
-
     private sealed class PathNode
     {
         public GridCoord Coord;
@@ -66,16 +63,22 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     }
 
     private TerrainGrid terrainGrid;
-    private GridReservationSystem reservationSystem;
+    private GridNavigationStateSystem navigateState;
 
     private PathNode[,] nodes;
     private readonly MinPriorityQueue<PathNode, PathPriority> openQueue = new();
     private readonly List<PathNode> touchedNodes = new();
 
-    public void Initialize(TerrainGrid terrainGrid, GridReservationSystem reservationSystem)
+    private const int StraightCost = 10;
+    private const int DiagonalCost = 14;
+
+    [Header("Dynamic Occupancy")]
+    [SerializeField][Min(0)] private int unitOccupancyPenalty = 25;
+
+    public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigateState)
     {
         this.terrainGrid = terrainGrid;
-        this.reservationSystem = reservationSystem;
+        this.navigateState = navigateState;
 
         if (terrainGrid == null)
         {
@@ -197,6 +200,8 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
                 int movementCost = diagonal ? DiagonalCost : StraightCost;
 
+                movementCost += GetUnitOccupancyPenalty(neighborCoord, requester);
+
                 int newGCost = currentNode.GCost + movementCost;
 
                 if (newGCost >= neighborNode.GCost)
@@ -211,6 +216,21 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
                 EnqueueNode(neighborNode);
             }
         }
+    }
+
+    private int GetUnitOccupancyPenalty(GridCoord coord, UnitBase requester)
+    {
+        if (navigateState == null)
+        {
+            return 0;
+        }
+
+        if (!navigateState.IsOccupiedByOtherUnit(coord, requester))
+        {
+            return 0;
+        }
+
+        return unitOccupancyPenalty;
     }
 
     private bool CanMoveDiagonally(GridCoord from, int xOffset, int zOffset, GridCoord startCoord, UnitBase requester)
@@ -238,10 +258,10 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         if (cell.Occupied)
             return false;
 
-        if (!cell.Reserved)
-            return true;
+        if (navigateState != null && navigateState.IsDestinationReservedByOther(coord, requester))
+            return false;
 
-        return reservationSystem != null && reservationSystem.IsReservedBy(coord, requester);
+        return true;
     }
 
     private int CalculateHeuristic(GridCoord from, GridCoord to)

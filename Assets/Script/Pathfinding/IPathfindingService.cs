@@ -3,7 +3,7 @@ using UnityEngine;
 
 public interface IPathfindingService
 {
-    void Initialize(TerrainGrid terrainGrid, GridReservationSystem reservationSystem);
+    void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState);
 
     bool TryFindPath(UnitBase requester, Vector3 start, Vector3 end, List<Vector3> result);
 }

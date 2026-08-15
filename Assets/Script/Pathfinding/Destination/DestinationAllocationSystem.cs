@@ -3,10 +3,10 @@ public sealed class DestinationAllocationSystem
     public RingDestinationAllocator Ring { get; }
     public FormationDestinationAllocator Formation { get; }
 
-    public DestinationAllocationSystem(TerrainGrid terrainGrid, GridReservationSystem reservationSystem)
+    public DestinationAllocationSystem(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState)
     {
-        Ring = new RingDestinationAllocator(terrainGrid, reservationSystem);
+        Ring = new RingDestinationAllocator(terrainGrid, navigationState);
 
-        Formation = new FormationDestinationAllocator(terrainGrid, reservationSystem);
+        Formation = new FormationDestinationAllocator(terrainGrid, navigationState);
     }
 }

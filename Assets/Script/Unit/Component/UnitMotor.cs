@@ -26,7 +26,10 @@ public class UnitMotor : MonoBehaviour
 
     private UnitBase owner;
     private IPathfindingService pathfindingService;
+    private GridNavigationStateSystem navigationState;
+    private LocalSteeringSystem localSteeringSystem;
     private float moveSpeed;
+    private Vector3 currentVelocity;
 
     private readonly List<Vector3> path = new List<Vector3>();
     private int pathIndex;
@@ -35,13 +38,19 @@ public class UnitMotor : MonoBehaviour
     public bool HasPath { get { return hasPath; } }
     public bool HasArrived { get { return !hasPath; } }
 
+    public Vector3 CurrentVelocity => currentVelocity;
+
     public void Initialize(UnitBase owner, 
         IPathfindingService pathfindingService, 
         TerrainGrid terrainGrid,
+        GridNavigationStateSystem navigationState,
+        LocalSteeringSystem localSteeringSystem,
         float moveSpeed)
     {
         this.owner = owner;
         this.pathfindingService = pathfindingService;
+        this.navigationState = navigationState;
+        this.localSteeringSystem = localSteeringSystem;
         this.moveSpeed = moveSpeed;
         this.terrainGrid = terrainGrid;
 
@@ -50,6 +59,8 @@ public class UnitMotor : MonoBehaviour
 
         SnapToGround();
         //SnapToCurrentCellCenter();
+
+        UpdateUnitOccupancy();
     }
 
     public void Tick()
@@ -129,9 +140,15 @@ public class UnitMotor : MonoBehaviour
             return;
         }
 
-        Vector3 desiredVelocity = CalculateDesiredVelocity(target);
+        Vector3 preferredVelocity = CalculateDesiredVelocity(target);
+        Vector3 finalVelocity = preferredVelocity;
 
-        ApplyVelocity(desiredVelocity, target);
+        if (localSteeringSystem != null)
+        {
+            finalVelocity = localSteeringSystem.CalculateVelocity(preferredVelocity, moveSpeed);
+        }
+
+        ApplyVelocity(finalVelocity, target);
 
         if (HasReachedTarget(target))
         {
@@ -170,14 +187,24 @@ public class UnitMotor : MonoBehaviour
         }
 
         Vector3 nextPosition = new Vector3(nextFlat.x, transform.position.y, nextFlat.z);
-
         nextPosition = ProjectPositionToGround(nextPosition);
 
-        Vector3 movement = nextPosition - transform.position;
-
+        Vector3 previousPosition = transform.position;
         transform.position = nextPosition;
 
-        RotateTowardsMovement(movement);
+        if (Time.deltaTime > Mathf.Epsilon)
+        {
+            currentVelocity = (nextPosition - previousPosition) / Time.deltaTime;
+            currentVelocity.y = 0f;
+        }
+        else
+        {
+            currentVelocity = Vector3.zero;
+        }
+
+        UpdateUnitOccupancy();
+
+        RotateTowardsMovement(nextPosition - previousPosition);
     }
 
 
@@ -233,6 +260,7 @@ public class UnitMotor : MonoBehaviour
     private void SnapToTarget(Vector3 target)
     {
         transform.position = ProjectPositionToGround(target);
+        UpdateUnitOccupancy();
     }
 
     private void ClearPath()
@@ -240,6 +268,7 @@ public class UnitMotor : MonoBehaviour
         path.Clear();
         pathIndex = 0;
         hasPath = false;
+        currentVelocity = Vector3.zero;
     }
 
     // ---------------------------------------------------------------------
@@ -300,6 +329,21 @@ public class UnitMotor : MonoBehaviour
     {
         Vector3 center = terrainGrid.CellToWorld(currentCell);
         transform.position = ProjectPositionToGround(center);
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    private void UpdateUnitOccupancy()
+    {
+        if (owner == null || terrainGrid == null || navigationState == null)
+        {
+            return;
+        }
+
+        GridCoord currentCell = terrainGrid.WorldToCell(transform.position);
+        navigationState.UpdateUnitOccupancy(owner, currentCell);
     }
 
     // ---------------------------------------------------------------------
