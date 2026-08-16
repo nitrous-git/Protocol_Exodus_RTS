@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ac4113a7f07f009418ca130d550aff53
+timeCreated: 1516937713
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Prefabs/infantry_missiler.prefab
+  uploadId: 225951

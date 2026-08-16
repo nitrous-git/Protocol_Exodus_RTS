@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 53fe5601f7cd70d4292f45f867cde60f
+timeCreated: 1507444841
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Prefabs/Effects/Muzzle_flash.prefab
+  uploadId: 225951

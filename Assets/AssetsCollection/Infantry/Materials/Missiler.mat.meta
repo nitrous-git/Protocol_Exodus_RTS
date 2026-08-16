@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 635f1d7630ff59d4ab4b738b18e93780
+timeCreated: 1507205419
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Materials/Missiler.mat
+  uploadId: 225951

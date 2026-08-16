@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6d64249796053cf4cb9e905a5df5a552
+timeCreated: 1507447340
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Prefabs/Effects/Rocket_flash.prefab
+  uploadId: 225951

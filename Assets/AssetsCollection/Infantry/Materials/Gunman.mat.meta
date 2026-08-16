@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 446433e0c1f61f545b1af0dff5b2ed8f
+timeCreated: 1507204345
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Materials/Gunman.mat
+  uploadId: 225951

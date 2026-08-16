@@ -1,0 +1,1613 @@
+fileFormatVersion: 2
+guid: 7c67391b42f8ddc4699a83a30cf308b0
+timeCreated: 1507208066
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: arm.L
+    100002: arm.R
+    100004: chest
+    100006: elbow_target.L
+    100008: elbow_target.L_end
+    100010: elbow_target.R
+    100012: elbow_target.R_end
+    100014: flamer
+    100016: flamer.001
+    100018: flamer_armature
+    100020: foot.L
+    100022: foot.R
+    100024: forearm.L
+    100026: forearm.R
+    100028: hand.L
+    100030: hand.L_end
+    100032: hand.R
+    100034: hand_IK.L
+    100036: hand_IK.L_end
+    100038: hand_IK.R
+    100040: hand_IK.R_end
+    100042: head
+    100044: head_end
+    100046: hip
+    100048: hip2.L
+    100050: hip2.R
+    100052: //RootNode
+    100054: knee_target.L
+    100056: knee_target.L_end
+    100058: knee_target.R
+    100060: knee_target.R_end
+    100062: leg_IK.L
+    100064: leg_IK.L_end
+    100066: leg_IK.R
+    100068: leg_IK.R_end
+    100070: neck
+    100072: root_bone
+    100074: shin.L
+    100076: shin.R
+    100078: shoulder.L
+    100080: shoulder.R
+    100082: shoulder_plate.L
+    100084: shoulder_plate.L_end
+    100086: shoulder_plate.R
+    100088: shoulder_plate.R_end
+    100090: spine
+    100092: thigh.L
+    100094: thigh.R
+    100096: toe.L
+    100098: toe.L_end
+    100100: toe.R
+    100102: toe.R_end
+    100104: weapon
+    100106: weapon_end
+    100108: flamegun
+    400000: arm.L
+    400002: arm.R
+    400004: chest
+    400006: elbow_target.L
+    400008: elbow_target.L_end
+    400010: elbow_target.R
+    400012: elbow_target.R_end
+    400014: flamer
+    400016: flamer.001
+    400018: flamer_armature
+    400020: foot.L
+    400022: foot.R
+    400024: forearm.L
+    400026: forearm.R
+    400028: hand.L
+    400030: hand.L_end
+    400032: hand.R
+    400034: hand_IK.L
+    400036: hand_IK.L_end
+    400038: hand_IK.R
+    400040: hand_IK.R_end
+    400042: head
+    400044: head_end
+    400046: hip
+    400048: hip2.L
+    400050: hip2.R
+    400052: //RootNode
+    400054: knee_target.L
+    400056: knee_target.L_end
+    400058: knee_target.R
+    400060: knee_target.R_end
+    400062: leg_IK.L
+    400064: leg_IK.L_end
+    400066: leg_IK.R
+    400068: leg_IK.R_end
+    400070: neck
+    400072: root_bone
+    400074: shin.L
+    400076: shin.R
+    400078: shoulder.L
+    400080: shoulder.R
+    400082: shoulder_plate.L
+    400084: shoulder_plate.L_end
+    400086: shoulder_plate.R
+    400088: shoulder_plate.R_end
+    400090: spine
+    400092: thigh.L
+    400094: thigh.R
+    400096: toe.L
+    400098: toe.L_end
+    400100: toe.R
+    400102: toe.R_end
+    400104: weapon
+    400106: weapon_end
+    400108: flamegun
+    2300000: flamer.001
+    2300002: flamegun
+    3300000: flamer.001
+    3300002: flamegun
+    4300000: flamer.001
+    4300002: flamer
+    4300004: flamegun
+    7400000: flamer_armature|-nayiux
+    7400002: flamer_armature|_death1
+    7400004: flamer_armature|_death2
+    7400006: flamer_armature|flamer_idle
+    7400008: flamer_armature|flamer_run
+    7400010: flamer_armature|flamer_shoot
+    7400012: flamer_armature|flamer_walk
+    7400014: flamer_armature|gunman_idle
+    7400016: flamer_armature|gunman_run
+    7400018: flamer_armature|gunman_shooting
+    7400020: flamer_armature|gunman_walk
+    7400022: flamer_armature|missiler_idle
+    7400024: flamer_armature|missiler_run
+    7400026: flamer_armature|missiler_shot
+    7400028: flamer_armature|missiler_walk
+    7400030: flamer_armature|nax
+    7400032: flamer_armature|sniper_idle
+    7400034: flamer_armature|sniper_run
+    7400036: flamer_armature|sniper_shoot
+    7400038: flamer_armature|sniper_walk
+    7400040: flamer_armature|flamer_idle_to_run
+    7400042: flamer_armature|flamer_run_to_idle
+    9500000: //RootNode
+    13700000: flamer
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 'MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_flamer'' conversion warning:
+      ''flamer_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_flamer'' conversion warning: ''flamer_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+'
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 3
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: flamer_armature|_death1
+      takeName: flamer_armature|_death1
+      firstFrame: 0
+      lastFrame: 45
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: flamer
+        weight: 1
+      - path: flamer_armature
+        weight: 1
+      - path: flamer_armature/root_bone
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/flamegun
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: flamer_armature|_death2
+      takeName: flamer_armature|_death2
+      firstFrame: 0
+      lastFrame: 54
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: flamer
+        weight: 1
+      - path: flamer_armature
+        weight: 1
+      - path: flamer_armature/root_bone
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/flamegun
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: flamer_armature|flamer_idle
+      takeName: flamer_armature|flamer_idle
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: flamer
+        weight: 0
+      - path: flamer_armature
+        weight: 1
+      - path: flamer_armature/root_bone
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: flamer_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: flamer_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/flamer.001
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.L
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.R
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: flamer_armature|flamer_run
+      takeName: flamer_armature|flamer_run
+      firstFrame: 0
+      lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: flamer
+        weight: 1
+      - path: flamer_armature
+        weight: 1
+      - path: flamer_armature/root_bone
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/flamegun
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: flamer_armature|flamer_shoot
+      takeName: flamer_armature|flamer_shoot
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: flamer
+        weight: 0
+      - path: flamer_armature
+        weight: 1
+      - path: flamer_armature/root_bone
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: flamer_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: flamer_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: flamer_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/flamer.001
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.L
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.R
+        weight: 0
+      - path: flamer_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: flamer_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: flamer_armature|flamer_walk
+      takeName: flamer_armature|flamer_walk
+      firstFrame: 0
+      lastFrame: 32
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: flamer
+        weight: 1
+      - path: flamer_armature
+        weight: 1
+      - path: flamer_armature/root_bone
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/flamegun
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 1
+      - path: flamer_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R
+        weight: 1
+      - path: flamer_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R
+        weight: 1
+      - path: flamer_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human:
+    - boneName: hip
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.L
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.R
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.L
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.R
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.L
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.R
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: chest
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shoulder.L
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shoulder.R
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: arm.L
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: arm.R
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.L
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.R
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.L
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.R
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: toe.L
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: toe.R
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: infantry_flamer(Clone)
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: flamer
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: flamer_armature
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106709}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: root_bone
+      position: {x: -0, y: .00358503289, z: 0}
+      rotation: {x: .707106829, y: 0, z: 0, w: .707106709}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hip
+      position: {x: -.000313394034, y: 1.07752049, z: -.0926604718}
+      rotation: {x: -.00502334489, y: 1.27992216e-05, z: -.000994295347, w: .999986887}
+      scale: {x: 1.00000024, y: .99999994, z: .99999994}
+      transformModified: 1
+    - name: spine
+      position: {x: -4.41901515e-10, y: .157608464, z: 9.31337008e-10}
+      rotation: {x: -.000990364933, y: .993996143, z: .109410673, w: -9.26185894e-05}
+      scale: {x: 1, y: 1.00000048, z: .99999994}
+      transformModified: 1
+    - name: chest
+      position: {x: 7.61612927e-14, y: .202515274, z: -1.11758718e-08}
+      rotation: {x: .0926615745, y: -.0118849827, z: .00452237716, w: .995616555}
+      scale: {x: .999999881, y: .999999821, z: 1.00000012}
+      transformModified: 1
+    - name: neck
+      position: {x: .00376095506, y: .167805463, z: -8.5872809e-05}
+      rotation: {x: -.12477129, y: .0117488448, z: .0040954412, w: .992107511}
+      scale: {x: .99999994, y: .99999994, z: 1.00000024}
+      transformModified: 1
+    - name: head
+      position: {x: -8.00244704e-10, y: .115661599, z: 8.00958517e-08}
+      rotation: {x: -.604712009, y: .00595399551, z: -.00569094345, w: .79640162}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: head_end
+      position: {x: -0, y: .188229099, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder.L
+      position: {x: .00376095506, y: .167805463, z: -8.5872809e-05}
+      rotation: {x: -.564707458, y: -.416754514, z: -.54586935, w: .457654804}
+      scale: {x: .999999285, y: .999999464, z: .999999762}
+      transformModified: 1
+    - name: arm.L
+      position: {x: 5.587935e-09, y: .237756625, z: -1.63272475e-07}
+      rotation: {x: -.0795190632, y: -.372187197, z: -.0167626385, w: -.924593091}
+      scale: {x: .999999762, y: 1.00000048, z: 1.00000048}
+      transformModified: 1
+    - name: forearm.L
+      position: {x: -1.35973082e-07, y: .346262544, z: -5.587935e-09}
+      rotation: {x: -.00843530521, y: .663553178, z: -.027717011, w: -.747568011}
+      scale: {x: .999999702, y: .999999702, z: .999999642}
+      transformModified: 1
+    - name: hand.L
+      position: {x: -3.91155446e-08, y: .314611763, z: -9.68575407e-08}
+      rotation: {x: .00677647302, y: -.383946747, z: .0964424089, w: .918279827}
+      scale: {x: 1.00000036, y: 1.00000024, z: .999999821}
+      transformModified: 1
+    - name: hand.L_end
+      position: {x: -0, y: .202376857, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder_plate.L
+      position: {x: 4.65661243e-09, y: .237756595, z: -1.70723055e-07}
+      rotation: {x: .63102001, y: -.00972992089, z: -.0142804515, w: .775574028}
+      scale: {x: 1, y: 1, z: 1.00000024}
+      transformModified: 1
+    - name: shoulder_plate.L_end
+      position: {x: -0, y: .2102153, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder.R
+      position: {x: -9.31322519e-10, y: .167847633, z: -2.56841282e-09}
+      rotation: {x: -.547394693, y: .433394521, z: .553453028, w: .454112291}
+      scale: {x: .999999881, y: 1, z: .99999994}
+      transformModified: 1
+    - name: arm.R
+      position: {x: -1.39698375e-09, y: .23775655, z: 7.11297545e-08}
+      rotation: {x: .0795179829, y: -.372187197, z: -.016762523, w: .92459321}
+      scale: {x: .999999821, y: 1.00000012, z: 1.00000012}
+      transformModified: 1
+    - name: forearm.R
+      position: {x: 1.45286307e-07, y: .346262753, z: 2.06753597e-07}
+      rotation: {x: .00843562651, y: .663553059, z: -.0277170148, w: .747568011}
+      scale: {x: .999999821, y: .999999702, z: .999999762}
+      transformModified: 1
+    - name: hand.R
+      position: {x: -4.84287703e-08, y: .314611703, z: 1.15483992e-07}
+      rotation: {x: .0778430998, y: .391491055, z: .0378338806, w: .916102529}
+      scale: {x: 1.00000024, y: 1.00000024, z: .999999881}
+      transformModified: 1
+    - name: weapon
+      position: {x: .0287103262, y: .0973616317, z: -.0032871773}
+      rotation: {x: .897269368, y: -.416073054, z: .0518236198, w: .138221517}
+      scale: {x: .999999404, y: .999999523, z: 1.0000006}
+      transformModified: 1
+    - name: flamegun
+      position: {x: -1.19209282e-07, y: -2.08616243e-07, z: 0}
+      rotation: {x: -1.80210876e-07, y: 1, z: -3.69618327e-08, w: 1.94707198e-07}
+      scale: {x: 1.00000012, y: 1.00000012, z: 1.00000072}
+      transformModified: 1
+    - name: weapon_end
+      position: {x: -0, y: .299999982, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder_plate.R
+      position: {x: -1.86264504e-09, y: .237756565, z: -5.18048147e-08}
+      rotation: {x: -.631019652, y: -.00972982403, z: -.0142803472, w: -.775574327}
+      scale: {x: 1, y: 1, z: 1.00000012}
+      transformModified: 1
+    - name: shoulder_plate.R_end
+      position: {x: -0, y: .2102153, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hip2.L
+      position: {x: -.0113550313, y: -2.26931661e-05, z: -4.05937385e-07}
+      rotation: {x: -.367468148, y: .222914115, z: .771511018, w: .469091892}
+      scale: {x: .99999994, y: .999999821, z: 1.00000012}
+      transformModified: 1
+    - name: thigh.L
+      position: {x: -3.35276091e-08, y: .128920019, z: -3.72528994e-08}
+      rotation: {x: -.448743075, y: .309430808, z: .214473352, w: .810483515}
+      scale: {x: 1, y: 1.00000024, z: .999999702}
+      transformModified: 1
+    - name: shin.L
+      position: {x: 9.89530147e-09, y: .503831625, z: 2.76486362e-10}
+      rotation: {x: -.0726984143, y: -.696833432, z: .127739191, w: -.702011943}
+      scale: {x: 1.00000036, y: .999999702, z: 1.00000012}
+      transformModified: 1
+    - name: foot.L
+      position: {x: -1.14087007e-08, y: .460934907, z: 6.51925758e-09}
+      rotation: {x: -.0376963504, y: .685643673, z: -.726798534, w: -.0153575614}
+      scale: {x: .999999642, y: .99999994, z: 1.00000024}
+      transformModified: 1
+    - name: toe.L
+      position: {x: -3.37604411e-09, y: .0760485977, z: 2.7939675e-09}
+      rotation: {x: .0266745631, y: .00901838578, z: .0256928112, w: .9992733}
+      scale: {x: .999999881, y: .999999881, z: 1.00000012}
+      transformModified: 1
+    - name: toe.L_end
+      position: {x: -0, y: .151936799, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hip2.R
+      position: {x: .0119818188, y: 2.37107561e-05, z: 4.24563893e-07}
+      rotation: {x: .366996706, y: .223660991, z: .770589888, w: -.470617086}
+      scale: {x: .999999762, y: 1, z: 1}
+      transformModified: 1
+    - name: thigh.R
+      position: {x: 1.86264497e-08, y: .128920019, z: 9.68575407e-08}
+      rotation: {x: -.448742747, y: -.309430897, z: -.214473292, w: .810483694}
+      scale: {x: .999999881, y: .99999994, z: .999999762}
+      transformModified: 1
+    - name: shin.R
+      position: {x: -0, y: .503831267, z: -1.54032005e-08}
+      rotation: {x: .0726982802, y: -.696833432, z: .127739474, w: .702012002}
+      scale: {x: .999999821, y: 1.00000012, z: 1.00000024}
+      transformModified: 1
+    - name: foot.R
+      position: {x: 1.26892692e-08, y: .460934907, z: -3.9581205e-09}
+      rotation: {x: .0376963839, y: .685643494, z: -.726798654, w: .0153575987}
+      scale: {x: .999999344, y: .999999404, z: .999999523}
+      transformModified: 1
+    - name: toe.R
+      position: {x: -2.7939675e-09, y: .0760485977, z: 2.56113686e-09}
+      rotation: {x: .0266745053, y: -.00901829917, z: -.0256927293, w: .9992733}
+      scale: {x: 1.00000036, y: 1.00000012, z: 1}
+      transformModified: 1
+    - name: toe.R_end
+      position: {x: -0, y: .151936799, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hand_IK.L
+      position: {x: -.821182251, y: 1.26118279, z: .0365212448}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hand_IK.L_end
+      position: {x: -0, y: .213998929, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hand_IK.R
+      position: {x: .821182251, y: 1.26118279, z: .0365212448}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hand_IK.R_end
+      position: {x: -0, y: .213998929, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.L
+      position: {x: -.549028754, y: 1.40592682, z: -.438539892}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.L_end
+      position: {x: -0, y: .300915629, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.L
+      position: {x: -.147352308, y: .064431034, z: -.107746333}
+      rotation: {x: -.700363338, y: 0, z: -0, w: .713786602}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.L_end
+      position: {x: -0, y: .307089061, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.L
+      position: {x: -.156367764, y: .541155159, z: .434345961}
+      rotation: {x: -3.09086232e-08, y: .707106829, z: .707106829, w: -3.09086232e-08}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.L_end
+      position: {x: -0, y: .347536683, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.R
+      position: {x: .549028754, y: 1.40592682, z: -.438539892}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.R_end
+      position: {x: -0, y: .300915629, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.R
+      position: {x: .147352308, y: .064431034, z: -.107746333}
+      rotation: {x: -.700363338, y: 0, z: -0, w: .713786602}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.R_end
+      position: {x: -0, y: .307089061, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.R
+      position: {x: .156367764, y: .541155159, z: .434345961}
+      rotation: {x: -3.09086232e-08, y: .707106829, z: .707106829, w: -3.09086232e-08}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.R_end
+      position: {x: -0, y: .347536683, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 3
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/FBX/infantry_flamer.fbx
+  uploadId: 225951

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     public const int MaximumQueueSize = 5;
 
     [Header("Production Options")]
-    [SerializeField] private List<UnitDefinition> producibleUnits = new();
+    [SerializeField] private List<UnitType> producibleUnitTypes = new();
 
     [Header("Spawn Search")]
     [SerializeField, Min(1)] private int initialSpawnDepth = 1;
@@ -33,6 +34,8 @@ public sealed class UnitProductionComponent : MonoBehaviour
     private BuildingBase building;
     private float productionElapsed;
     private bool removalHandled;
+
+    private readonly List<UnitDefinition> producibleUnits = new();
 
     // ---------------------------------------------------------------------
     // Public state
@@ -89,6 +92,9 @@ public sealed class UnitProductionComponent : MonoBehaviour
         }
 
         this.building = building;
+
+        ResolveProducibleUnits();
+
         productionElapsed = 0f;
         removalHandled = false;
     }
@@ -448,6 +454,50 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         resourceManager.AddMinerals(definition.Cost.Minerals);
         resourceManager.AddGas(definition.Cost.Gas);
+    }
+
+    // ---------------------------------------------------------------------
+    // Production Roster
+    // ---------------------------------------------------------------------
+
+    private void ResolveProducibleUnits()
+    {
+        producibleUnits.Clear();
+
+        FactionDefinition factionDefinition = building.OwnerFaction?.Definition;
+
+        if (factionDefinition == null)
+        {
+            Debug.LogError($"{name} cannot resolve producible units because the owning faction has no definition.");
+            return;
+        }
+
+        for (int i = 0; i < producibleUnitTypes.Count; i++)
+        {
+            UnitType unitType = producibleUnitTypes[i];
+            UnitDefinition definition = factionDefinition.GetUnitDefinition(unitType);
+
+            if (definition == null)
+            {
+                Debug.LogWarning($"{name}: faction '{factionDefinition.factionName}' has no unit definition for {unitType}.");
+                continue;
+            }
+
+            producibleUnits.Add(definition);
+        }
+    }
+
+    public UnitDefinition GetProducibleUnit(UnitType unitType)
+    {
+        for (int i = 0; i < producibleUnits.Count; i++)
+        {
+            UnitDefinition definition = producibleUnits[i];
+
+            if (definition != null && definition.Type == unitType)
+                return definition;
+        }
+
+        return null;
     }
 
     // ---------------------------------------------------------------------

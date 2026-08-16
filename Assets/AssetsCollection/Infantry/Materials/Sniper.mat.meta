@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a78f0975a2c5d2147975c0f31f244cee
+timeCreated: 1507205419
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Materials/Sniper.mat
+  uploadId: 225951

@@ -53,8 +53,8 @@ public sealed class CommandPanelController : MonoBehaviour
     [SerializeField] private BuildingDefinition barracksDefinition;
 
     [Header("Unit Definitions")]
-    [SerializeField] private UnitDefinition workerUnitDefinition;
-    [SerializeField] private UnitDefinition combatUnitDefinition;
+    //[SerializeField] private UnitDefinition workerUnitDefinition;
+    //[SerializeField] private UnitDefinition combatUnitDefinition;
 
     private Faction playerFaction;
     private GameContext gameContext;
@@ -343,7 +343,10 @@ public sealed class CommandPanelController : MonoBehaviour
     private void ShowCommandCenterCommands()
     {
         bool operational = CanOperateSelectedBuilding();
-        ConfigureGameplaySlot(TrainUnitSlot, "W", operational, CommandPanelAction.TrainUnit(workerUnitDefinition));
+
+        UnitDefinition workerDefinition = GetSelectedBuildingUnitDefinition(UnitType.Worker);
+
+        ConfigureGameplaySlot(TrainUnitSlot, "W", operational, CommandPanelAction.TrainUnit(workerDefinition));
         ConfigureDisabledSlot(UpgradeSlot, "U");
         ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
@@ -352,7 +355,10 @@ public sealed class CommandPanelController : MonoBehaviour
     private void ShowBarracksCommands()
     {
         bool operational = CanOperateSelectedBuilding();
-        ConfigureGameplaySlot(TrainUnitSlot, "C", operational, CommandPanelAction.TrainUnit(combatUnitDefinition));
+
+        UnitDefinition combatDefinition = GetSelectedBuildingUnitDefinition(UnitType.Combat);
+
+        ConfigureGameplaySlot(TrainUnitSlot, "C", operational, CommandPanelAction.TrainUnit(combatDefinition));
         ConfigureDisabledSlot(UpgradeSlot, "U");
         ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
@@ -458,6 +464,21 @@ public sealed class CommandPanelController : MonoBehaviour
     {
         BuildingBase building = gameContext.SelectedBuilding;
         return building != null && building.OwnerFaction == playerFaction && building.IsOperational && building.IsAlive;
+    }
+
+    private UnitDefinition GetSelectedBuildingUnitDefinition(UnitType unitType)
+    {
+        BuildingBase building = gameContext?.SelectedBuilding;
+
+        if (building == null)
+            return null;
+
+        UnitProductionComponent production = building.UnitProduction;
+
+        if (production == null)
+            return null;
+
+        return production.GetProducibleUnit(unitType);
     }
 
     // ---------------------------------------------------------------------

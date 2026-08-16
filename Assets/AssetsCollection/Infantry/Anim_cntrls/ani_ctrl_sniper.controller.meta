@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 994ef5e6a7ab5fa47b15ba04e24f5adf
+timeCreated: 1507209048
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Anim_cntrls/ani_ctrl_sniper.controller
+  uploadId: 225951

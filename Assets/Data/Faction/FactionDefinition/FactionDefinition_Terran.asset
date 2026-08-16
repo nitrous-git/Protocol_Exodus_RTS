@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1cfc02b6906fe9448daf883e6128efc, type: 3}
+  m_Name: FactionDefinition_Terran
+  m_EditorClassIdentifier: Assembly-CSharp::FactionDefinition
+  factionName: Faction Terran
+  factionColor: {r: 0.02745098, g: 0.69803923, b: 0, a: 1}
+  selectionRingColor: {r: 0.37254903, g: 0.50980395, b: 0.3764706, a: 0.7019608}
+  startingMinerals: 2000
+  startingGas: 2000
+  startingMaxSupply: 15
+  unitRoster:
+  - {fileID: 11400000, guid: 304feabee14809247ad10ee0adab9085, type: 2}
+  - {fileID: 11400000, guid: 16f327cc775da4d4bb66ea89dbbdfff4, type: 2}

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 91ca0d377f9be004aa932571afa648e4
+timeCreated: 1507209039
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Anim_cntrls/ani_ctrl_flamer.controller
+  uploadId: 225951

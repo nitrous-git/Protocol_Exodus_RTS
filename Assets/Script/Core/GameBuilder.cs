@@ -15,8 +15,8 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private FactionDefinition FactionC_Definition;
 
     [Header("Starting Units")]
-    [SerializeField] private UnitBase combatUnitPrefab;
-    [SerializeField] private int startingWorkerCount = 3;
+    //[SerializeField] private UnitBase combatUnitPrefab;
+    [SerializeField] private int startingCombatCount = 3;
     [SerializeField] private float startingUnitSpacing = 2f;
 
     public GameContext GameContext { get; private set; }
@@ -161,7 +161,9 @@ public class GameBuilder : MonoBehaviour
         if (faction == null || matchWorld == null)
             return;
 
-        if (combatUnitPrefab == null)
+        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+
+        if (combatDefinition.Prefab == null)
         {
             Debug.LogWarning("GameBuilder has no workerUnitPrefab assigned.");
             return;
@@ -170,12 +172,12 @@ public class GameBuilder : MonoBehaviour
         Vector3 origin = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
 
-        for (int i = 0; i < startingWorkerCount; i++)
+        for (int i = 0; i < startingCombatCount; i++)
         {
             Vector3 spawnPosition = origin + GetStartingUnitOffset(i);
 
             faction.UnitManager.SpawnUnit(
-                combatUnitPrefab,
+                combatDefinition.Prefab,
                 spawnPosition,
                 rotation,
                 matchWorld.UnitsRoot
