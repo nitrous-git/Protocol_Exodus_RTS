@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 842042457614f854d870c43522324729
+timeCreated: 1442929732
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 46588
+  packageName: Devil Mech
+  packageVersion: 2.0
+  assetPath: Assets/DevilMech/3D Models/Materials/devilMechTexture01.mat
+  uploadId: 83610

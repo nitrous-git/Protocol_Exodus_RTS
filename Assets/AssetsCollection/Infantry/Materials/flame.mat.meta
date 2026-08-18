@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 326cb3f9300db524fb7c9a85cc2aacf9
+timeCreated: 1507297769
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Materials/flame.mat
+  uploadId: 225951

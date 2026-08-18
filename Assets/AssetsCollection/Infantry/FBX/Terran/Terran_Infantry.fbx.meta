@@ -1,0 +1,1841 @@
+fileFormatVersion: 2
+guid: ec0d826e601eee7428e8e85ba79a5818
+ModelImporter:
+  serializedVersion: 24501
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: arm.L
+  - first:
+      1: 100002
+    second: arm.R
+  - first:
+      1: 100004
+    second: chest
+  - first:
+      1: 100006
+    second: elbow_target.L
+  - first:
+      1: 100008
+    second: elbow_target.L_end
+  - first:
+      1: 100010
+    second: elbow_target.R
+  - first:
+      1: 100012
+    second: elbow_target.R_end
+  - first:
+      1: 100014
+    second: foot.L
+  - first:
+      1: 100016
+    second: foot.R
+  - first:
+      1: 100018
+    second: forearm.L
+  - first:
+      1: 100020
+    second: forearm.R
+  - first:
+      1: 100022
+    second: gun
+  - first:
+      1: 100024
+    second: gunman
+  - first:
+      1: 100026
+    second: hand.L
+  - first:
+      1: 100028
+    second: hand.L_end
+  - first:
+      1: 100030
+    second: hand.R
+  - first:
+      1: 100032
+    second: hand_IK.L
+  - first:
+      1: 100034
+    second: hand_IK.L_end
+  - first:
+      1: 100036
+    second: hand_IK.R
+  - first:
+      1: 100038
+    second: hand_IK.R_end
+  - first:
+      1: 100040
+    second: head
+  - first:
+      1: 100042
+    second: head_end
+  - first:
+      1: 100044
+    second: hip
+  - first:
+      1: 100046
+    second: hip2.L
+  - first:
+      1: 100048
+    second: hip2.R
+  - first:
+      1: 100050
+    second: infantry_arma
+  - first:
+      1: 100052
+    second: //RootNode
+  - first:
+      1: 100054
+    second: knee_target.L
+  - first:
+      1: 100056
+    second: knee_target.L_end
+  - first:
+      1: 100058
+    second: knee_target.R
+  - first:
+      1: 100060
+    second: knee_target.R_end
+  - first:
+      1: 100062
+    second: leg_IK.L
+  - first:
+      1: 100064
+    second: leg_IK.L_end
+  - first:
+      1: 100066
+    second: leg_IK.R
+  - first:
+      1: 100068
+    second: leg_IK.R_end
+  - first:
+      1: 100070
+    second: neck
+  - first:
+      1: 100072
+    second: root_bone
+  - first:
+      1: 100074
+    second: shin.L
+  - first:
+      1: 100076
+    second: shin.R
+  - first:
+      1: 100078
+    second: shoulder.L
+  - first:
+      1: 100080
+    second: shoulder.R
+  - first:
+      1: 100082
+    second: shoulder_plate.L
+  - first:
+      1: 100084
+    second: shoulder_plate.L_end
+  - first:
+      1: 100086
+    second: shoulder_plate.R
+  - first:
+      1: 100088
+    second: shoulder_plate.R_end
+  - first:
+      1: 100090
+    second: spine
+  - first:
+      1: 100092
+    second: thigh.L
+  - first:
+      1: 100094
+    second: thigh.R
+  - first:
+      1: 100096
+    second: toe.L
+  - first:
+      1: 100098
+    second: toe.L_end
+  - first:
+      1: 100100
+    second: toe.R
+  - first:
+      1: 100102
+    second: toe.R_end
+  - first:
+      1: 100104
+    second: weapon
+  - first:
+      1: 100106
+    second: weapon_end
+  - first:
+      4: 400000
+    second: arm.L
+  - first:
+      4: 400002
+    second: arm.R
+  - first:
+      4: 400004
+    second: chest
+  - first:
+      4: 400006
+    second: elbow_target.L
+  - first:
+      4: 400008
+    second: elbow_target.L_end
+  - first:
+      4: 400010
+    second: elbow_target.R
+  - first:
+      4: 400012
+    second: elbow_target.R_end
+  - first:
+      4: 400014
+    second: foot.L
+  - first:
+      4: 400016
+    second: foot.R
+  - first:
+      4: 400018
+    second: forearm.L
+  - first:
+      4: 400020
+    second: forearm.R
+  - first:
+      4: 400022
+    second: gun
+  - first:
+      4: 400024
+    second: gunman
+  - first:
+      4: 400026
+    second: hand.L
+  - first:
+      4: 400028
+    second: hand.L_end
+  - first:
+      4: 400030
+    second: hand.R
+  - first:
+      4: 400032
+    second: hand_IK.L
+  - first:
+      4: 400034
+    second: hand_IK.L_end
+  - first:
+      4: 400036
+    second: hand_IK.R
+  - first:
+      4: 400038
+    second: hand_IK.R_end
+  - first:
+      4: 400040
+    second: head
+  - first:
+      4: 400042
+    second: head_end
+  - first:
+      4: 400044
+    second: hip
+  - first:
+      4: 400046
+    second: hip2.L
+  - first:
+      4: 400048
+    second: hip2.R
+  - first:
+      4: 400050
+    second: infantry_arma
+  - first:
+      4: 400052
+    second: //RootNode
+  - first:
+      4: 400054
+    second: knee_target.L
+  - first:
+      4: 400056
+    second: knee_target.L_end
+  - first:
+      4: 400058
+    second: knee_target.R
+  - first:
+      4: 400060
+    second: knee_target.R_end
+  - first:
+      4: 400062
+    second: leg_IK.L
+  - first:
+      4: 400064
+    second: leg_IK.L_end
+  - first:
+      4: 400066
+    second: leg_IK.R
+  - first:
+      4: 400068
+    second: leg_IK.R_end
+  - first:
+      4: 400070
+    second: neck
+  - first:
+      4: 400072
+    second: root_bone
+  - first:
+      4: 400074
+    second: shin.L
+  - first:
+      4: 400076
+    second: shin.R
+  - first:
+      4: 400078
+    second: shoulder.L
+  - first:
+      4: 400080
+    second: shoulder.R
+  - first:
+      4: 400082
+    second: shoulder_plate.L
+  - first:
+      4: 400084
+    second: shoulder_plate.L_end
+  - first:
+      4: 400086
+    second: shoulder_plate.R
+  - first:
+      4: 400088
+    second: shoulder_plate.R_end
+  - first:
+      4: 400090
+    second: spine
+  - first:
+      4: 400092
+    second: thigh.L
+  - first:
+      4: 400094
+    second: thigh.R
+  - first:
+      4: 400096
+    second: toe.L
+  - first:
+      4: 400098
+    second: toe.L_end
+  - first:
+      4: 400100
+    second: toe.R
+  - first:
+      4: 400102
+    second: toe.R_end
+  - first:
+      4: 400104
+    second: weapon
+  - first:
+      4: 400106
+    second: weapon_end
+  - first:
+      23: 2300000
+    second: gun
+  - first:
+      33: 3300000
+    second: gun
+  - first:
+      43: 4300000
+    second: gun
+  - first:
+      43: 4300002
+    second: gunman
+  - first:
+      74: 7400000
+    second: infantry_arma|-nayiux
+  - first:
+      74: 7400002
+    second: Death01
+  - first:
+      74: 7400004
+    second: Death02
+  - first:
+      74: 7400006
+    second: infantry_arma|flamer_idle
+  - first:
+      74: 7400008
+    second: infantry_arma|flamer_run
+  - first:
+      74: 7400010
+    second: infantry_arma|flamer_shoot
+  - first:
+      74: 7400012
+    second: infantry_arma|flamer_walk
+  - first:
+      74: 7400014
+    second: Idle
+  - first:
+      74: 7400016
+    second: Run
+  - first:
+      74: 7400018
+    second: Attack
+  - first:
+      74: 7400020
+    second: Walk
+  - first:
+      74: 7400022
+    second: infantry_arma|missiler_idle
+  - first:
+      74: 7400024
+    second: infantry_arma|missiler_run
+  - first:
+      74: 7400026
+    second: infantry_arma|missiler_shot
+  - first:
+      74: 7400028
+    second: infantry_arma|missiler_walk
+  - first:
+      74: 7400030
+    second: infantry_arma|nax
+  - first:
+      74: 7400032
+    second: infantry_arma|sniper_idle
+  - first:
+      74: 7400034
+    second: infantry_arma|sniper_run
+  - first:
+      74: 7400036
+    second: infantry_arma|sniper_shoot
+  - first:
+      74: 7400038
+    second: infantry_arma|sniper_walk
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: gunman
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+    searchTexturesGlobally: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: "\nClip 'infantry_arma|_death1' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'neck' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\t'hip2.L' is
+      inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|_death2' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.L'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|flamer_run' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.L'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|flamer_shoot' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'hip2.L' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\t'hip2.R' is inbetween humanoid transforms and has
+      rotation animation that will be discarded.\n\nClip 'infantry_arma|flamer_walk'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.L'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|gunman_run' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.L'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|gunman_shooting' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'neck' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'infantry_arma|gunman_walk' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'neck' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\t'hip2.L' is
+      inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|missiler_run' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'neck' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\t'hip2.L' is inbetween humanoid transforms and has
+      rotation animation that will be discarded.\n\t'hip2.R' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'infantry_arma|missiler_shot'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|missiler_walk' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'neck' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\t'hip2.L' is inbetween humanoid transforms and has
+      rotation animation that will be discarded.\n\t'hip2.R' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'infantry_arma|nax'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.L'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|sniper_run' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'neck'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.L'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'infantry_arma|sniper_shoot' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'neck' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'infantry_arma|sniper_walk' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'neck' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\t'hip2.L' is
+      inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'hip2.R'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Death01
+      takeName: infantry_arma|_death1
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 45
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: gunman
+        weight: 0
+      - path: infantry_arma
+        weight: 1
+      - path: infantry_arma/root_bone
+        weight: 1
+      - path: infantry_arma/root_bone/elbow_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/hip2.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/gun
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Death02
+      takeName: infantry_arma|_death2
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 54
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: gunman
+        weight: 0
+      - path: infantry_arma
+        weight: 1
+      - path: infantry_arma/root_bone
+        weight: 1
+      - path: infantry_arma/root_bone/elbow_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/hip2.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/gun
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle
+      takeName: infantry_arma|gunman_idle
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: gunman
+        weight: 0
+      - path: infantry_arma
+        weight: 1
+      - path: infantry_arma/root_bone
+        weight: 1
+      - path: infantry_arma/root_bone/elbow_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/hip2.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/gun
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Run
+      takeName: infantry_arma|gunman_run
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: gunman
+        weight: 0
+      - path: infantry_arma
+        weight: 1
+      - path: infantry_arma/root_bone
+        weight: 1
+      - path: infantry_arma/root_bone/elbow_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/hip2.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/gun
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Attack
+      takeName: infantry_arma|gunman_shooting
+      internalID: 0
+      firstFrame: 9
+      lastFrame: 34
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: gunman
+        weight: 0
+      - path: infantry_arma
+        weight: 1
+      - path: infantry_arma/root_bone
+        weight: 1
+      - path: infantry_arma/root_bone/elbow_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/hip2.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/gun
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: infantry_arma|gunman_walk
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 32
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: gunman
+        weight: 0
+      - path: infantry_arma
+        weight: 1
+      - path: infantry_arma/root_bone
+        weight: 1
+      - path: infantry_arma/root_bone/elbow_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/hip2.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/gun
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: infantry_arma/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R
+        weight: 0
+      - path: infantry_arma/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R
+        weight: 0
+      - path: infantry_arma/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    importUVs: -1
+    importVertexColors: 1
+    meshOptimizationFlags: -1
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+    calculateBlendshapeNormalsDeltaFromImportedNormals: 1
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human:
+    - boneName: hip
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.L
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.R
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.L
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.R
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.L
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.R
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: chest
+      humanName: Chest
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shoulder.L
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shoulder.R
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: arm.L
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: arm.R
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.L
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.R
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.L
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.R
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: toe.L
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: toe.R
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: infantry_gunman(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: gunman
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: infantry_arma
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: root_bone
+      parentName: 
+      position: {x: -0, y: 0.003585033, z: 0}
+      rotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
+      scale: {x: 1, y: 1, z: 1}
+    - name: hip
+      parentName: 
+      position: {x: -0.0003136596, y: 1.0499964, z: 0.0030887942}
+      rotation: {x: -0.005023345, y: 0.000012799222, z: -0.0009942953, w: 0.9999869}
+      scale: {x: 1.0000002, y: 0.99999994, z: 1}
+    - name: spine
+      parentName: 
+      position: {x: 9.5127455e-11, y: 0.15760843, z: -0.000000007460017}
+      rotation: {x: -0.0009903649, y: 0.99399614, z: 0.10941067, w: -0.00009261859}
+      scale: {x: 0.9999999, y: 1.0000004, z: 0.9999999}
+    - name: chest
+      parentName: 
+      position: {x: 5.6843415e-14, y: 0.20251524, z: -0.000000014900346}
+      rotation: {x: 0.092661574, y: -0.011884983, z: 0.004522377, w: 0.99561656}
+      scale: {x: 0.9999999, y: 0.9999999, z: 1.0000002}
+    - name: neck
+      parentName: 
+      position: {x: 0.0037609693, y: 0.16780543, z: -0.00008585373}
+      rotation: {x: -0.12477129, y: 0.011748845, z: 0.004095441, w: 0.9921075}
+      scale: {x: 0.9999998, y: 0.99999994, z: 0.99999976}
+    - name: head
+      parentName: 
+      position: {x: -0.00000003073364, y: 0.11566158, z: 0.00000001862645}
+      rotation: {x: -0.604712, y: 0.0059539955, z: -0.0056909434, w: 0.7964016}
+      scale: {x: 1, y: 1, z: 1}
+    - name: head_end
+      parentName: 
+      position: {x: -0, y: 0.1882291, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: shoulder.L
+      parentName: 
+      position: {x: 0.0037609693, y: 0.16780543, z: -0.00008585373}
+      rotation: {x: -0.56470746, y: -0.4167545, z: -0.54586935, w: 0.4576548}
+      scale: {x: 0.99999934, y: 0.9999994, z: 0.9999994}
+    - name: arm.L
+      parentName: 
+      position: {x: -0.00000009685754, y: 0.23775665, z: -0.00000031292436}
+      rotation: {x: -0.07951906, y: -0.37218708, z: -0.016762847, w: -0.92459315}
+      scale: {x: 1, y: 0.9999994, z: 1.0000002}
+    - name: forearm.L
+      parentName: 
+      position: {x: 0.000000009778886, y: 0.34626284, z: 0.00000004842877}
+      rotation: {x: -0.008435149, y: 0.6635532, z: -0.02771646, w: -0.74756795}
+      scale: {x: 0.99999964, y: 1.0000007, z: 0.99999994}
+    - name: hand.L
+      parentName: 
+      position: {x: -0.000000024214385, y: 0.31461176, z: 0.00000002980232}
+      rotation: {x: 0.0067766784, y: -0.3839466, z: 0.09644222, w: 0.9182799}
+      scale: {x: 0.99999964, y: 1.0000004, z: 0.99999976}
+    - name: hand.L_end
+      parentName: 
+      position: {x: -0, y: 0.20237686, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: shoulder_plate.L
+      parentName: 
+      position: {x: -0.00000004470348, y: 0.23775662, z: -0.0000002030283}
+      rotation: {x: 0.63102, y: -0.009729921, z: -0.014280451, w: 0.775574}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1}
+    - name: shoulder_plate.L_end
+      parentName: 
+      position: {x: -0, y: 0.2102153, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: shoulder.R
+      parentName: 
+      position: {x: 0.000000011350493, y: 0.16784753, z: 0.000000019557772}
+      rotation: {x: -0.5473947, y: 0.43339452, z: 0.553453, w: 0.4541123}
+      scale: {x: 0.9999999, y: 0.9999999, z: 0.99999964}
+    - name: arm.R
+      parentName: 
+      position: {x: -0.00000001490116, y: 0.23775662, z: -0.00000003352761}
+      rotation: {x: 0.07951852, y: -0.3721872, z: -0.016762642, w: 0.92459315}
+      scale: {x: 1, y: 0.99999976, z: 1.0000002}
+    - name: forearm.R
+      parentName: 
+      position: {x: -0, y: 0.34626284, z: -0.00000001490116}
+      rotation: {x: 0.008435339, y: 0.66355306, z: -0.027716935, w: 0.74756813}
+      scale: {x: 0.9999994, y: 1, z: 0.99999964}
+    - name: hand.R
+      parentName: 
+      position: {x: 0.000000071362585, y: 0.31461167, z: -0.000000020489095}
+      rotation: {x: 0.10846173, y: 0.3919456, z: 0.09648251, w: 0.9084634}
+      scale: {x: 1, y: 1.0000002, z: 0.99999976}
+    - name: weapon
+      parentName: 
+      position: {x: 0.047899608, y: 0.10602756, z: 0.031970154}
+      rotation: {x: 0.89726937, y: -0.41607305, z: 0.05182362, w: 0.13822152}
+      scale: {x: 0.9999999, y: 1.0000002, z: 1.0000001}
+    - name: gun
+      parentName: 
+      position: {x: 0.00000001490116, y: -0.00000008940696, z: 0.00000005960464}
+      rotation: {x: -0.000000022351742, y: 1, z: -0.000000007450581, w: 0.00000019470718}
+      scale: {x: 1, y: 1, z: 1}
+    - name: weapon_end
+      parentName: 
+      position: {x: -0, y: 0.29999998, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: shoulder_plate.R
+      parentName: 
+      position: {x: 0.00000000745058, y: 0.23775662, z: -0.00000016763805}
+      rotation: {x: -0.63101965, y: -0.009729824, z: -0.014280347, w: -0.7755743}
+      scale: {x: 1, y: 1, z: 1}
+    - name: shoulder_plate.R_end
+      parentName: 
+      position: {x: -0, y: 0.2102153, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: hip2.L
+      parentName: 
+      position: {x: -0.01135503, y: -0.000022616683, z: -0.00000041153416}
+      rotation: {x: -0.3792858, y: 0.20225483, z: 0.79608756, w: 0.42600462}
+      scale: {x: 0.9999999, y: 0.9999995, z: 0.99999976}
+    - name: thigh.L
+      parentName: 
+      position: {x: 0.0000000745058, y: 0.11123767, z: -0.0000000372529}
+      rotation: {x: -0.3843586, y: 0.31950074, z: 0.19229136, w: 0.84451866}
+      scale: {x: 0.9999999, y: 1.0000001, z: 0.99999976}
+    - name: shin.L
+      parentName: 
+      position: {x: 0.000000013038515, y: 0.5031357, z: -0.000000026193446}
+      rotation: {x: -0.05718961, y: -0.6938842, z: 0.14283067, w: -0.7034583}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1}
+    - name: foot.L
+      parentName: 
+      position: {x: 0.0000000032596288, y: 0.46093482, z: 0.00000003073364}
+      rotation: {x: -0.037696347, y: 0.6856435, z: -0.72679853, w: -0.01535747}
+      scale: {x: 0.9999999, y: 1, z: 1.0000002}
+    - name: toe.L
+      parentName: 
+      position: {x: -0.000000024680046, y: 0.076048605, z: -0.0000000020954756}
+      rotation: {x: 0.026674503, y: 0.009018404, z: 0.025692705, w: 0.9992733}
+      scale: {x: 1.0000001, y: 1.0000001, z: 0.9999998}
+    - name: toe.L_end
+      parentName: 
+      position: {x: -0, y: 0.1519368, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: hip2.R
+      parentName: 
+      position: {x: 0.01198182, y: 0.000023787234, z: 0.00000041896593}
+      rotation: {x: 0.37885463, y: 0.2030238, z: 0.7952524, w: -0.42757955}
+      scale: {x: 1, y: 0.9999999, z: 0.99999976}
+    - name: thigh.R
+      parentName: 
+      position: {x: 0.00000006705522, y: 0.111237705, z: -0.00000001117587}
+      rotation: {x: -0.3843582, y: -0.31950068, z: -0.1922913, w: 0.8445189}
+      scale: {x: 1, y: 0.9999998, z: 0.99999964}
+    - name: shin.R
+      parentName: 
+      position: {x: -0.000000009313225, y: 0.5031356, z: 0.0000000128056845}
+      rotation: {x: 0.057189383, y: -0.69388413, z: 0.14283104, w: 0.7034583}
+      scale: {x: 0.99999994, y: 1.0000004, z: 1.0000001}
+    - name: foot.R
+      parentName: 
+      position: {x: -0.000000005587935, y: 0.4609348, z: 0.000000009313225}
+      rotation: {x: 0.03769657, y: 0.6856436, z: -0.7267985, w: 0.01535758}
+      scale: {x: 0.9999991, y: 1.0000002, z: 0.9999998}
+    - name: toe.R
+      parentName: 
+      position: {x: -0.000000011292285, y: 0.07604858, z: -0.000000004423782}
+      rotation: {x: 0.026674565, y: -0.00901845, z: -0.025692688, w: 0.9992733}
+      scale: {x: 1.0000001, y: 1.0000001, z: 1.0000001}
+    - name: toe.R_end
+      parentName: 
+      position: {x: -0, y: 0.1519368, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: hand_IK.L
+      parentName: 
+      position: {x: -0.12853746, y: 0.8972742, z: 0.07893861}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1.0000001}
+    - name: hand_IK.L_end
+      parentName: 
+      position: {x: -0, y: 0.21399893, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: hand_IK.R
+      parentName: 
+      position: {x: 0.30259946, y: 1.0789286, z: -0.03437786}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1.0000001}
+    - name: hand_IK.R_end
+      parentName: 
+      position: {x: -0, y: 0.21399893, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: elbow_target.L
+      parentName: 
+      position: {x: -0.3104619, y: 0.9813165, z: -0.3414219}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: elbow_target.L_end
+      parentName: 
+      position: {x: -0, y: 0.30091563, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: leg_IK.L
+      parentName: 
+      position: {x: -0.14735231, y: 0.06443104, z: -0.4035561}
+      rotation: {x: -0.70036334, y: 0, z: -0, w: 0.7137866}
+      scale: {x: 0.99999994, y: 0.9999999, z: 0.99999994}
+    - name: leg_IK.L_end
+      parentName: 
+      position: {x: -0, y: 0.30708906, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: knee_target.L
+      parentName: 
+      position: {x: -0.15325528, y: 0.5162553, z: 0.43434596}
+      rotation: {x: -0.000000030908623, y: 0.7071068, z: 0.7071068, w: -0.000000030908623}
+      scale: {x: 1, y: 1, z: 1}
+    - name: knee_target.L_end
+      parentName: 
+      position: {x: -0, y: 0.34753668, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: elbow_target.R
+      parentName: 
+      position: {x: 0.37998825, y: 1.1353323, z: -0.4534107}
+      rotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+      scale: {x: 1, y: 1, z: 1}
+    - name: elbow_target.R_end
+      parentName: 
+      position: {x: -0, y: 0.30091563, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: leg_IK.R
+      parentName: 
+      position: {x: 0.14735231, y: 0.064431034, z: -0.10774633}
+      rotation: {x: -0.70036334, y: 0, z: -0, w: 0.7137866}
+      scale: {x: 0.99999994, y: 1, z: 1}
+    - name: leg_IK.R_end
+      parentName: 
+      position: {x: -0, y: 0.30708906, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: knee_target.R
+      parentName: 
+      position: {x: 0.041206125, y: 0.52559274, z: 0.43434596}
+      rotation: {x: -0.000000030908623, y: 0.7071068, z: 0.7071068, w: -0.000000030908623}
+      scale: {x: 1, y: 1, z: 1}
+    - name: knee_target.R_end
+      parentName: 
+      position: {x: -0, y: 0.34753668, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 3
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

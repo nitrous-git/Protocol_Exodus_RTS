@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f1c0e384e79f35f439620ef95b55799a
+timeCreated: 1507444260
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Materials/muzzle_flash.mat
+  uploadId: 225951

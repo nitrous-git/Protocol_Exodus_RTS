@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1cfc02b6906fe9448daf883e6128efc, type: 3}
+  m_Name: FactionDefinition_Terran
+  m_EditorClassIdentifier: Assembly-CSharp::FactionDefinition
+  factionName: Faction Terran
+  startingMinerals: 2000
+  startingGas: 2000
+  startingMaxSupply: 15
+  unitRoster:
+  - {fileID: 11400000, guid: 304feabee14809247ad10ee0adab9085, type: 2}
+  - {fileID: 11400000, guid: 16f327cc775da4d4bb66ea89dbbdfff4, type: 2}
+  colorVariants:
+  - colorType: 0
+    displayName: Red
+    factionColor: {r: 1, g: 0.15566039, b: 0.15566039, a: 0}
+    selectionRingColor: {r: 0.7924528, g: 0.16073336, b: 0.16073336, a: 0.6509804}
+  - colorType: 2
+    displayName: Green
+    factionColor: {r: 0.14509805, g: 0.8980392, b: 0.11372549, a: 0}
+    selectionRingColor: {r: 0.20811671, g: 0.6981132, b: 0.18770024, a: 0.69411767}
+  - colorType: 1
+    displayName: Blue
+    factionColor: {r: 0.03564434, g: 0.08824494, b: 0.8396226, a: 0}
+    selectionRingColor: {r: 0.13866144, g: 0.17815635, b: 0.7169812, a: 0.6862745}

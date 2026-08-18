@@ -167,7 +167,7 @@ public sealed class SelectionPanelController : MonoBehaviour
             }
         }
 
-        //infoBuilder.Append("State : ").AppendLine(unit.CurrentStateName);
+        infoBuilder.Append("State : ").AppendLine(unit.CurrentStateName);
 
         ApplyText(displayName, infoBuilder.ToString());
     }

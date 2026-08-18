@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 12b87e2ad90207d4993564b796a5c947
+timeCreated: 1442953374
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 46588
+  packageName: Devil Mech
+  packageVersion: 2.0
+  assetPath: Assets/DevilMech/3D Models/Materials/devilMechGreenCamoTexture01.mat
+  uploadId: 83610

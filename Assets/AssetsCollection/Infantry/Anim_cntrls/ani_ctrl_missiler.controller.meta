@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d57945a34897be741b61dc3c5a7eb6b6
+timeCreated: 1507209004
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Anim_cntrls/ani_ctrl_missiler.controller
+  uploadId: 225951

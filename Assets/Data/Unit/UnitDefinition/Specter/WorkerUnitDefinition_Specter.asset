@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f4e02a934297f3419e52e3b94a4ef31, type: 3}
+  m_Name: WorkerUnitDefinition_Specter
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
+  unitType: 0
+  displayName: Worker Drone
+  icon: {fileID: 21300000, guid: a29a59460ff911a40b521e29b11da7d1, type: 3}
+  prefab: {fileID: 7697506017048367036, guid: 1f666ff558f45a749862388a73fffc05, type: 3}
+  cost:
+    minerals: 50
+    gas: 0
+    supply: 1
+  productionDuration: 2
+  maxHealth: 100
+  moveSpeed: 4
+  visionRange: 12
+  canAttack: 0
+  attackRange: 7
+  attackDamage: 10
+  attackCooldown: 1
+  selectionRadius: 0.5
+  navigationRadius: 0.55

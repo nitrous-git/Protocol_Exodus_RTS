@@ -10,13 +10,12 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private MatchUIController matchUI;
 
     [Header("Faction Definitions")]
-    [SerializeField] private FactionDefinition FactionA_Definition;
-    [SerializeField] private FactionDefinition FactionB_Definition;
-    [SerializeField] private FactionDefinition FactionC_Definition;
+    [SerializeField] private FactionDefinition FactionTerran_Definition;
+    [SerializeField] private FactionDefinition FactionSpecter_Definition;
 
     [Header("Starting Units")]
-    [SerializeField] private UnitBase combatUnitPrefab;
-    [SerializeField] private int startingWorkerCount = 3;
+    //[SerializeField] private UnitBase combatUnitPrefab;
+    [SerializeField] private int startingCombatCount = 3;
     [SerializeField] private float startingUnitSpacing = 2f;
 
     public GameContext GameContext { get; private set; }
@@ -80,13 +79,13 @@ public class GameBuilder : MonoBehaviour
         // Controller
         PlayerFactionController playerFactionController = new();
 
-        Faction playerFaction = BuildFaction(FactionA_Definition, playerFactionController);
+        Faction playerFaction = BuildFaction(FactionTerran_Definition, FactionColorType.Blue, playerFactionController);
         SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
 
-        Faction aiFaction01 = BuildFaction(FactionB_Definition, new AIFactionController());
+        Faction aiFaction01 = BuildFaction(FactionTerran_Definition, FactionColorType.Green, new AIFactionController());
         SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
 
-        Faction aiFaction02 = BuildFaction(FactionC_Definition, new AIFactionController());
+        Faction aiFaction02 = BuildFaction(FactionTerran_Definition, FactionColorType.Red, new AIFactionController());
         SpawnStartingUnits(aiFaction02, matchWorld.FactionSpawnPoints[2]);
 
         FactionManager.AddFaction(playerFaction);
@@ -113,7 +112,7 @@ public class GameBuilder : MonoBehaviour
         );
     }
 
-    private Faction BuildFaction(FactionDefinition definition, IFactionController controller)
+    private Faction BuildFaction(FactionDefinition definition, FactionColorType color, IFactionController controller)
     {
         UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService, matchWorld.UnitsRoot);
         BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot); // we can evetually remove TerrainGrid and simply get it from the GameContext
@@ -121,6 +120,7 @@ public class GameBuilder : MonoBehaviour
 
         return new Faction(
             definition,
+            color,
             controller,
             unitManager,
             buildingManager,
@@ -161,7 +161,9 @@ public class GameBuilder : MonoBehaviour
         if (faction == null || matchWorld == null)
             return;
 
-        if (combatUnitPrefab == null)
+        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+
+        if (combatDefinition.Prefab == null)
         {
             Debug.LogWarning("GameBuilder has no workerUnitPrefab assigned.");
             return;
@@ -170,12 +172,12 @@ public class GameBuilder : MonoBehaviour
         Vector3 origin = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
 
-        for (int i = 0; i < startingWorkerCount; i++)
+        for (int i = 0; i < startingCombatCount; i++)
         {
             Vector3 spawnPosition = origin + GetStartingUnitOffset(i);
 
             faction.UnitManager.SpawnUnit(
-                combatUnitPrefab,
+                combatDefinition.Prefab,
                 spawnPosition,
                 rotation,
                 matchWorld.UnitsRoot

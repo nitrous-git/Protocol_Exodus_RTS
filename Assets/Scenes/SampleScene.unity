@@ -4229,11 +4229,9 @@ MonoBehaviour:
   gameLoop: {fileID: 1551415267}
   matchWorld: {fileID: 1559407554}
   matchUI: {fileID: 1808596899}
-  FactionA_Definition: {fileID: 11400000, guid: 02096f93430aee843bc22e6ffc75c685, type: 2}
-  FactionB_Definition: {fileID: 11400000, guid: e3acd9b9c4d96fa46943014c5ba01390, type: 2}
-  FactionC_Definition: {fileID: 11400000, guid: f7bfc0e744381e2408d4229ff5c91076, type: 2}
-  combatUnitPrefab: {fileID: 8320676107144926392, guid: 1c6565437eecd7940a89098568aa5d20, type: 3}
-  startingWorkerCount: 16
+  FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
+  FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
+  startingCombatCount: 8
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:
@@ -4298,8 +4296,6 @@ MonoBehaviour:
   commandCenterDefinition: {fileID: 11400000, guid: 18613a203f32f36499b4a2fbff3dc2cc, type: 2}
   supplyDepotDefinition: {fileID: 11400000, guid: fa6c1f9ea4d343643ab36b0432a33b8f, type: 2}
   barracksDefinition: {fileID: 11400000, guid: b429fb98eec60444f9e1767b7f17df26, type: 2}
-  workerUnitDefinition: {fileID: 11400000, guid: d285b029ffc3a594bbf483c809d149d0, type: 2}
-  combatUnitDefinition: {fileID: 11400000, guid: 28ab043df6286034e90c852fe6012e3f, type: 2}
 --- !u!1001 &1794528526
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4991,7 +4987,7 @@ Transform:
   m_GameObject: {fileID: 1989332473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 62.8, y: 0, z: 100.71}
+  m_LocalPosition: {x: 49.07, y: 0, z: 118.56}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

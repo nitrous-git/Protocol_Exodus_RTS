@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a873d0af80b706e4ea80b5af81259547
+timeCreated: 1507442731
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Prefabs/Weapons/Rocket.prefab
+  uploadId: 225951

@@ -367,8 +367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b459ecc49bc564ab03c2954a508a14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitProductionComponent
-  producibleUnits:
-  - {fileID: 11400000, guid: d285b029ffc3a594bbf483c809d149d0, type: 2}
+  producibleUnitTypes: 00000000
   initialSpawnDepth: 1
   maximumExtraSpawnDepth: 4
   spawnOpennessRadius: 2

@@ -1,0 +1,1584 @@
+fileFormatVersion: 2
+guid: b7ea2ae2ccdf86548907ab38206f7d66
+timeCreated: 1507291916
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: arm.L
+    100002: arm.R
+    100004: chest
+    100006: elbow_target.L
+    100008: elbow_target.L_end
+    100010: elbow_target.R
+    100012: elbow_target.R_end
+    100014: foot.L
+    100016: foot.R
+    100018: forearm.L
+    100020: forearm.R
+    100022: hand.L
+    100024: hand.L_end
+    100026: hand.R
+    100028: hand_IK.L
+    100030: hand_IK.L_end
+    100032: hand_IK.R
+    100034: hand_IK.R_end
+    100036: head
+    100038: head_end
+    100040: hip
+    100042: hip2.L
+    100044: hip2.R
+    100046: //RootNode
+    100048: knee_target.L
+    100050: knee_target.L_end
+    100052: knee_target.R
+    100054: knee_target.R_end
+    100056: launcher
+    100058: leg_IK.L
+    100060: leg_IK.L_end
+    100062: leg_IK.R
+    100064: leg_IK.R_end
+    100066: missile
+    100068: Missiler_armature
+    100070: neck
+    100072: root_bone
+    100074: shin.L
+    100076: shin.R
+    100078: shoulder.L
+    100080: shoulder.R
+    100082: shoulder_plate.L
+    100084: shoulder_plate.L_end
+    100086: shoulder_plate.R
+    100088: shoulder_plate.R_end
+    100090: spine
+    100092: thigh.L
+    100094: thigh.R
+    100096: toe.L
+    100098: toe.L_end
+    100100: toe.R
+    100102: toe.R_end
+    100104: weapon
+    100106: weapon_end
+    400000: arm.L
+    400002: arm.R
+    400004: chest
+    400006: elbow_target.L
+    400008: elbow_target.L_end
+    400010: elbow_target.R
+    400012: elbow_target.R_end
+    400014: foot.L
+    400016: foot.R
+    400018: forearm.L
+    400020: forearm.R
+    400022: hand.L
+    400024: hand.L_end
+    400026: hand.R
+    400028: hand_IK.L
+    400030: hand_IK.L_end
+    400032: hand_IK.R
+    400034: hand_IK.R_end
+    400036: head
+    400038: head_end
+    400040: hip
+    400042: hip2.L
+    400044: hip2.R
+    400046: //RootNode
+    400048: knee_target.L
+    400050: knee_target.L_end
+    400052: knee_target.R
+    400054: knee_target.R_end
+    400056: launcher
+    400058: leg_IK.L
+    400060: leg_IK.L_end
+    400062: leg_IK.R
+    400064: leg_IK.R_end
+    400066: missile
+    400068: Missiler_armature
+    400070: neck
+    400072: root_bone
+    400074: shin.L
+    400076: shin.R
+    400078: shoulder.L
+    400080: shoulder.R
+    400082: shoulder_plate.L
+    400084: shoulder_plate.L_end
+    400086: shoulder_plate.R
+    400088: shoulder_plate.R_end
+    400090: spine
+    400092: thigh.L
+    400094: thigh.R
+    400096: toe.L
+    400098: toe.L_end
+    400100: toe.R
+    400102: toe.R_end
+    400104: weapon
+    400106: weapon_end
+    2300000: launcher
+    3300000: launcher
+    4300000: launcher
+    4300002: missile
+    7400000: Missiler_armature|-nayiux
+    7400002: Missiler_armature|_death1
+    7400004: Missiler_armature|_death2
+    7400006: Missiler_armature|flamer_idle
+    7400008: Missiler_armature|flamer_run
+    7400010: Missiler_armature|flamer_shoot
+    7400012: Missiler_armature|flamer_walk
+    7400014: Missiler_armature|gunman_idle
+    7400016: Missiler_armature|gunman_run
+    7400018: Missiler_armature|gunman_shooting
+    7400020: Missiler_armature|gunman_walk
+    7400022: Missiler_armature|missiler_idle
+    7400024: Missiler_armature|missiler_run
+    7400026: Missiler_armature|missiler_shot
+    7400028: Missiler_armature|missiler_walk
+    7400030: Missiler_armature|nax
+    7400032: Missiler_armature|sniper_idle
+    7400034: Missiler_armature|sniper_run
+    7400036: Missiler_armature|sniper_shoot
+    7400038: Missiler_armature|sniper_walk
+    9500000: //RootNode
+    13700000: missile
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 'MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+      MuscleClip ''infantry_missiler'' conversion warning:
+      ''Missiler_armature/root_bone/hip/hip2.L'' is between humanoid transforms and
+      has rotation animation. This might lower retargeting quality.
+
+
+      MuscleClip
+      ''infantry_missiler'' conversion warning: ''Missiler_armature/root_bone/hip/hip2.R''
+      is between humanoid transforms and has rotation animation. This might lower
+      retargeting quality.
+
+
+'
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 3
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Missiler_armature|_death1
+      takeName: Missiler_armature|_death1
+      firstFrame: 0
+      lastFrame: 45
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: missile
+        weight: 0
+      - path: Missiler_armature
+        weight: 1
+      - path: Missiler_armature/root_bone
+        weight: 1
+      - path: Missiler_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/launcher
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Missiler_armature|_death2
+      takeName: Missiler_armature|_death2
+      firstFrame: 0
+      lastFrame: 54
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: missile
+        weight: 0
+      - path: Missiler_armature
+        weight: 1
+      - path: Missiler_armature/root_bone
+        weight: 1
+      - path: Missiler_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/launcher
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Missiler_armature|missiler_idle
+      takeName: Missiler_armature|missiler_idle
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: missile
+        weight: 0
+      - path: Missiler_armature
+        weight: 1
+      - path: Missiler_armature/root_bone
+        weight: 1
+      - path: Missiler_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/launcher
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Missiler_armature|missiler_run
+      takeName: Missiler_armature|missiler_run
+      firstFrame: 0
+      lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: missile
+        weight: 0
+      - path: Missiler_armature
+        weight: 1
+      - path: Missiler_armature/root_bone
+        weight: 1
+      - path: Missiler_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/launcher
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Missiler_armature|missiler_shot
+      takeName: Missiler_armature|missiler_shot
+      firstFrame: 0
+      lastFrame: 26
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: missile
+        weight: 0
+      - path: Missiler_armature
+        weight: 1
+      - path: Missiler_armature/root_bone
+        weight: 1
+      - path: Missiler_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/launcher
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Missiler_armature|missiler_walk
+      takeName: Missiler_armature|missiler_walk
+      firstFrame: 0
+      lastFrame: 32
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: missile
+        weight: 0
+      - path: Missiler_armature
+        weight: 1
+      - path: Missiler_armature/root_bone
+        weight: 1
+      - path: Missiler_armature/root_bone/elbow_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.L/elbow_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/elbow_target.R/elbow_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.L/hand_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hand_IK.R/hand_IK.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.L/thigh.L/shin.L/foot.L/toe.L/toe.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/hip2.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/hip2.R/thigh.R/shin.R/foot.R/toe.R/toe.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/neck/head/head_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/arm.L/forearm.L/hand.L/hand.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.L/shoulder_plate.L/shoulder_plate.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R
+        weight: 1
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/launcher
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/arm.R/forearm.R/hand.R/weapon/weapon_end
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R
+        weight: 0
+      - path: Missiler_armature/root_bone/hip/spine/chest/shoulder.R/shoulder_plate.R/shoulder_plate.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.L/knee_target.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R
+        weight: 0
+      - path: Missiler_armature/root_bone/knee_target.R/knee_target.R_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.L/leg_IK.L_end
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R
+        weight: 0
+      - path: Missiler_armature/root_bone/leg_IK.R/leg_IK.R_end
+        weight: 0
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human:
+    - boneName: hip
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.L
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: -60, y: -60, z: -90}
+        max: {x: 60, y: 60, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: thigh.R
+      humanName: RightUpperLeg
+      limit:
+        min: {x: -60, y: -60, z: -90}
+        max: {x: 60, y: 60, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.L
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shin.R
+      humanName: RightLowerLeg
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.L
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: -30, z: -50}
+        max: {x: 0, y: 30, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: foot.R
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: -30, z: -50}
+        max: {x: 0, y: 30, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: spine
+      humanName: Spine
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: chest
+      humanName: Chest
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: neck
+      humanName: Neck
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: head
+      humanName: Head
+      limit:
+        min: {x: -40, y: -40, z: -40}
+        max: {x: 40, y: 40, z: 40}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: shoulder.L
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: -37.3972549, z: -15}
+        max: {x: 0, y: 78.9041061, z: 30}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 1
+    - boneName: shoulder.R
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: -15, z: -15}
+        max: {x: 0, y: 15, z: 30}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: arm.L
+      humanName: LeftUpperArm
+      limit:
+        min: {x: -120.821907, y: -24.6575317, z: -29.5890274}
+        max: {x: 78.9041061, y: 83.8356171, z: 78.9041214}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 1
+    - boneName: arm.R
+      humanName: RightUpperArm
+      limit:
+        min: {x: -90, y: -100, z: -60}
+        max: {x: 90, y: 100, z: 100}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: forearm.L
+      humanName: LeftLowerArm
+      limit:
+        min: {x: -2.46575928, y: 0, z: -47.9452057}
+        max: {x: 49.3150787, y: 0, z: 81.3698273}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 1
+    - boneName: forearm.R
+      humanName: RightLowerArm
+      limit:
+        min: {x: -90, y: 0, z: -80}
+        max: {x: 90, y: 0, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.L
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: -40, z: -80}
+        max: {x: 0, y: 40, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: hand.R
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: -40, z: -80}
+        max: {x: 0, y: 40, z: 80}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: toe.L
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: -50}
+        max: {x: 0, y: 0, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: toe.R
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: -50}
+        max: {x: 0, y: 0, z: 50}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: infantry_missiler(Clone)
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: missile
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: Missiler_armature
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106709}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: root_bone
+      position: {x: -0, y: .00358503289, z: 0}
+      rotation: {x: .707106829, y: 0, z: 0, w: .707106709}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.L
+      position: {x: -.796040118, y: .856391311, z: .139849111}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.L_end
+      position: {x: -0, y: .300915629, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.R
+      position: {x: .499472618, y: 1.14256895, z: -.457108438}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: elbow_target.R_end
+      position: {x: -0, y: .300915629, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hand_IK.L
+      position: {x: .223422572, y: 1.4731555, z: .136840478}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1.00000012}
+      transformModified: 1
+    - name: hand_IK.L_end
+      position: {x: -0, y: .213998929, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hand_IK.R
+      position: {x: .225743458, y: 1.37163579, z: -.0792365372}
+      rotation: {x: -.707106829, y: 0, z: -0, w: .707106829}
+      scale: {x: 1, y: 1, z: 1.00000012}
+      transformModified: 1
+    - name: hand_IK.R_end
+      position: {x: -0, y: .213998929, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hip
+      position: {x: -.00386861246, y: 1.04999673, z: .00308877928}
+      rotation: {x: -.00502334489, y: 1.27992216e-05, z: -.000994295347, w: .999986887}
+      scale: {x: 1.00000024, y: .99999994, z: 1}
+      transformModified: 1
+    - name: hip2.L
+      position: {x: -.0113550304, y: -2.25878684e-05, z: -4.00210041e-07}
+      rotation: {x: -.379285812, y: .202254832, z: .796087563, w: .426004618}
+      scale: {x: .999999881, y: .999999523, z: .999999762}
+      transformModified: 1
+    - name: thigh.L
+      position: {x: 7.45058015e-09, y: .111237757, z: -1.15483992e-07}
+      rotation: {x: -.384358615, y: .319500744, z: .192291364, w: .844518661}
+      scale: {x: .99999994, y: 1.00000036, z: .999999881}
+      transformModified: 1
+    - name: shin.L
+      position: {x: -4.65661243e-09, y: .503135741, z: -1.21071926e-08}
+      rotation: {x: -.0571896099, y: -.693884194, z: .14283067, w: -.703458309}
+      scale: {x: .999999702, y: 1, z: 1.00000024}
+      transformModified: 1
+    - name: foot.L
+      position: {x: 1.95577723e-08, y: .460934877, z: 2.6309861e-08}
+      rotation: {x: -.0376963504, y: .685643554, z: -.726798594, w: -.0153574711}
+      scale: {x: .999999344, y: .999999404, z: .99999994}
+      transformModified: 1
+    - name: toe.L
+      position: {x: -6.05359629e-09, y: .076048553, z: -1.62981439e-09}
+      rotation: {x: .0266745035, y: .00901840441, z: .0256927051, w: .9992733}
+      scale: {x: 1.00000048, y: 1.00000024, z: 1}
+      transformModified: 1
+    - name: toe.L_end
+      position: {x: -0, y: .151936799, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: hip2.R
+      position: {x: .0119818188, y: 2.38160483e-05, z: 4.30290015e-07}
+      rotation: {x: .378854632, y: .203023806, z: .795252383, w: -.427579552}
+      scale: {x: 1, y: .999999881, z: .999999762}
+      transformModified: 1
+    - name: thigh.R
+      position: {x: 7.45057989e-08, y: .111237831, z: -1.117587e-08}
+      rotation: {x: -.384358197, y: -.319500685, z: -.192291304, w: .8445189}
+      scale: {x: 1, y: 1, z: .999999642}
+      transformModified: 1
+    - name: shin.R
+      position: {x: 2.60770303e-08, y: .503135622, z: -4.65661243e-09}
+      rotation: {x: .0571893826, y: -.693884134, z: .142831042, w: .703458309}
+      scale: {x: 1.00000012, y: 1.00000012, z: 1.00000024}
+      transformModified: 1
+    - name: foot.R
+      position: {x: 1.76951271e-08, y: .460934818, z: -3.72529008e-09}
+      rotation: {x: .0376965702, y: .685643613, z: -.726798475, w: .01535758}
+      scale: {x: .999999285, y: 1.0000006, z: .999999821}
+      transformModified: 1
+    - name: toe.R
+      position: {x: -9.31322486e-09, y: .0760485753, z: -3.49245943e-09}
+      rotation: {x: .0266745649, y: -.00901845004, z: -.0256926883, w: .9992733}
+      scale: {x: 1.00000036, y: 1.00000012, z: 1.00000024}
+      transformModified: 1
+    - name: toe.R_end
+      position: {x: -0, y: .151936799, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: spine
+      position: {x: -5.27506892e-11, y: .157608524, z: 3.86410148e-09}
+      rotation: {x: -.000990364933, y: .993996143, z: .109410673, w: -9.26185894e-05}
+      scale: {x: .999999642, y: 1.00000024, z: .999999821}
+      transformModified: 1
+    - name: chest
+      position: {x: 1.19086954e-11, y: .202515379, z: -7.70143949e-09}
+      rotation: {x: .0926615745, y: -.0118849827, z: .00452237716, w: .995616555}
+      scale: {x: 1.00000024, y: .999999762, z: 1.0000006}
+      transformModified: 1
+    - name: neck
+      position: {x: .00376094761, y: .167805374, z: -8.586677e-05}
+      rotation: {x: -.12477129, y: .0117488448, z: .0040954412, w: .992107511}
+      scale: {x: .999999821, y: .999999881, z: .999999821}
+      transformModified: 1
+    - name: head
+      position: {x: -3.72529008e-09, y: .11566177, z: 9.31322519e-10}
+      rotation: {x: -.604712009, y: .00595399551, z: -.00569094345, w: .79640162}
+      scale: {x: .99999994, y: 1, z: 1.00000036}
+      transformModified: 1
+    - name: head_end
+      position: {x: -0, y: .188229099, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder.L
+      position: {x: .00376094761, y: .167805374, z: -8.586677e-05}
+      rotation: {x: -.564707458, y: -.416754514, z: -.54586935, w: .457654804}
+      scale: {x: .999999166, y: .999999404, z: .999999762}
+      transformModified: 1
+    - name: arm.L
+      position: {x: -5.21540606e-08, y: .23775658, z: 1.60187469e-07}
+      rotation: {x: -.0795190111, y: -.372187108, z: -.0167627297, w: -.92459321}
+      scale: {x: .999999821, y: 1.00000036, z: 1.0000006}
+      transformModified: 1
+    - name: forearm.L
+      position: {x: 4.18350101e-05, y: .346265167, z: -6.1314553e-05}
+      rotation: {x: -.00747453887, y: .63738966, z: -.0279908553, w: -.769996881}
+      scale: {x: .999999642, y: .999999702, z: .999999881}
+      transformModified: 1
+    - name: hand.L
+      position: {x: 1.86264504e-09, y: .314611673, z: 7.17118311e-08}
+      rotation: {x: .00677666673, y: -.383946687, z: .096442014, w: .918279946}
+      scale: {x: 1, y: 1.00000024, z: 1}
+      transformModified: 1
+    - name: hand.L_end
+      position: {x: -0, y: .202376857, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder_plate.L
+      position: {x: -7.45058015e-09, y: .23775658, z: 4.09781897e-08}
+      rotation: {x: .631020069, y: -.00972992182, z: -.0142804524, w: .775574088}
+      scale: {x: .999999881, y: 1.00000012, z: .999999881}
+      transformModified: 1
+    - name: shoulder_plate.L_end
+      position: {x: -0, y: .2102153, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder.R
+      position: {x: 9.31322519e-10, y: .167847618, z: -8.14907164e-09}
+      rotation: {x: -.547394693, y: .433394521, z: .553453028, w: .454112291}
+      scale: {x: .999999702, y: 1, z: .999999821}
+      transformModified: 1
+    - name: arm.R
+      position: {x: 4.09781897e-08, y: .23775661, z: 2.45869131e-07}
+      rotation: {x: .0795182511, y: -.372187227, z: -.016762672, w: .92459321}
+      scale: {x: .999999881, y: .999999762, z: 1}
+      transformModified: 1
+    - name: forearm.R
+      position: {x: -6.70552183e-08, y: .346262664, z: 4.470348e-08}
+      rotation: {x: .00843539648, y: .663553059, z: -.027717106, w: .747568011}
+      scale: {x: .999999642, y: .999999881, z: 1}
+      transformModified: 1
+    - name: hand.R
+      position: {x: 5.587935e-09, y: .314611673, z: -1.67638046e-08}
+      rotation: {x: .108461484, y: .39194563, z: .0964822099, w: .908463538}
+      scale: {x: 1.00000036, y: 1.0000006, z: 1.00000036}
+      transformModified: 1
+    - name: weapon
+      position: {x: .0478995703, y: .106027454, z: .0319699757}
+      rotation: {x: .897269368, y: -.416073054, z: .0518236198, w: .138221517}
+      scale: {x: .999999642, y: 1.00000024, z: .999999523}
+      transformModified: 1
+    - name: launcher
+      position: {x: -2.98023195e-07, y: -2.68220873e-07, z: 3.72528994e-08}
+      rotation: {x: -1.79978045e-07, y: 1, z: -5.02913799e-08, w: 1.94707198e-07}
+      scale: {x: 1.00000012, y: 1.00000012, z: 1.00000072}
+      transformModified: 1
+    - name: weapon_end
+      position: {x: -0, y: .299999982, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: shoulder_plate.R
+      position: {x: 3.72529008e-09, y: .23775664, z: 1.19209282e-07}
+      rotation: {x: -.631019711, y: -.00972982496, z: -.0142803481, w: -.775574386}
+      scale: {x: .999999881, y: 1, z: .999999583}
+      transformModified: 1
+    - name: shoulder_plate.R_end
+      position: {x: -0, y: .2102153, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.L
+      position: {x: -.153255284, y: .516255319, z: .434345961}
+      rotation: {x: -3.09086232e-08, y: .707106829, z: .707106829, w: -3.09086232e-08}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.L_end
+      position: {x: -0, y: .347536683, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.R
+      position: {x: .0412061252, y: .525592744, z: .434345961}
+      rotation: {x: -3.09086232e-08, y: .707106829, z: .707106829, w: -3.09086232e-08}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: knee_target.R_end
+      position: {x: -0, y: .347536683, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.L
+      position: {x: -.147352308, y: .0644310415, z: -.506721616}
+      rotation: {x: -.700363338, y: 0, z: -0, w: .713786602}
+      scale: {x: .99999994, y: .999999881, z: .99999994}
+      transformModified: 1
+    - name: leg_IK.L_end
+      position: {x: -0, y: .307089061, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.R
+      position: {x: .147352308, y: .064431034, z: -.107746333}
+      rotation: {x: -.700363338, y: 0, z: -0, w: .713786602}
+      scale: {x: .99999994, y: 1, z: 1}
+      transformModified: 1
+    - name: leg_IK.R_end
+      position: {x: -0, y: .307089061, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+      transformModified: 1
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .5
+    legStretch: 0
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 3
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/FBX/infantry_missiler.fbx
+  uploadId: 225951

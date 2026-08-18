@@ -8,12 +8,15 @@ public class CombatUnit : UnitBase
     [SerializeField] private UnitWeapon weapon;
 
     [Tooltip("How far the explicit target must move before AttackState rebuilds its path.")]
-    [SerializeField, Min(0.05f)]
-    private float chaseRepathDistance = 0.75f;
+    [SerializeField, Min(0.05f)] private float chaseRepathDistance = 0.75f;
 
+    [Header("Visual")]
     [SerializeField] private float combatRotationSpeed = 720f;
 
+
     private ITargetable currentTarget;
+    private bool attackAnimationActive;
+    private ITargetable attackTarget;
 
     public float ChaseRepathDistance => chaseRepathDistance;
     public ITargetable CurrentTarget => currentTarget;
@@ -82,6 +85,10 @@ public class CombatUnit : UnitBase
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Projectile Attack
+    // ---------------------------------------------------------------------
+
     /// <summary>
     /// Passive combat behavior used only by CombatIdleState.
     ///
@@ -106,28 +113,52 @@ public class CombatUnit : UnitBase
         if (currentTarget == null)
             return;
 
+        //FaceTarget(currentTarget, deltaTime);
+        //weapon.TryFire(currentTarget);
+
         FaceTarget(currentTarget, deltaTime);
-        weapon.TryFire(currentTarget);
+
+        if (attackAnimationActive)
+            return;
+
+        if (!weapon.TryBeginAttack(currentTarget))
+            return;
+
+        attackTarget = currentTarget;
+        attackAnimationActive = true;
+
+        view?.PlayAnim("Attack");
     }
 
-    public void FaceTarget(ITargetable target, float deltaTime)
+    public void OnWeaponFireAnimationEvent()
     {
-        if (target == null)
+        if (!attackAnimationActive)
             return;
 
-        Vector3 direction = target.Position - transform.position;
-
-        // The unit rotates only around the vertical axis.
-        direction.y = 0f;
-
-        if (direction.sqrMagnitude <= 0.0001f)
+        if (attackTarget == null || !attackTarget.IsAlive)
             return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, combatRotationSpeed * deltaTime);
+        weapon.TryFireProjectile(attackTarget);
     }
 
+    public void OnAttackAnimationFinished()
+    {
+        attackAnimationActive = false;
+        attackTarget = null;
+
+        view?.PlayAnim("Idle");
+    }
+
+    public void CancelAttackAnimation()
+    {
+        attackAnimationActive = false;
+        attackTarget = null;
+    }
+
+    // ---------------------------------------------------------------------
     // Helper methods
+    // ---------------------------------------------------------------------
+
     private void StopAndEnterCombatIdle()
     {
         motor?.Stop();
@@ -165,8 +196,26 @@ public class CombatUnit : UnitBase
         return sensor.IsValidEnemyTarget(target) && IsWithinAttackRange(target);
     }
 
+    public void FaceTarget(ITargetable target, float deltaTime)
+    {
+        if (target == null)
+            return;
 
+        Vector3 direction = target.Position - transform.position;
+
+        // The unit rotates only around the vertical axis.
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude <= 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, combatRotationSpeed * deltaTime);
+    }
+
+    // ---------------------------------------------------------------------
     // Getter & Setter 
+    // ---------------------------------------------------------------------
 
     public float GetAttackRange()
     {

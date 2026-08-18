@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 425698c0a64a673439ce96ca9f794228
+timeCreated: 1442930752
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 46588
+  packageName: Devil Mech
+  packageVersion: 2.0
+  assetPath: Assets/DevilMech/Prefabs/DevilMechPrefab.prefab
+  uploadId: 83610

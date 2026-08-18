@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cfcc2359c72e9b24aaf116eec452aa25
+timeCreated: 1442929854
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 46588
+  packageName: Devil Mech
+  packageVersion: 2.0
+  assetPath: Assets/DevilMech/devilMechAnimations.txt
+  uploadId: 83610

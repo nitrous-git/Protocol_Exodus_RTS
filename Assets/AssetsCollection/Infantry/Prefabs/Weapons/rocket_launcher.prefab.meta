@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bb6c1cb5e5d77694e8940371a6f5a5d4
+timeCreated: 1507443116
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Prefabs/Weapons/rocket_launcher.prefab
+  uploadId: 225951

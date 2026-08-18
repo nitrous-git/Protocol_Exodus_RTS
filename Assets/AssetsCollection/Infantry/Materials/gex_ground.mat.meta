@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 56591b819d5558b45b952d0d5b34c464
+timeCreated: 1507536837
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 102218
+  packageName: Infantry
+  packageVersion: 1.1
+  assetPath: Assets/Infantry/Materials/gex_ground.mat
+  uploadId: 225951

@@ -45,6 +45,8 @@ public class MoveState : UnitState<UnitBase>
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
         }
+
+        unit.View?.PlayAnim("Walk");
     }
 
     protected override void TickTyped(UnitBase unit)
