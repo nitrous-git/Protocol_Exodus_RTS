@@ -10,15 +10,23 @@ public class UnitView : MonoBehaviour
     [SerializeField] private Terrain terrain;
 
     [Header("Animation")]
-    //[SerializeField] private Animator animator;
-
-    private UnitBase owner;
+    [SerializeField] private Animator animator;
 
     [Header("Components")]
-    private MeshRenderer cylinderRenderer;
     private MeshRenderer selectionRingRenderer;
 
+    [Header("Faction Visuals")]
+    [SerializeField] private Renderer[] factionRenderers;
+    [SerializeField] private UnitFactionTextureVariant[] factionTextureVariants;
+
+    private string currentAnimState;
+    private string baseAnimState;
+    private string oneShotAnimState;
+    private bool playingOneShot;
+
+    private UnitBase owner;
     private MaterialPropertyBlock propertyBlock;
+    private static readonly int BaseMapID = Shader.PropertyToID("_BaseMap");
     private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
 
     public void Initialize(UnitBase owner)
@@ -29,21 +37,28 @@ public class UnitView : MonoBehaviour
             terrain = Terrain.activeTerrain;
 
         propertyBlock = new();
-        if (cylinderRenderer == null)
-        {
-            cylinderRenderer = this.transform.GetChild(0).GetComponent<MeshRenderer>();
-            selectionRingRenderer = selectionRing.GetComponent<MeshRenderer>();
-        }
+
+        selectionRingRenderer = selectionRing.GetComponent<MeshRenderer>();
 
         SetSelected(false);
         RefreshFactionVisuals();
-        //PlayIdle();
+
+        if (animator != null)
+        {
+            animator.applyRootMotion = false;
+            currentAnimState = null;
+            baseAnimState = null;
+            oneShotAnimState = null;
+            playingOneShot = false;
+        }
     }
 
     public void TickLate()
     {
         if (owner == null)
             return;
+
+        UpdateOneShotAnimation();
 
         if (selectionRing == null)
             return;
@@ -69,13 +84,7 @@ public class UnitView : MonoBehaviour
     private void UpdateSelectionRingGroundProjection()
     {
         Vector3 unitPosition = owner.Position;
-
-        Vector3 ringPosition = new Vector3(
-            unitPosition.x,
-            unitPosition.y,
-            unitPosition.z
-        );
-
+        Vector3 ringPosition = new Vector3(unitPosition.x, unitPosition.y, unitPosition.z);
         Vector3 groundNormal = Vector3.up;
 
         if (terrain == null)
@@ -122,29 +131,97 @@ public class UnitView : MonoBehaviour
         return terrainData.GetInterpolatedNormal(normalizedX, normalizedZ);
     }
 
-    //public void PlayIdle()
-    //{
-    //    if (animator != null)
-    //        animator.Play("Idle");
-    //}
-
-    //public void PlayMove()
-    //{
-    //    if (animator != null)
-    //        animator.Play("Move");
-    //}
+    // ---------------------------------------------------------------------
+    // Materials
+    // ---------------------------------------------------------------------
 
     public void RefreshFactionVisuals()
     {
-        if (owner == null)
+        if (owner == null || owner.OwnerFaction == null)
             return;
 
-        cylinderRenderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.FactionColor);
-        cylinderRenderer.SetPropertyBlock(propertyBlock);
+        FactionColorType colorType = owner.OwnerFaction.ColorType;
+        Texture texture = GetFactionTexture(colorType);
 
+        // Set Textures
+        for (int i = 0; i < factionRenderers.Length; i++)
+        {
+            Renderer targetRenderer = factionRenderers[i];
+
+            propertyBlock.Clear();
+            targetRenderer.GetPropertyBlock(propertyBlock);
+            propertyBlock.SetTexture(BaseMapID, texture);
+            targetRenderer.SetPropertyBlock(propertyBlock);
+        }
+
+        // Set Selection Ring
         selectionRingRenderer.GetPropertyBlock(propertyBlock);
         propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
         selectionRingRenderer.SetPropertyBlock(propertyBlock);
+    }
+
+    private Texture GetFactionTexture(FactionColorType colorType)
+    {
+        for (int i = 0; i < factionTextureVariants.Length; i++)
+        {
+            if (factionTextureVariants[i].colorType == colorType)
+                return factionTextureVariants[i].baseMap;
+        }
+
+        return null;
+    }
+
+    // ---------------------------------------------------------------------
+    // Animations
+    // ---------------------------------------------------------------------
+
+    public void PlayAnim(string newAnimState)
+    {
+        if (animator == null)
+            return;
+
+        baseAnimState = newAnimState;
+        playingOneShot = false;
+
+        if (currentAnimState == newAnimState)
+            return;
+
+        animator.Play(newAnimState);
+
+        currentAnimState = newAnimState;
+    }
+
+    public void PlayOneShotAnim(string newAnimState)
+    {
+        if (animator == null)
+            return;
+
+        playingOneShot = true;
+        oneShotAnimState = newAnimState;
+
+        animator.Play(newAnimState, 0, 0f);
+
+        currentAnimState = newAnimState;
+    }
+
+    private void UpdateOneShotAnimation()
+    {
+        if (animator == null || !playingOneShot)
+            return;
+
+        AnimatorStateInfo stateInfo =
+            animator.GetCurrentAnimatorStateInfo(0);
+
+        if (!stateInfo.IsName(oneShotAnimState))
+            return;
+
+        if (stateInfo.normalizedTime < 1f)
+            return;
+
+        playingOneShot = false;
+        oneShotAnimState = null;
+        currentAnimState = null;
+
+        PlayAnim(baseAnimState);
     }
 }

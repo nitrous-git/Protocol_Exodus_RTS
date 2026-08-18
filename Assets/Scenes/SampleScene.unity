@@ -4229,9 +4229,8 @@ MonoBehaviour:
   gameLoop: {fileID: 1551415267}
   matchWorld: {fileID: 1559407554}
   matchUI: {fileID: 1808596899}
-  FactionA_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
-  FactionB_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
-  FactionC_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
+  FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
+  FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
   startingCombatCount: 8
   startingUnitSpacing: 3
 --- !u!1 &1788038490
@@ -4988,7 +4987,7 @@ Transform:
   m_GameObject: {fileID: 1989332473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 62.8, y: 0, z: 100.71}
+  m_LocalPosition: {x: 49.07, y: 0, z: 118.56}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

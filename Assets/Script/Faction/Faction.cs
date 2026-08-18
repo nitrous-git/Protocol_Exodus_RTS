@@ -7,25 +7,31 @@ public sealed class Faction
     public UnitManager UnitManager { get; }
     public BuildingManager BuildingManager { get; }
     public ResourceManager ResourceManager { get; }
+    public FactionColorType ColorType { get; }
+    public FactionColorVariant ColorVariant { get; }
 
     public string Name => Definition != null ? Definition.factionName : "Unnamed Faction";
-    public Color FactionColor => Definition != null ? Definition.factionColor : Color.white;
-    public Color SelectionRingColor => Definition != null ? Definition.selectionRingColor : Color.white;
+    public Color FactionColor => ColorVariant.factionColor;
+    public Color SelectionRingColor => ColorVariant.selectionRingColor;
 
     public Faction(
-    FactionDefinition definition,
-    IFactionController controller,
-    UnitManager unitManager,
-    BuildingManager buildingManager,
-    ResourceManager resourceManager,
-    GameContext gameContext)
+        FactionDefinition definition,
+        FactionColorType colorType,
+        IFactionController controller,
+        UnitManager unitManager,
+        BuildingManager buildingManager,
+        ResourceManager resourceManager,
+        GameContext gameContext)
     {
         Definition = definition;
+        ColorType = colorType;
         Controller = controller;
 
         UnitManager = unitManager;
         BuildingManager = buildingManager;  
         ResourceManager = resourceManager;
+
+        ColorVariant = definition.GetColorVariant(colorType);
 
         UnitManager?.SetOwnerFaction(this);
         BuildingManager?.SetOwnerFaction(this);

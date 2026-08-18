@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d3713f458786ce74b8789717298aa69c
+timeCreated: 1442709161
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 46588
+  packageName: Devil Mech
+  packageVersion: 2.0
+  assetPath: Assets/DevilMech/Prefabs/DevilMechController.controller
+  uploadId: 83610

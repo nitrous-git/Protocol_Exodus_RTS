@@ -1,0 +1,3370 @@
+fileFormatVersion: 2
+guid: 45fc273992edc03428c4506e6220c0a9
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: LeftBackToe01
+    100004: LeftBigToe01
+    100006: LeftBigToe02
+    100008: LeftFoot01
+    100010: LeftLegSection01
+    100012: LeftLegSection02
+    100014: LeftLegSection03
+    100016: LeftLegSection04
+    100018: MechHull01
+    100020: RightBackToe01
+    100022: RightBigToe01
+    100024: RightBigToe02
+    100026: RightFoot01
+    100028: RightLegSection01
+    100030: RightLegSection02
+    100032: RightLegSection03
+    100034: RightLegSection04
+    100036: LeftCannon01
+    100038: RightCannon01
+    100040: IK Chain001
+    100042: IK Chain002
+    100044: IK Chain003
+    100046: IK Chain004
+    100048: IK Chain005
+    100050: IK Chain006
+    100052: LeftBackFootAnimHelper01
+    100054: LeftBackToeBone01
+    100056: LeftBackToeBone02
+    100058: LeftBackToeBone03
+    100060: LeftBone01
+    100062: LeftBone02
+    100064: LeftBone03
+    100066: LeftBone04
+    100068: LeftBone05
+    100070: LeftBone06
+    100072: LeftBone07
+    100074: LeftBone08
+    100076: LeftFrontFootAnimHelper01
+    100078: LeftLegAnimHelper01
+    100080: RightBackFootAnimHelper01
+    100082: RightBackToeBone01
+    100084: RightBackToeBone02
+    100086: RightBackToeBone03
+    100088: RightBone01
+    100090: RightBone02
+    100092: RightBone03
+    100094: RightBone04
+    100096: RightBone05
+    100098: RightBone06
+    100100: RightBone07
+    100102: RightBone08
+    100104: RightFrontFootAnimHelper001
+    100106: RightLegAnimHelper
+    100108: LeftLegAnimHelper
+    100110: LeftWingBottom
+    100112: LeftWingMiddle
+    100114: LeftWingTop
+    100116: MechBodyCenter
+    100118: MechFrame
+    100120: RightBackToe002
+    100122: RightBackToeBone004
+    100124: RightBackToeBone005
+    100126: RightBackToeBone006
+    100128: RightBigToe003
+    100130: RightBigToe004
+    100132: RightBone009
+    100134: RightBone010
+    100136: RightBone011
+    100138: RightBone012
+    100140: RightBone013
+    100142: RightBone014
+    100144: RightBone015
+    100146: RightBone016
+    100148: RightCannon002
+    100150: RightFoot002
+    100152: RightLegSection005
+    100154: RightLegSection006
+    100156: RightLegSection007
+    100158: RightLegSection008
+    100160: RightWingBottom
+    100162: RightWingMiddle
+    100164: RightWingTop
+    100166: LeftBarrelLrgBottom
+    100168: LeftBarrelLrgTop
+    100170: LeftBarrelSmlBottom
+    100172: LeftBarrelSmlTop
+    100174: LeftCannon
+    100176: RightBarrelLrgBottom
+    100178: RightBarrelLrgTop
+    100180: RightBarrelSmlBottom
+    100182: RightBarrelSmlTop
+    100184: LeftBlade
+    100186: LeftForeArm
+    100188: LeftForeArmJoint
+    100190: LeftUpperArm
+    100192: LeftUpperArmJoint
+    100194: LeftWingBottom001
+    100196: RightBlade
+    100198: RightForeArm
+    100200: RightForeArmJoint
+    100202: RightLegSection006 1
+    100204: RightUpperArm
+    100206: RightUpperArmJoint
+    100208: RightWingBottom001
+    100210: DevilMechBodyCenter
+    100212: DvlIK Chain003
+    100214: DvlIK Chain004
+    100216: DvlLeftBackToe002
+    100218: DvlLeftBackToeBone004
+    100220: DvlLeftBackToeBone005
+    100222: DvlLeftBackToeBone006
+    100224: DvlLeftBarrelLrgBottom
+    100226: DvlLeftBarrelLrgTop
+    100228: DvlLeftBarrelSmlBottom
+    100230: DvlLeftBarrelSmlTop
+    100232: DvlLeftBigToe003
+    100234: DvlLeftBigToe004
+    100236: DvlLeftBlade
+    100238: DvlLeftBone009
+    100240: DvlLeftBone010
+    100242: DvlLeftBone011
+    100244: DvlLeftBone012
+    100246: DvlLeftBone013
+    100248: DvlLeftBone014
+    100250: DvlLeftBone015
+    100252: DvlLeftBone016
+    100254: DvlLeftCannon
+    100256: DvlLeftFoot002
+    100258: DvlLeftForeArm
+    100260: DvlLeftForeArmJoint
+    100262: DvlLeftLegAnimHelper
+    100264: DvlLeftLegSection005
+    100266: DvlLeftLegSection006
+    100268: DvlLeftLegSection007
+    100270: DvlLeftLegSection008
+    100272: DvlLeftUpperArm
+    100274: DvlLeftUpperArmJoint
+    100276: DvlLeftWingBottom
+    100278: DvlLeftWingBottom001
+    100280: DvlLeftWingMiddle
+    100282: DvlLeftWingTop
+    100284: DvlMechFrame
+    100286: DvlMechHull01
+    100288: DvlRightBackToe01
+    100290: DvlRightBackToeBone01
+    100292: DvlRightBackToeBone02
+    100294: DvlRightBackToeBone03
+    100296: DvlRightBarrelLrgBottom
+    100298: DvlRightBarrelLrgTop
+    100300: DvlRightBarrelSmlBottom
+    100302: DvlRightBarrelSmlTop
+    100304: DvlRightBigToe01
+    100306: DvlRightBigToe02
+    100308: DvlRightBlade
+    100310: DvlRightBone01
+    100312: DvlRightBone02
+    100314: DvlRightBone03
+    100316: DvlRightBone04
+    100318: DvlRightBone05
+    100320: DvlRightBone06
+    100322: DvlRightBone07
+    100324: DvlRightBone08
+    100326: DvlRightCannon01
+    100328: DvlRightFoot01
+    100330: DvlRightForeArm
+    100332: DvlRightForeArmJoint
+    100334: DvlRightLegAnimHelper
+    100336: DvlRightLegSection006
+    100338: DvlRightLegSection01
+    100340: DvlRightLegSection02
+    100342: DvlRightLegSection04
+    100344: DvlRightUpperArm
+    100346: DvlRightUpperArmJoint
+    100348: DvlRightWingBottom
+    100350: DvlRightWingBottom001
+    100352: DvlRightWingMiddle
+    100354: DvlRightWingTop
+    400000: //RootNode
+    400002: LeftBackToe01
+    400004: LeftBigToe01
+    400006: LeftBigToe02
+    400008: LeftFoot01
+    400010: LeftLegSection01
+    400012: LeftLegSection02
+    400014: LeftLegSection03
+    400016: LeftLegSection04
+    400018: MechHull01
+    400020: RightBackToe01
+    400022: RightBigToe01
+    400024: RightBigToe02
+    400026: RightFoot01
+    400028: RightLegSection01
+    400030: RightLegSection02
+    400032: RightLegSection03
+    400034: RightLegSection04
+    400036: LeftCannon01
+    400038: RightCannon01
+    400040: IK Chain001
+    400042: IK Chain002
+    400044: IK Chain003
+    400046: IK Chain004
+    400048: IK Chain005
+    400050: IK Chain006
+    400052: LeftBackFootAnimHelper01
+    400054: LeftBackToeBone01
+    400056: LeftBackToeBone02
+    400058: LeftBackToeBone03
+    400060: LeftBone01
+    400062: LeftBone02
+    400064: LeftBone03
+    400066: LeftBone04
+    400068: LeftBone05
+    400070: LeftBone06
+    400072: LeftBone07
+    400074: LeftBone08
+    400076: LeftFrontFootAnimHelper01
+    400078: LeftLegAnimHelper01
+    400080: RightBackFootAnimHelper01
+    400082: RightBackToeBone01
+    400084: RightBackToeBone02
+    400086: RightBackToeBone03
+    400088: RightBone01
+    400090: RightBone02
+    400092: RightBone03
+    400094: RightBone04
+    400096: RightBone05
+    400098: RightBone06
+    400100: RightBone07
+    400102: RightBone08
+    400104: RightFrontFootAnimHelper001
+    400106: RightLegAnimHelper
+    400108: LeftLegAnimHelper
+    400110: LeftWingBottom
+    400112: LeftWingMiddle
+    400114: LeftWingTop
+    400116: MechBodyCenter
+    400118: MechFrame
+    400120: RightBackToe002
+    400122: RightBackToeBone004
+    400124: RightBackToeBone005
+    400126: RightBackToeBone006
+    400128: RightBigToe003
+    400130: RightBigToe004
+    400132: RightBone009
+    400134: RightBone010
+    400136: RightBone011
+    400138: RightBone012
+    400140: RightBone013
+    400142: RightBone014
+    400144: RightBone015
+    400146: RightBone016
+    400148: RightCannon002
+    400150: RightFoot002
+    400152: RightLegSection005
+    400154: RightLegSection006
+    400156: RightLegSection007
+    400158: RightLegSection008
+    400160: RightWingBottom
+    400162: RightWingMiddle
+    400164: RightWingTop
+    400166: LeftBarrelLrgBottom
+    400168: LeftBarrelLrgTop
+    400170: LeftBarrelSmlBottom
+    400172: LeftBarrelSmlTop
+    400174: LeftCannon
+    400176: RightBarrelLrgBottom
+    400178: RightBarrelLrgTop
+    400180: RightBarrelSmlBottom
+    400182: RightBarrelSmlTop
+    400184: LeftBlade
+    400186: LeftForeArm
+    400188: LeftForeArmJoint
+    400190: LeftUpperArm
+    400192: LeftUpperArmJoint
+    400194: LeftWingBottom001
+    400196: RightBlade
+    400198: RightForeArm
+    400200: RightForeArmJoint
+    400202: RightLegSection006 1
+    400204: RightUpperArm
+    400206: RightUpperArmJoint
+    400208: RightWingBottom001
+    400210: DevilMechBodyCenter
+    400212: DvlIK Chain003
+    400214: DvlIK Chain004
+    400216: DvlLeftBackToe002
+    400218: DvlLeftBackToeBone004
+    400220: DvlLeftBackToeBone005
+    400222: DvlLeftBackToeBone006
+    400224: DvlLeftBarrelLrgBottom
+    400226: DvlLeftBarrelLrgTop
+    400228: DvlLeftBarrelSmlBottom
+    400230: DvlLeftBarrelSmlTop
+    400232: DvlLeftBigToe003
+    400234: DvlLeftBigToe004
+    400236: DvlLeftBlade
+    400238: DvlLeftBone009
+    400240: DvlLeftBone010
+    400242: DvlLeftBone011
+    400244: DvlLeftBone012
+    400246: DvlLeftBone013
+    400248: DvlLeftBone014
+    400250: DvlLeftBone015
+    400252: DvlLeftBone016
+    400254: DvlLeftCannon
+    400256: DvlLeftFoot002
+    400258: DvlLeftForeArm
+    400260: DvlLeftForeArmJoint
+    400262: DvlLeftLegAnimHelper
+    400264: DvlLeftLegSection005
+    400266: DvlLeftLegSection006
+    400268: DvlLeftLegSection007
+    400270: DvlLeftLegSection008
+    400272: DvlLeftUpperArm
+    400274: DvlLeftUpperArmJoint
+    400276: DvlLeftWingBottom
+    400278: DvlLeftWingBottom001
+    400280: DvlLeftWingMiddle
+    400282: DvlLeftWingTop
+    400284: DvlMechFrame
+    400286: DvlMechHull01
+    400288: DvlRightBackToe01
+    400290: DvlRightBackToeBone01
+    400292: DvlRightBackToeBone02
+    400294: DvlRightBackToeBone03
+    400296: DvlRightBarrelLrgBottom
+    400298: DvlRightBarrelLrgTop
+    400300: DvlRightBarrelSmlBottom
+    400302: DvlRightBarrelSmlTop
+    400304: DvlRightBigToe01
+    400306: DvlRightBigToe02
+    400308: DvlRightBlade
+    400310: DvlRightBone01
+    400312: DvlRightBone02
+    400314: DvlRightBone03
+    400316: DvlRightBone04
+    400318: DvlRightBone05
+    400320: DvlRightBone06
+    400322: DvlRightBone07
+    400324: DvlRightBone08
+    400326: DvlRightCannon01
+    400328: DvlRightFoot01
+    400330: DvlRightForeArm
+    400332: DvlRightForeArmJoint
+    400334: DvlRightLegAnimHelper
+    400336: DvlRightLegSection006
+    400338: DvlRightLegSection01
+    400340: DvlRightLegSection02
+    400342: DvlRightLegSection04
+    400344: DvlRightUpperArm
+    400346: DvlRightUpperArmJoint
+    400348: DvlRightWingBottom
+    400350: DvlRightWingBottom001
+    400352: DvlRightWingMiddle
+    400354: DvlRightWingTop
+    2300000: LeftBackToe01
+    2300002: LeftBigToe01
+    2300004: LeftBigToe02
+    2300006: LeftFoot01
+    2300008: LeftLegSection01
+    2300010: LeftLegSection02
+    2300012: LeftLegSection03
+    2300014: LeftLegSection04
+    2300016: MechHull01
+    2300018: RightBackToe01
+    2300020: RightBigToe01
+    2300022: RightBigToe02
+    2300024: RightFoot01
+    2300026: RightLegSection01
+    2300028: RightLegSection02
+    2300030: RightLegSection03
+    2300032: RightLegSection04
+    2300034: LeftCannon01
+    2300036: RightCannon01
+    2300038: LeftWingBottom
+    2300040: LeftWingMiddle
+    2300042: LeftWingTop
+    2300044: MechFrame
+    2300046: RightBackToe002
+    2300048: RightBigToe003
+    2300050: RightBigToe004
+    2300052: RightCannon002
+    2300054: RightFoot002
+    2300056: RightLegSection005
+    2300058: RightLegSection006
+    2300060: RightLegSection007
+    2300062: RightLegSection008
+    2300064: RightWingBottom
+    2300066: RightWingMiddle
+    2300068: RightWingTop
+    2300070: LeftBarrelLrgBottom
+    2300072: LeftBarrelLrgTop
+    2300074: LeftBarrelSmlBottom
+    2300076: LeftBarrelSmlTop
+    2300078: LeftCannon
+    2300080: RightBarrelLrgBottom
+    2300082: RightBarrelLrgTop
+    2300084: RightBarrelSmlBottom
+    2300086: RightBarrelSmlTop
+    2300088: LeftBlade
+    2300090: LeftForeArm
+    2300092: LeftForeArmJoint
+    2300094: LeftUpperArm
+    2300096: LeftUpperArmJoint
+    2300098: LeftWingBottom001
+    2300100: RightBlade
+    2300102: RightForeArm
+    2300104: RightForeArmJoint
+    2300106: RightLegSection006 1
+    2300108: RightUpperArm
+    2300110: RightUpperArmJoint
+    2300112: RightWingBottom001
+    2300114: DvlLeftBackToe002
+    2300116: DvlLeftBarrelLrgBottom
+    2300118: DvlLeftBarrelLrgTop
+    2300120: DvlLeftBarrelSmlBottom
+    2300122: DvlLeftBarrelSmlTop
+    2300124: DvlLeftBigToe003
+    2300126: DvlLeftBigToe004
+    2300128: DvlLeftBlade
+    2300130: DvlLeftCannon
+    2300132: DvlLeftFoot002
+    2300134: DvlLeftForeArm
+    2300136: DvlLeftForeArmJoint
+    2300138: DvlLeftLegSection005
+    2300140: DvlLeftLegSection006
+    2300142: DvlLeftLegSection007
+    2300144: DvlLeftLegSection008
+    2300146: DvlLeftUpperArm
+    2300148: DvlLeftUpperArmJoint
+    2300150: DvlLeftWingBottom
+    2300152: DvlLeftWingBottom001
+    2300154: DvlLeftWingMiddle
+    2300156: DvlLeftWingTop
+    2300158: DvlMechFrame
+    2300160: DvlMechHull01
+    2300162: DvlRightBackToe01
+    2300164: DvlRightBarrelLrgBottom
+    2300166: DvlRightBarrelLrgTop
+    2300168: DvlRightBarrelSmlBottom
+    2300170: DvlRightBarrelSmlTop
+    2300172: DvlRightBigToe01
+    2300174: DvlRightBigToe02
+    2300176: DvlRightBlade
+    2300178: DvlRightCannon01
+    2300180: DvlRightFoot01
+    2300182: DvlRightForeArm
+    2300184: DvlRightForeArmJoint
+    2300186: DvlRightLegSection006
+    2300188: DvlRightLegSection01
+    2300190: DvlRightLegSection02
+    2300192: DvlRightLegSection04
+    2300194: DvlRightUpperArm
+    2300196: DvlRightUpperArmJoint
+    2300198: DvlRightWingBottom
+    2300200: DvlRightWingBottom001
+    2300202: DvlRightWingMiddle
+    2300204: DvlRightWingTop
+    3300000: LeftBackToe01
+    3300002: LeftBigToe01
+    3300004: LeftBigToe02
+    3300006: LeftFoot01
+    3300008: LeftLegSection01
+    3300010: LeftLegSection02
+    3300012: LeftLegSection03
+    3300014: LeftLegSection04
+    3300016: MechHull01
+    3300018: RightBackToe01
+    3300020: RightBigToe01
+    3300022: RightBigToe02
+    3300024: RightFoot01
+    3300026: RightLegSection01
+    3300028: RightLegSection02
+    3300030: RightLegSection03
+    3300032: RightLegSection04
+    3300034: LeftCannon01
+    3300036: RightCannon01
+    3300038: LeftWingBottom
+    3300040: LeftWingMiddle
+    3300042: LeftWingTop
+    3300044: MechFrame
+    3300046: RightBackToe002
+    3300048: RightBigToe003
+    3300050: RightBigToe004
+    3300052: RightCannon002
+    3300054: RightFoot002
+    3300056: RightLegSection005
+    3300058: RightLegSection006
+    3300060: RightLegSection007
+    3300062: RightLegSection008
+    3300064: RightWingBottom
+    3300066: RightWingMiddle
+    3300068: RightWingTop
+    3300070: LeftBarrelLrgBottom
+    3300072: LeftBarrelLrgTop
+    3300074: LeftBarrelSmlBottom
+    3300076: LeftBarrelSmlTop
+    3300078: LeftCannon
+    3300080: RightBarrelLrgBottom
+    3300082: RightBarrelLrgTop
+    3300084: RightBarrelSmlBottom
+    3300086: RightBarrelSmlTop
+    3300088: LeftBlade
+    3300090: LeftForeArm
+    3300092: LeftForeArmJoint
+    3300094: LeftUpperArm
+    3300096: LeftUpperArmJoint
+    3300098: LeftWingBottom001
+    3300100: RightBlade
+    3300102: RightForeArm
+    3300104: RightForeArmJoint
+    3300106: RightLegSection006 1
+    3300108: RightUpperArm
+    3300110: RightUpperArmJoint
+    3300112: RightWingBottom001
+    3300114: DvlLeftBackToe002
+    3300116: DvlLeftBarrelLrgBottom
+    3300118: DvlLeftBarrelLrgTop
+    3300120: DvlLeftBarrelSmlBottom
+    3300122: DvlLeftBarrelSmlTop
+    3300124: DvlLeftBigToe003
+    3300126: DvlLeftBigToe004
+    3300128: DvlLeftBlade
+    3300130: DvlLeftCannon
+    3300132: DvlLeftFoot002
+    3300134: DvlLeftForeArm
+    3300136: DvlLeftForeArmJoint
+    3300138: DvlLeftLegSection005
+    3300140: DvlLeftLegSection006
+    3300142: DvlLeftLegSection007
+    3300144: DvlLeftLegSection008
+    3300146: DvlLeftUpperArm
+    3300148: DvlLeftUpperArmJoint
+    3300150: DvlLeftWingBottom
+    3300152: DvlLeftWingBottom001
+    3300154: DvlLeftWingMiddle
+    3300156: DvlLeftWingTop
+    3300158: DvlMechFrame
+    3300160: DvlMechHull01
+    3300162: DvlRightBackToe01
+    3300164: DvlRightBarrelLrgBottom
+    3300166: DvlRightBarrelLrgTop
+    3300168: DvlRightBarrelSmlBottom
+    3300170: DvlRightBarrelSmlTop
+    3300172: DvlRightBigToe01
+    3300174: DvlRightBigToe02
+    3300176: DvlRightBlade
+    3300178: DvlRightCannon01
+    3300180: DvlRightFoot01
+    3300182: DvlRightForeArm
+    3300184: DvlRightForeArmJoint
+    3300186: DvlRightLegSection006
+    3300188: DvlRightLegSection01
+    3300190: DvlRightLegSection02
+    3300192: DvlRightLegSection04
+    3300194: DvlRightUpperArm
+    3300196: DvlRightUpperArmJoint
+    3300198: DvlRightWingBottom
+    3300200: DvlRightWingBottom001
+    3300202: DvlRightWingMiddle
+    3300204: DvlRightWingTop
+    4300000: MechHull01
+    4300002: RightLegSection01
+    4300004: RightLegSection02
+    4300006: RightLegSection03
+    4300008: RightLegSection04
+    4300010: RightFoot01
+    4300012: RightBigToe01
+    4300014: RightBackToe01
+    4300016: RightBigToe02
+    4300018: LeftLegSection01
+    4300020: LeftLegSection02
+    4300022: LeftLegSection03
+    4300024: LeftLegSection04
+    4300026: LeftFoot01
+    4300028: LeftBigToe01
+    4300030: LeftBackToe01
+    4300032: LeftBigToe02
+    4300034: RightCannon01
+    4300036: LeftCannon01
+    4300038: RightBigToe003
+    4300040: RightBigToe004
+    4300042: RightFoot002
+    4300044: RightBackToe002
+    4300046: RightLegSection005
+    4300048: RightLegSection006
+    4300050: RightLegSection007
+    4300052: RightLegSection008
+    4300054: MechFrame
+    4300056: RightCannon002
+    4300058: RightWingTop
+    4300060: RightWingMiddle
+    4300062: RightWingBottom
+    4300064: LeftWingTop
+    4300066: LeftWingMiddle
+    4300068: LeftWingBottom
+    4300070: RightBarrelLrgTop
+    4300072: RightBarrelSmlTop
+    4300074: RightBarrelSmlBottom
+    4300076: RightBarrelLrgBottom
+    4300078: LeftCannon
+    4300080: LeftBarrelSmlBottom
+    4300082: LeftBarrelLrgTop
+    4300084: LeftBarrelLrgBottom
+    4300086: LeftBarrelSmlTop
+    4300088: RightWingBottom001
+    4300090: LeftWingBottom001
+    4300092: RightUpperArmJoint
+    4300094: RightUpperArm
+    4300096: RightForeArmJoint
+    4300098: RightForeArm
+    4300100: RightBlade
+    4300102: LeftUpperArmJoint
+    4300104: LeftUpperArm
+    4300106: LeftForeArmJoint
+    4300108: LeftForeArm
+    4300110: LeftBlade
+    4300112: RightLegSection006
+    4300114: DvlMechFrame
+    4300116: DvlMechHull01
+    4300118: DvlRightCannon01
+    4300120: DvlRightBarrelLrgTop
+    4300122: DvlRightBarrelSmlTop
+    4300124: DvlRightBarrelSmlBottom
+    4300126: DvlRightBarrelLrgBottom
+    4300128: DvlRightWingTop
+    4300130: DvlRightWingMiddle
+    4300132: DvlRightWingBottom
+    4300134: DvlLeftWingTop
+    4300136: DvlLeftWingMiddle
+    4300138: DvlLeftWingBottom
+    4300140: DvlLeftCannon
+    4300142: DvlLeftBarrelSmlBottom
+    4300144: DvlLeftBarrelLrgTop
+    4300146: DvlLeftBarrelLrgBottom
+    4300148: DvlLeftBarrelSmlTop
+    4300150: DvlRightWingBottom001
+    4300152: DvlLeftWingBottom001
+    4300154: DvlRightUpperArmJoint
+    4300156: DvlRightUpperArm
+    4300158: DvlRightForeArmJoint
+    4300160: DvlRightForeArm
+    4300162: DvlRightBlade
+    4300164: DvlLeftUpperArmJoint
+    4300166: DvlLeftUpperArm
+    4300168: DvlLeftForeArmJoint
+    4300170: DvlLeftForeArm
+    4300172: DvlLeftBlade
+    4300174: DvlLeftBigToe003
+    4300176: DvlLeftBigToe004
+    4300178: DvlLeftFoot002
+    4300180: DvlLeftBackToe002
+    4300182: DvlLeftLegSection005
+    4300184: DvlLeftLegSection006
+    4300186: DvlLeftLegSection007
+    4300188: DvlLeftLegSection008
+    4300190: DvlRightBigToe02
+    4300192: DvlRightBigToe01
+    4300194: DvlRightFoot01
+    4300196: DvlRightBackToe01
+    4300198: DvlRightLegSection04
+    4300200: DvlRightLegSection006
+    4300202: DvlRightLegSection02
+    4300204: DvlRightLegSection01
+    7400000: Idle
+    7400002: Walk
+    7400004: WalkBackward
+    7400006: StrafeRight
+    7400008: StrafeLeft
+    7400010: TurnLeft
+    7400012: TurnRight
+    7400014: HitFromFront
+    7400016: HitFromBack
+    7400018: DieBackward
+    7400020: DieForward
+    7400022: Attack
+    7400024: Jump
+    7400026: RightSwordHack
+    7400028: LeftSwordSwing
+    9500000: //RootNode
+    11100000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationImportErrors: 'MuscleClip ''devilMech01'' conversion failed: Cannot
+      find root motion transform ''MechBodyCenter''
+
+
+'
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 3
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Idle
+      takeName: Take 001
+      firstFrame: 170
+      lastFrame: 200
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Walk
+      takeName: Take 001
+      firstFrame: 30
+      lastFrame: 60
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: WalkBackward
+      takeName: Take 001
+      firstFrame: 60
+      lastFrame: 90
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: StrafeRight
+      takeName: Take 001
+      firstFrame: 95
+      lastFrame: 125
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: StrafeLeft
+      takeName: Take 001
+      firstFrame: 130
+      lastFrame: 160
+      wrapMode: 2
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TurnLeft
+      takeName: Take 001
+      firstFrame: 250
+      lastFrame: 280
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: TurnRight
+      takeName: Take 001
+      firstFrame: 210
+      lastFrame: 240
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HitFromFront
+      takeName: Take 001
+      firstFrame: 330
+      lastFrame: 360
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: HitFromBack
+      takeName: Take 001
+      firstFrame: 370
+      lastFrame: 400
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: DieBackward
+      takeName: Take 001
+      firstFrame: 410
+      lastFrame: 450
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: DieForward
+      takeName: Take 001
+      firstFrame: 460
+      lastFrame: 500
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Attack
+      takeName: Take 001
+      firstFrame: 510
+      lastFrame: 540
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: Jump
+      takeName: Take 001
+      firstFrame: 290
+      lastFrame: 325
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: RightSwordHack
+      takeName: Take 001
+      firstFrame: 550
+      lastFrame: 600
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    - serializedVersion: 16
+      name: LeftSwordSwing
+      takeName: Take 001
+      firstFrame: 610
+      lastFrame: 660
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: DevilMechBodyCenter
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlLeftLegAnimHelper/DvlIK Chain004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToe002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBackToeBone004/DvlLeftBackToeBone005/DvlLeftBackToeBone006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBigToe004
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBigToe003
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftBone014/DvlLeftBone015/DvlLeftBone016
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftBone013/DvlLeftFoot002
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftBone012/DvlLeftLegSection005
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftBone011/DvlLeftLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftBone010/DvlLeftLegSection007
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlLeftBone009/DvlLeftLegSection008
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftCannon/DvlLeftBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftUpperArmJoint/DvlLeftUpperArm/DvlLeftForeArmJoint/DvlLeftForeArm/DvlLeftBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlLeftWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelLrgTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightCannon01/DvlRightBarrelSmlTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightUpperArmJoint/DvlRightUpperArm/DvlRightForeArmJoint/DvlRightForeArm/DvlRightBlade
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingBottom001
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingMiddle
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlMechHull01/DvlRightWingTop
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBackToeBone01/DvlRightBackToeBone02/DvlRightBackToeBone03
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBigToe01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBigToe02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightBone06/DvlRightBone07/DvlRightBone08
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightBone05/DvlRightFoot01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightBone04/DvlRightLegSection04
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightBone03/DvlRightLegSection006
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightBone02/DvlRightLegSection02
+        weight: 1
+      - path: DevilMechBodyCenter/DvlMechFrame/DvlRightBone01/DvlRightLegSection01
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper
+        weight: 1
+      - path: DevilMechBodyCenter/DvlRightLegAnimHelper/DvlIK Chain003
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: DevilMechBodyCenter
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 46588
+  packageName: Devil Mech
+  packageVersion: 2.0
+  assetPath: Assets/DevilMech/3D Models/devilMech01.FBX
+  uploadId: 83610

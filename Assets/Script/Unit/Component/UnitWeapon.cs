@@ -33,7 +33,51 @@ public class UnitWeapon : MonoBehaviour
             cooldownRemaining -= deltaTime;
     }
 
-    public bool TryFire(ITargetable target)
+    //public bool TryFire(ITargetable target)
+    //{
+    //    if (!IsReady || !CanFireAt(target))
+    //        return false;
+
+    //    if (projectilePrefab == null || projectileManager == null)
+    //        return false;
+
+    //    Vector3 origin = FirePoint.position;
+    //    Vector3 targetPosition = target.AimPoint != null ? target.AimPoint.position : target.Position;
+
+    //    Vector3 direction = targetPosition - origin;
+
+    //    if (direction.sqrMagnitude <= 0.0001f)
+    //        return false;
+
+    //    direction.Normalize();
+    //    Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+
+    //    //owner.transform.rotation = Quaternion.LookRotation(direction, Vector3.up); 
+
+    //    Projectile projectile = projectileManager.SpawnProjectile(
+    //        projectilePrefab,
+    //        origin,
+    //        rotation,
+    //        owner,
+    //        direction,
+    //        projectileSpeed,
+    //        owner.Definition.attackDamage,
+    //        projectileLifetime,
+    //        projectileCollisionRadius,
+    //        projectileCollisionMask
+    //    );
+
+    //    if (projectile == null)
+    //        return false;
+
+    //    cooldownRemaining = owner.Definition.attackCooldown;
+
+    //    owner.View?.PlayOneShotAnim("Attack");
+
+    //    return true;
+    //}
+
+    public bool TryBeginAttack(ITargetable target)
     {
         if (!IsReady || !CanFireAt(target))
             return false;
@@ -41,18 +85,29 @@ public class UnitWeapon : MonoBehaviour
         if (projectilePrefab == null || projectileManager == null)
             return false;
 
+        cooldownRemaining = owner.Definition.attackCooldown;
+
+        return true;
+    }
+
+    public bool TryFireProjectile(ITargetable target)
+    {
+        if (!CanFireAt(target))
+            return false;
+
+        if (projectilePrefab == null || projectileManager == null)
+            return false;
+
         Vector3 origin = FirePoint.position;
         Vector3 targetPosition = target.AimPoint != null ? target.AimPoint.position : target.Position;
-
         Vector3 direction = targetPosition - origin;
 
         if (direction.sqrMagnitude <= 0.0001f)
             return false;
 
         direction.Normalize();
-        Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
 
-        //owner.transform.rotation = Quaternion.LookRotation(direction, Vector3.up); 
+        Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
 
         Projectile projectile = projectileManager.SpawnProjectile(
             projectilePrefab,
@@ -67,11 +122,7 @@ public class UnitWeapon : MonoBehaviour
             projectileCollisionMask
         );
 
-        if (projectile == null)
-            return false;
-
-        cooldownRemaining = owner.Definition.attackCooldown;
-        return true;
+        return projectile != null;
     }
 
     public bool CanFireAt(ITargetable target)
