@@ -132,7 +132,7 @@ public class UnitView : MonoBehaviour
     }
 
     // ---------------------------------------------------------------------
-    // Materials
+    // Faction Visuals - Materials
     // ---------------------------------------------------------------------
 
     public void RefreshFactionVisuals()

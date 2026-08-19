@@ -47,12 +47,12 @@ public sealed class CommandPanelController : MonoBehaviour
     [Header("Command Grid")]
     [SerializeField] private CommandSlotView[] commandSlots = new CommandSlotView[SlotCount];
 
-    [Header("Building Definition")]
-    [SerializeField] private BuildingDefinition commandCenterDefinition;
-    [SerializeField] private BuildingDefinition supplyDepotDefinition;
-    [SerializeField] private BuildingDefinition barracksDefinition;
+    //[Header("Building Definition")]
+    //[SerializeField] private BuildingDefinition commandCenterDefinition;
+    //[SerializeField] private BuildingDefinition supplyDepotDefinition;
+    //[SerializeField] private BuildingDefinition barracksDefinition;
 
-    [Header("Unit Definitions")]
+    //[Header("Unit Definitions")]
     //[SerializeField] private UnitDefinition workerUnitDefinition;
     //[SerializeField] private UnitDefinition combatUnitDefinition;
 
@@ -279,7 +279,10 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowBuildMenu()
     {
-        // Visible but disabled until BuildingPlacement is implemented.
+        BuildingDefinition commandCenterDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.CommandCenter);
+        BuildingDefinition barracksDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.Barracks);
+        BuildingDefinition supplyDepotDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.SupplyDepot);
+
         ConfigureGameplaySlot(CommandCenterSlot, "C", true, CommandPanelAction.PlaceBuilding(commandCenterDefinition));
         ConfigureGameplaySlot(SupplyDepotSlot, "S", true, CommandPanelAction.PlaceBuilding(supplyDepotDefinition));
         ConfigureGameplaySlot(BarracksSlot, "B", true, CommandPanelAction.PlaceBuilding(barracksDefinition));

@@ -72,11 +72,11 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     }
 
     public virtual void Initialize(
-    BuildingDefinition definition,
-    Faction ownerFaction,
-    GameContext gameContext,
-    BuildingManager owningBuildingManager,
-    GridCoord footprintOrigin)
+        BuildingDefinition definition,
+        Faction ownerFaction,
+        GameContext gameContext,
+        BuildingManager owningBuildingManager,
+        GridCoord footprintOrigin)
     {
         if (IsInitialized)
             return;

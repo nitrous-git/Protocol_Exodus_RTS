@@ -2,12 +2,8 @@ using UnityEngine;
 
 public sealed class BuildingView : MonoBehaviour
 {
-    private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
-    private static readonly int ConstructionVisibilityId = Shader.PropertyToID("_ConstructionVisibility");
-
     [Header("Selection")]
     [SerializeField] private GameObject selectionIndicator;
-    //[SerializeField] private Renderer selectionIndicatorRenderer;
 
     [Header("Building Visuals")]
     [SerializeField] private Transform visualRoot;
@@ -17,10 +13,18 @@ public sealed class BuildingView : MonoBehaviour
     [SerializeField, Min(0f)] private float completionTransitionDuration = 0.5f;
     [SerializeField] private AnimationCurve completionTransitionCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
+    [Header("Building Visuals")]
+    [SerializeField] private Renderer[] buildingRenderers;
+    [SerializeField] private UnitFactionTextureVariant[] factionTextureVariants;
+
     private BuildingBase owner;
 
-    private Renderer[] buildingRenderers;
+    private MeshRenderer selectionIndicatorRenderer;
+
     private MaterialPropertyBlock propertyBlock;
+    private static readonly int BaseMapID = Shader.PropertyToID("_BaseMap");
+    private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
+    private static readonly int ConstructionVisibilityID = Shader.PropertyToID("_ConstructionVisibility");
 
     private float currentConstructionVisibility = 1f;
     private float transitionStartVisibility;
@@ -36,35 +40,31 @@ public sealed class BuildingView : MonoBehaviour
     {
         this.owner = owner;
 
-        CacheComponents();
+        propertyBlock = new();
+        selectionIndicatorRenderer = selectionIndicator.GetComponent<MeshRenderer>();
 
         SetSelected(false);
-        SetOperationalImmediate();
-        //RefreshFactionVisuals();
+        RefreshFactionVisuals();
+        //SetOperationalImmediate();
     }
 
-    private void CacheComponents()
-    {
-        if (propertyBlock == null)
-        {
-            propertyBlock = new MaterialPropertyBlock();
-        }
+    //private void CacheComponents()
+    //{
+    //    if (propertyBlock == null)
+    //    {
+    //        propertyBlock = new MaterialPropertyBlock();
+    //    }
 
-        if (visualRoot == null)
-        {
-            Debug.LogError(name + " BuildingView is missing its visual root.");
-            buildingRenderers = System.Array.Empty<Renderer>();
-        }
-        else
-        {
-            buildingRenderers = visualRoot.GetComponentsInChildren<Renderer>(true);
-        }
-
-        //if (selectionIndicatorRenderer == null && selectionIndicator != null)
-        //{
-        //    selectionIndicatorRenderer = selectionIndicator.GetComponentInChildren<Renderer>(true);
-        //}
-    }
+    //    if (visualRoot == null)
+    //    {
+    //        Debug.LogError(name + " BuildingView is missing its visual root.");
+    //        buildingRenderers = System.Array.Empty<Renderer>();
+    //    }
+    //    else
+    //    {
+    //        buildingRenderers = visualRoot.GetComponentsInChildren<Renderer>(true);
+    //    }
+    //}
 
     // ---------------------------------------------------------------------
     // Centralized tick
@@ -155,8 +155,7 @@ public sealed class BuildingView : MonoBehaviour
 
     private void ApplyConstructionVisibility(float visibility)
     {
-        currentConstructionVisibility =
-            Mathf.Clamp01(visibility);
+        currentConstructionVisibility = Mathf.Clamp01(visibility);
 
         for (int i = 0; i < buildingRenderers.Length; i++)
         {
@@ -167,10 +166,50 @@ public sealed class BuildingView : MonoBehaviour
 
             GetPropertyBlock(buildingRenderer);
 
-            propertyBlock.SetFloat(ConstructionVisibilityId, currentConstructionVisibility);
+            propertyBlock.SetFloat(ConstructionVisibilityID, currentConstructionVisibility);
 
             buildingRenderer.SetPropertyBlock(propertyBlock);
         }
+    }
+
+    // ---------------------------------------------------------------------
+    // Faction Visuals - Materials
+    // ---------------------------------------------------------------------
+
+    public void RefreshFactionVisuals()
+    {
+        if (owner == null || owner.OwnerFaction == null)
+            return;
+
+        FactionColorType colorType = owner.OwnerFaction.ColorType;
+        Texture texture = GetFactionTexture(colorType);
+
+        // Set Textures
+        for (int i = 0; i < buildingRenderers.Length; i++)
+        {
+            Renderer targetRenderer = buildingRenderers[i];
+
+            propertyBlock.Clear();
+            targetRenderer.GetPropertyBlock(propertyBlock);
+            propertyBlock.SetTexture(BaseMapID, texture);
+            targetRenderer.SetPropertyBlock(propertyBlock);
+        }
+
+        // Set Selection Ring
+        selectionIndicatorRenderer.GetPropertyBlock(propertyBlock);
+        propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
+        selectionIndicatorRenderer.SetPropertyBlock(propertyBlock);
+    }
+
+    private Texture GetFactionTexture(FactionColorType colorType)
+    {
+        for (int i = 0; i < factionTextureVariants.Length; i++)
+        {
+            if (factionTextureVariants[i].colorType == colorType)
+                return factionTextureVariants[i].baseMap;
+        }
+
+        return null;
     }
 
     // ---------------------------------------------------------------------
@@ -181,37 +220,6 @@ public sealed class BuildingView : MonoBehaviour
     {
         if (selectionIndicator != null)
             selectionIndicator.SetActive(selected);
-    }
-
-    // ---------------------------------------------------------------------
-    // Faction visuals
-    // ---------------------------------------------------------------------
-
-    public void RefreshFactionVisuals()
-    {
-        if (owner == null || owner.OwnerFaction == null)
-            return;
-
-        //Color buildingColor = owner.OwnerFaction.FactionColor;
-
-        for (int i = 0; i < buildingRenderers.Length; i++)
-        {
-            Renderer buildingRenderer = buildingRenderers[i];
-
-            if (buildingRenderer == null)
-                continue;
-
-            GetPropertyBlock(buildingRenderer);
-            //propertyBlock.SetColor(BaseColorId, buildingColor);
-            buildingRenderer.SetPropertyBlock(propertyBlock);
-        }
-
-        //if (selectionIndicatorRenderer != null)
-        //{
-        //    GetPropertyBlock(selectionIndicatorRenderer);
-        //    propertyBlock.SetColor(BaseColorId, owner.OwnerFaction.SelectionRingColor);
-        //    selectionIndicatorRenderer.SetPropertyBlock(propertyBlock);
-        //}
     }
 
     // ---------------------------------------------------------------------
