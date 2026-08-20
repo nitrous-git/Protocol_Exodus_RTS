@@ -7,10 +7,7 @@ public sealed class CombatIdleState : UnitState<CombatUnit>
         unit.ClearCurrentTarget();
     }
 
-    protected override void TickTyped(CombatUnit unit, float deltaTime)
-    {
-        unit.UpdateAutomaticCombat(deltaTime);
-    }
+    protected override void TickTyped(CombatUnit unit, float deltaTime){ }
 
     protected override void OnExitTyped(CombatUnit unit)
     {

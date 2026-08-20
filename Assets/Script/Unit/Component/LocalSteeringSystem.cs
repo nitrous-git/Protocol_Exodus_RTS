@@ -4,13 +4,13 @@ using UnityEngine;
 public class LocalSteeringSystem : MonoBehaviour
 {
     [Header("Separation")]
-    [SerializeField] private float separationPadding = 0.15f;
+    [SerializeField] private float separationPadding = 0.25f;
     [SerializeField] private float separationWeight = 1.0f;
 
     [Header("Predictive Avoidance")]
-    [SerializeField] private float predictionTime = 0.75f;
-    [SerializeField] private float avoidancePadding = 0.20f;
-    [SerializeField] private float avoidanceWeight = 0f;
+    [SerializeField] private float predictionTime = 1.75f;
+    [SerializeField] private float avoidancePadding = 0.30f;
+    [SerializeField] private float avoidanceWeight = 1.2f;
 
     [Header("Debug")]
     [SerializeField] private bool drawSteeringGizmos = true;
@@ -33,11 +33,12 @@ public class LocalSteeringSystem : MonoBehaviour
             return preferredVelocity;
 
         Vector3 separation = CalculateSeparation();
-        //Vector3 avoidance = CalculatePredictiveAvoidance(preferredVelocity);
+        Vector3 avoidance = CalculatePredictiveAvoidance(preferredVelocity);
 
         Vector3 velocity = 
             preferredVelocity 
-            + separation * maxSpeed * separationWeight;
+            + separation * maxSpeed * separationWeight
+            + avoidance * maxSpeed * avoidanceWeight;
 
         velocity.y = 0f;
 

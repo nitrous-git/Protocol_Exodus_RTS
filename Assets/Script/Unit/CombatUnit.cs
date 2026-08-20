@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(UnitSensor))]
@@ -53,6 +54,9 @@ public class CombatUnit : UnitBase
     public override void Tick(float deltaTime)
     {
         weapon?.Tick(deltaTime);
+
+        UpdateCombatAwareness();
+
         base.Tick(deltaTime);
     }
 
@@ -71,11 +75,11 @@ public class CombatUnit : UnitBase
                 break;
 
             case CommandType.Attack:
-                SetState(new AttackState());
+                SetState(new AttackState(context.Target));
                 break;
 
             case CommandType.HoldPosition:
-                StopAndEnterCombatIdle();
+                EnterCombatIdle();
                 break;
             
             case CommandType.Idle:
@@ -86,35 +90,29 @@ public class CombatUnit : UnitBase
     }
 
     // ---------------------------------------------------------------------
-    // Projectile Attack
+    // Attack Methods
     // ---------------------------------------------------------------------
 
-    /// <summary>
-    /// Passive combat behavior used only by CombatIdleState.
-    ///
-    /// The unit may acquire and shoot a nearby enemy, but it never
-    /// changes to AttackState and never pursues an automatic target.
-    /// </summary>
-    /// 
-    public void UpdateAutomaticCombat(float deltaTime)
+    private void UpdateCombatAwareness()
     {
-        if (!CanAttack())
-        {
-            ClearCurrentTarget();
-            return;
-        }
-
-        if (!IsValidAutomaticTarget(currentTarget))
-        {
-            ITargetable target = sensor.FindClosestEnemy(GetAttackRange());
-            SetCurrentTarget(target);
-        }
-
-        if (currentTarget == null)
+        if (!IsInitialized || !IsAlive || !CanAttack())
             return;
 
-        //FaceTarget(currentTarget, deltaTime);
-        //weapon.TryFire(currentTarget);
+        if (currentState is AttackState)
+            return;
+
+        ITargetable target = FindClosestAttackTarget();
+
+        if (target == null)
+            return;
+
+        SetState(new AttackState(target));
+    }
+
+    public void UpdateAttack(float deltaTime)
+    {
+        if (!IsValidAttackTarget(currentTarget))
+            return;
 
         FaceTarget(currentTarget, deltaTime);
 
@@ -159,12 +157,12 @@ public class CombatUnit : UnitBase
     // Helper methods
     // ---------------------------------------------------------------------
 
-    private void StopAndEnterCombatIdle()
+    public void EnterCombatIdle()
     {
-        motor?.Stop();
-        ClearCurrentTarget();
+        CurrentCommand = CommandType.Idle;
+        currentContext = CommandContext.None();
 
-        base.IssueCommand(CommandType.Idle, CommandContext.None());
+        SetState(new CombatIdleState());
     }
 
     public void ClearCurrentTarget()
@@ -191,9 +189,20 @@ public class CombatUnit : UnitBase
         return difference.sqrMagnitude <= attackRange * attackRange;
     }
 
-    private bool IsValidAutomaticTarget(ITargetable target)
+    public bool IsValidAttackTarget(ITargetable target)
     {
+        if (sensor == null)
+            return false;
+
         return sensor.IsValidEnemyTarget(target) && IsWithinAttackRange(target);
+    }
+
+    public ITargetable FindClosestAttackTarget()
+    {
+        if (!CanAttack())
+            return null;
+
+        return sensor.FindClosestEnemy(GetAttackRange());
     }
 
     public void FaceTarget(ITargetable target, float deltaTime)
