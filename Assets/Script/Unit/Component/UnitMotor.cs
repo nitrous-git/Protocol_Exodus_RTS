@@ -19,6 +19,7 @@ public class UnitMotor : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField] private bool drawPathGizmos = true;
+    [SerializeField] private bool drawOccupancyGizmo = true;
     [SerializeField] private float gizmoSampleSpacing = 0.5f;
     [SerializeField] private float gizmoHeightOffset = 0.05f;
 
@@ -224,7 +225,7 @@ public class UnitMotor : MonoBehaviour
     {
         while (pathIndex < path.Count - 1)
         {
-            if (!IsWithinWaypointReach(path[pathIndex]))
+            if (!IsWithinWaypointReach(path[pathIndex]) || HasPassedIntermediateWaypoint(pathIndex))
                 return;
 
             pathIndex++;
@@ -247,6 +248,27 @@ public class UnitMotor : MonoBehaviour
         float reachDistance = WaypointReachDistance();
 
         return (waypointFlat - currentFlat).sqrMagnitude <= reachDistance * reachDistance;
+    }
+
+    private bool HasPassedIntermediateWaypoint(int index)
+    {
+        if (index <= 0 || index >= path.Count - 1)
+            return false;
+
+        Vector3 previous = path[index - 1];
+        Vector3 waypoint = path[index];
+        Vector3 current = transform.position;
+
+        previous.y = 0f;
+        waypoint.y = 0f;
+        current.y = 0f;
+
+        Vector3 incomingDirection = waypoint - previous;
+
+        if (incomingDirection.sqrMagnitude <= 0.0001f)
+            return false;
+
+        return Vector3.Dot(current - waypoint,incomingDirection) > 0f;
     }
 
     private float WaypointReachDistance()
@@ -352,6 +374,8 @@ public class UnitMotor : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        DrawOccupancyGizmo(); 
+
         if (!drawPathGizmos || path == null || path.Count == 0)
             return;
 
@@ -431,6 +455,83 @@ public class UnitMotor : MonoBehaviour
 
         Gizmos.color = color;
         Gizmos.DrawWireCube(center, size);
+    }
+
+    private void DrawOccupancyGizmo()
+    {
+        if (!drawOccupancyGizmo ||
+            owner == null ||
+            terrainGrid == null ||
+            navigationState == null)
+        {
+            return;
+        }
+
+        GridCoord physicalCell = terrainGrid.WorldToCell(transform.position);
+        GridCoord? registeredCell = navigationState.GetOccupiedCell(owner);
+
+        float cellSize = terrainGrid.CellSize;
+
+        // No occupancy registered at all.
+        if (!registeredCell.HasValue)
+        {
+            Gizmos.color = Color.yellow;
+
+            Vector3 physicalCenter =
+                GetGizmoGroundPoint(terrainGrid.CellToWorld(physicalCell));
+
+            Gizmos.DrawWireCube(
+                physicalCenter,
+                new Vector3(cellSize * 0.9f, 0.15f, cellSize * 0.9f));
+
+            return;
+        }
+
+        bool cellMatches =
+            registeredCell.Value.x == physicalCell.x &&
+            registeredCell.Value.z == physicalCell.z;
+
+        int occupantCount =
+            navigationState.GetOccupantCount(registeredCell.Value);
+
+        if (!cellMatches)
+        {
+            // Navigation state is stale / incorrect.
+            Gizmos.color = Color.magenta;
+        }
+        else if (occupantCount > 1)
+        {
+            // Multiple units registered in the exact same cell.
+            Gizmos.color = Color.red;
+        }
+        else
+        {
+            // Everything healthy.
+            Gizmos.color = Color.green;
+        }
+
+        Vector3 registeredCenter =
+            GetGizmoGroundPoint(
+                terrainGrid.CellToWorld(registeredCell.Value));
+
+        Gizmos.DrawWireCube(
+            registeredCenter,
+            new Vector3(cellSize * 0.9f, 0.15f, cellSize * 0.9f));
+
+        // If physical position and registered occupancy disagree,
+        // also draw the physical cell.
+        if (!cellMatches)
+        {
+            Gizmos.color = Color.yellow;
+
+            Vector3 physicalCenter =
+                GetGizmoGroundPoint(
+                    terrainGrid.CellToWorld(physicalCell));
+
+            Gizmos.DrawWireCube(
+                physicalCenter,
+                new Vector3(cellSize * 0.65f, 0.2f, cellSize * 0.65f));
+        }
     }
 
 }

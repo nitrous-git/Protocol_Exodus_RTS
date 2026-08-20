@@ -5,12 +5,13 @@ public class LocalSteeringSystem : MonoBehaviour
 {
     [Header("Separation")]
     [SerializeField] private float separationPadding = 0.25f;
-    [SerializeField] private float separationWeight = 1.0f;
+    [SerializeField] private float separationWeight = 0.0f; // 1.0f;
 
     [Header("Predictive Avoidance")]
-    [SerializeField] private float predictionTime = 1.75f;
     [SerializeField] private float avoidancePadding = 0.30f;
     [SerializeField] private float avoidanceWeight = 1.2f;
+
+    private float predictionTime = 2.2f;
 
     [Header("Debug")]
     [SerializeField] private bool drawSteeringGizmos = true;
@@ -20,6 +21,20 @@ public class LocalSteeringSystem : MonoBehaviour
     private IReadOnlyList<UnitBase> allUnits;
 
     private Vector3 debugSeparation;
+    private Vector3 debugAvoidance;
+
+    private bool debugPredictionCandidate;
+    private bool debugThreatDetected;
+
+    private Vector3 debugOwnerPosition;
+    private Vector3 debugOtherPosition;
+
+    private Vector3 debugOwnerVelocity;
+    private Vector3 debugOtherVelocity;
+
+    private float debugTimeToClosestApproach;
+    private float debugClosestDistance;
+    private float debugAvoidanceDistance;
 
     public void Initialize(UnitBase owner, IReadOnlyList<UnitBase> allUnits)
     {
@@ -35,10 +50,13 @@ public class LocalSteeringSystem : MonoBehaviour
         Vector3 separation = CalculateSeparation();
         Vector3 avoidance = CalculatePredictiveAvoidance(preferredVelocity);
 
+        debugAvoidance = avoidance;
+
         Vector3 velocity = 
             preferredVelocity 
-            + separation * maxSpeed * separationWeight
             + avoidance * maxSpeed * avoidanceWeight;
+
+        //+separation * maxSpeed * separationWeight
 
         velocity.y = 0f;
 
@@ -112,16 +130,29 @@ public class LocalSteeringSystem : MonoBehaviour
 
     private Vector3 CalculatePredictiveAvoidance(Vector3 preferredVelocity)
     {
+        ResetPredictiveDebug();
+
         if (preferredVelocity.sqrMagnitude <= Mathf.Epsilon)
             return Vector3.zero;
 
-        UnitBase threat = null;
-
-        float earliestCollisionTime = predictionTime;
-        Vector3 threatFutureOffset = Vector3.zero;
-        float threatAvoidanceDistance = 0f;
-
         float ownerRadius = GetNavigationRadius(owner);
+
+        Vector3 ownerVelocity = preferredVelocity;
+
+        if (owner.Motor != null &&
+            owner.Motor.CurrentVelocity.sqrMagnitude > 0.0001f)
+        {
+            ownerVelocity = owner.Motor.CurrentVelocity;
+        }
+
+        ownerVelocity.y = 0f;
+
+        UnitBase closestThreat = null;
+
+        float earliestCollisionTime = float.PositiveInfinity;
+        Vector3 closestFutureOffset = Vector3.zero;
+        float closestAvoidanceDistance = 0f;
+        Vector3 closestOtherVelocity = Vector3.zero;
 
         for (int i = 0; i < allUnits.Count; i++)
         {
@@ -134,83 +165,204 @@ public class LocalSteeringSystem : MonoBehaviour
                 continue;
             }
 
-            Vector3 relativePosition = other.Position - owner.Position;
+            Vector3 relativePosition =
+                other.Position - owner.Position;
+
             relativePosition.y = 0f;
+
             Vector3 otherVelocity = Vector3.zero;
 
             if (other.Motor != null)
+            {
                 otherVelocity = other.Motor.CurrentVelocity;
+            }
 
-            Vector3 relativeVelocity = otherVelocity - preferredVelocity;
-            relativeVelocity.y = 0f;
-            float relativeSpeedSquared = relativeVelocity.sqrMagnitude;
+            otherVelocity.y = 0f;
+
+            Vector3 relativeVelocity =
+                otherVelocity - ownerVelocity;
+
+            float relativeSpeedSquared =
+                relativeVelocity.sqrMagnitude;
 
             if (relativeSpeedSquared <= 0.0001f)
                 continue;
 
-            float timeToClosestApproach = -Vector3.Dot(relativePosition, relativeVelocity) / relativeSpeedSquared;
+            float timeToClosestApproach =
+                -Vector3.Dot(relativePosition, relativeVelocity)
+                / relativeSpeedSquared;
 
-            if (timeToClosestApproach <= 0f || timeToClosestApproach > predictionTime)
+            // Closest approach is behind us:
+            // units are no longer approaching.
+            if (timeToClosestApproach <= 0f)
+                continue;
+
+            Vector3 futureOffset =
+                relativePosition +
+                relativeVelocity * timeToClosestApproach;
+
+            float avoidanceDistance =
+                ownerRadius +
+                GetNavigationRadius(other) +
+                avoidancePadding;
+
+            // Closest approach is safe.
+            if (futureOffset.sqrMagnitude >=
+                avoidanceDistance * avoidanceDistance)
             {
                 continue;
             }
 
-            Vector3 futureOffset = relativePosition + relativeVelocity * timeToClosestApproach;
-
-            float avoidanceDistance = ownerRadius + GetNavigationRadius(other) + avoidancePadding;
-
-            if (futureOffset.sqrMagnitude >= avoidanceDistance * avoidanceDistance)
-            {
-                continue;
-            }
-
+            // We now KNOW this unit is on a collision course.
+            // Keep the collision that will happen first.
             if (timeToClosestApproach >= earliestCollisionTime)
                 continue;
 
-            threat = other;
-            earliestCollisionTime = timeToClosestApproach;
-            threatFutureOffset = futureOffset;
-            threatAvoidanceDistance = avoidanceDistance;
+            closestThreat = other;
+
+            earliestCollisionTime =
+                timeToClosestApproach;
+
+            closestFutureOffset =
+                futureOffset;
+
+            closestAvoidanceDistance =
+                avoidanceDistance;
+
+            closestOtherVelocity =
+                otherVelocity;
         }
 
-        if (threat == null)
+        // No unit is currently on a predicted collision course.
+        if (closestThreat == null)
             return Vector3.zero;
 
-        return CalculateAvoidanceDirection(preferredVelocity, threatFutureOffset, earliestCollisionTime, threatAvoidanceDistance);
+        // -------------------------------------------------------------
+        // DEBUG
+        // -------------------------------------------------------------
+
+        debugPredictionCandidate = true;
+
+        debugOwnerPosition = owner.Position;
+        debugOtherPosition = closestThreat.Position;
+
+        debugOwnerVelocity = ownerVelocity;
+        debugOtherVelocity = closestOtherVelocity;
+
+        debugTimeToClosestApproach =
+            earliestCollisionTime;
+
+        debugClosestDistance =
+            closestFutureOffset.magnitude;
+
+        debugAvoidanceDistance =
+            closestAvoidanceDistance;
+
+        // -------------------------------------------------------------
+        // PREDICTION HORIZON
+        // -------------------------------------------------------------
+
+        if (earliestCollisionTime > predictionTime)
+        {
+            // Collision exists, but it is still too far in the future.
+            // Debug remains yellow.
+            return Vector3.zero;
+        }
+
+        // SAME candidate, SAME TCA.
+        // It has now entered our prediction horizon.
+        debugThreatDetected = true;
+
+        return CalculateAvoidanceDirection(
+            preferredVelocity,
+            closestFutureOffset,
+            earliestCollisionTime,
+            closestAvoidanceDistance);
     }
 
-    private Vector3 CalculateAvoidanceDirection(Vector3 preferredVelocity, Vector3 futureOffset, float collisionTime, float avoidanceDistance)
+    private Vector3 CalculateAvoidanceDirection(
+        Vector3 preferredVelocity,
+        Vector3 futureOffset,
+        float collisionTime,
+        float avoidanceDistance)
     {
         Vector3 forward = preferredVelocity.normalized;
         Vector3 right = new Vector3(forward.z, 0f, -forward.x);
 
+        float sideOffset = Vector3.Dot(futureOffset, right);
+
+        // Treat nearly head-on encounters as symmetric.
+        // Using "own right" for both head-on units causes them
+        // to pass on opposite world-space sides.
+        float sideDeadZone = avoidanceDistance * 0.15f;
+
         Vector3 avoidanceDirection;
 
-        if (futureOffset.sqrMagnitude <= 0.0001f)
+        if (Mathf.Abs(sideOffset) <= sideDeadZone)
         {
-            // Perfectly symmetric/head-on situation.
-            // Both agents move to their own right.
             avoidanceDirection = right;
         }
         else
         {
-            float otherSide = Vector3.Dot(futureOffset, right);
-            avoidanceDirection = otherSide >= 0f ? -right : right;
+            avoidanceDirection = sideOffset > 0f ? -right : right;
         }
 
         float futureDistance = futureOffset.magnitude;
 
         float distanceUrgency = 1f - Mathf.Clamp01(futureDistance / avoidanceDistance);
 
-        float timeUrgency = 1f - Mathf.Clamp01(collisionTime / predictionTime);
+        float timeUrgency =  1f - Mathf.Clamp01(collisionTime / predictionTime);
 
         float strength = Mathf.Clamp01(0.5f * distanceUrgency + 0.5f * timeUrgency);
 
         return avoidanceDirection * strength;
     }
 
+    // ---------------------------------------------------------------------
+    // Debug Helpers
+    // ---------------------------------------------------------------------
 
+    private void ResetPredictiveDebug()
+    {
+        debugPredictionCandidate = false;
+        debugThreatDetected = false;
 
+        debugOwnerPosition = Vector3.zero;
+        debugOtherPosition = Vector3.zero;
+
+        debugOwnerVelocity = Vector3.zero;
+        debugOtherVelocity = Vector3.zero;
+
+        debugTimeToClosestApproach = 0f;
+        debugClosestDistance = 0f;
+        debugAvoidanceDistance = 0f;
+    }
+
+    private void StorePredictiveDebug(
+        UnitBase other,
+        Vector3 ownerVelocity,
+        Vector3 otherVelocity,
+        float timeToClosestApproach,
+        float closestDistance,
+        float avoidanceDistance)
+    {
+        debugPredictionCandidate = true;
+
+        debugOwnerPosition = owner.Position;
+        debugOtherPosition = other.Position;
+
+        debugOwnerVelocity = ownerVelocity;
+        debugOtherVelocity = otherVelocity;
+
+        debugTimeToClosestApproach =
+            timeToClosestApproach;
+
+        debugClosestDistance =
+            closestDistance;
+
+        debugAvoidanceDistance =
+            avoidanceDistance;
+    }
 
     // ---------------------------------------------------------------------
     // Gizmos
@@ -254,6 +406,24 @@ public class LocalSteeringSystem : MonoBehaviour
             Gizmos.DrawLine(start, end);
             Gizmos.DrawSphere(end,0.06f);
         }
+
+        if (debugAvoidance.sqrMagnitude > 0.0001f)
+        {
+            Vector3 start = transform.position;
+            start.y += 0.35f;
+
+            Vector3 end = start + debugAvoidance * 2f;
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(start, end);
+            Gizmos.DrawSphere(end, 0.06f);
+        }
+
+
+        if (debugPredictionCandidate)
+        {
+            DrawPredictiveAvoidanceDebug();
+        }
     }
 
     private void DrawCircle(Vector3 center, float radius, Color color)
@@ -279,4 +449,106 @@ public class LocalSteeringSystem : MonoBehaviour
         }
     }
 
+
+    private void DrawPredictiveAvoidanceDebug()
+    {
+        Vector3 ownerStart = debugOwnerPosition;
+        Vector3 otherStart = debugOtherPosition;
+
+        ownerStart.y += 0.45f;
+        otherStart.y += 0.45f;
+
+        // -------------------------------------------------------------
+        // Prediction horizon
+        // -------------------------------------------------------------
+
+        Vector3 ownerHorizon =
+            ownerStart +
+            debugOwnerVelocity * predictionTime;
+
+        Vector3 otherHorizon =
+            otherStart +
+            debugOtherVelocity * predictionTime;
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(ownerStart, ownerHorizon);
+        Gizmos.DrawWireSphere(ownerHorizon, 0.08f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(otherStart, otherHorizon);
+        Gizmos.DrawWireSphere(otherHorizon, 0.08f);
+
+        // -------------------------------------------------------------
+        // Actual closest approach
+        // -------------------------------------------------------------
+
+        Vector3 ownerClosest =
+            ownerStart +
+            debugOwnerVelocity *
+            debugTimeToClosestApproach;
+
+        Vector3 otherClosest =
+            otherStart +
+            debugOtherVelocity *
+            debugTimeToClosestApproach;
+
+        // If threat is active -> white.
+        // If collision is still outside prediction horizon -> yellow.
+        Gizmos.color =
+            debugThreatDetected
+                ? Color.white
+                : Color.yellow;
+
+        Gizmos.DrawLine(
+            ownerClosest,
+            otherClosest);
+
+        Gizmos.DrawSphere(
+            ownerClosest,
+            0.07f);
+
+        Gizmos.DrawSphere(
+            otherClosest,
+            0.07f);
+
+        // Show the combined avoidance envelope at closest approach.
+        DrawCircle(
+            ownerClosest,
+            debugAvoidanceDistance,
+            debugThreatDetected
+                ? Color.cyan
+                : Color.yellow);
+
+        // -------------------------------------------------------------
+        // Current prediction state marker
+        // -------------------------------------------------------------
+
+        Gizmos.color =
+            debugThreatDetected
+                ? Color.blue
+                : Color.yellow;
+
+        Gizmos.DrawWireSphere(
+            ownerStart,
+            0.18f);
+
+#if UNITY_EDITOR
+        string state =
+            debugThreatDetected
+                ? "ACTIVE AVOIDANCE"
+                : "FUTURE COLLISION";
+
+        Vector3 labelPosition =
+            ownerStart + Vector3.up * 1.2f;
+
+        UnityEditor.Handles.Label(
+            labelPosition,
+            $"{state}\n" +
+            $"TCA: {debugTimeToClosestApproach:F3}s\n" +
+            $"Horizon: {predictionTime:F3}s\n" +
+            $"Delta: {debugTimeToClosestApproach - predictionTime:F3}s\n" +
+            $"Closest: {debugClosestDistance:F2}\n" +
+            $"Avoid Dist: {debugAvoidanceDistance:F2}");
+#endif
+    }
 }
