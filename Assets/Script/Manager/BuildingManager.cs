@@ -7,6 +7,11 @@ using UnityEngine;
 /// </summary>
 public sealed class BuildingManager
 {
+    //[Header("Production Options")]
+    //[SerializeField] private List<BuildingType> producibleBuildingTypes = new();
+
+    //private readonly List<BuildingDefinition> producibleBuildings = new();
+
     private readonly List<BuildingBase> buildingList = new();
     private readonly List<BuildingBase> pendingRemovalList = new();
 
@@ -17,6 +22,7 @@ public sealed class BuildingManager
     public Faction OwnerFaction { get; private set; }
 
     public IReadOnlyList<BuildingBase> BuildingList => buildingList;
+    public IReadOnlyList<BuildingDefinition> ProducibleBuildings => OwnerFaction?.Definition.BuildingRoster;
     public TerrainGrid TerrainGrid => terrainGrid;
 
     public BuildingManager(GameContext gameContext, TerrainGrid terrainGrid, Transform buildingsRoot)
@@ -24,6 +30,8 @@ public sealed class BuildingManager
         this.gameContext = gameContext;
         this.terrainGrid = terrainGrid;
         this.buildingsRoot = buildingsRoot;
+
+        //ResolveProducibleBuildings();
     }
 
     public void SetOwnerFaction(Faction ownerFaction)
@@ -225,6 +233,51 @@ public sealed class BuildingManager
 
         Object.Destroy(building.gameObject);
     }
+
+    // ---------------------------------------------------------------------
+    // Construction Roster
+    // ---------------------------------------------------------------------
+
+    private void ResolveProducibleBuildings()
+    {
+        //producibleBuildings.Clear();
+
+        //FactionDefinition factionDefinition = OwnerFaction?.Definition;
+
+        //if (factionDefinition == null)
+        //{
+        //    Debug.LogError($"{OwnerFaction?.Name} cannot resolve producible buildings because the owning faction has no definition.");
+        //    return;
+        //}
+
+        //for (int i = 0; i < producibleBuildingTypes.Count; i++)
+        //{
+        //    BuildingType buildingType = producibleBuildingTypes[i];
+        //    BuildingDefinition definition = factionDefinition.GetBuildingDefinition(buildingType);
+
+        //    if (definition == null)
+        //    {
+        //        Debug.LogWarning($"{OwnerFaction?.Name}: faction '{factionDefinition.factionName}' has no unit definition for {buildingType}.");
+        //        continue;
+        //    }
+
+        //    producibleBuildings.Add(definition);
+        //}
+    }
+
+    public BuildingDefinition GetProducibleBuilding(BuildingType buildingType)
+    {
+        for (int i = 0; i < ProducibleBuildings.Count; i++)
+        {
+            BuildingDefinition definition = ProducibleBuildings[i];
+
+            if (definition != null && definition.Type == buildingType)
+                return definition;
+        }
+
+        return null;
+    }
+
 
     // ---------------------------------------------------------------------
     // Placement

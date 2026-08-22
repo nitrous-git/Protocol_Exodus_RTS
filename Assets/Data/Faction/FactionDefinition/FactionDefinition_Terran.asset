@@ -19,16 +19,20 @@ MonoBehaviour:
   unitRoster:
   - {fileID: 11400000, guid: 304feabee14809247ad10ee0adab9085, type: 2}
   - {fileID: 11400000, guid: 16f327cc775da4d4bb66ea89dbbdfff4, type: 2}
+  buildingRoster:
+  - {fileID: 11400000, guid: ede45adabc5d310449a52735a88b0715, type: 2}
+  - {fileID: 11400000, guid: 285fa27c69b84764292bab8873a17d6b, type: 2}
+  - {fileID: 11400000, guid: fdd08ba98d30dff45a12d55655a69a25, type: 2}
   colorVariants:
   - colorType: 0
-    displayName: Red
+    displayName: Circadia Red
     factionColor: {r: 1, g: 0.15566039, b: 0.15566039, a: 0}
     selectionRingColor: {r: 0.7924528, g: 0.16073336, b: 0.16073336, a: 0.6509804}
   - colorType: 2
-    displayName: Green
+    displayName: Solarian Green
     factionColor: {r: 0.14509805, g: 0.8980392, b: 0.11372549, a: 0}
-    selectionRingColor: {r: 0.20811671, g: 0.6981132, b: 0.18770024, a: 0.69411767}
+    selectionRingColor: {r: 0.20811671, g: 0.6981132, b: 0.18770024, a: 0.6509804}
   - colorType: 1
-    displayName: Blue
+    displayName: Absola Blue
     factionColor: {r: 0.03564434, g: 0.08824494, b: 0.8396226, a: 0}
-    selectionRingColor: {r: 0.13866144, g: 0.17815635, b: 0.7169812, a: 0.6862745}
+    selectionRingColor: {r: 0.13866144, g: 0.17815635, b: 0.7169812, a: 0.6509804}

@@ -15,12 +15,14 @@ public class FactionDefinition : ScriptableObject
 
     [Header("Roster")]
     [SerializeField] private List<UnitDefinition> unitRoster = new();
+    [SerializeField] private List<BuildingDefinition> buildingRoster = new();
 
     [Header("Faction Colors")]
     public FactionColorVariant[] colorVariants;
 
     [Header("Roster")]
     public IReadOnlyList<UnitDefinition> UnitRoster => unitRoster;
+    public IReadOnlyList<BuildingDefinition> BuildingRoster => buildingRoster;
 
     // ---------------------------------------------------------------------
     // Helpers
@@ -33,6 +35,19 @@ public class FactionDefinition : ScriptableObject
             UnitDefinition definition = unitRoster[i];
 
             if (definition != null && definition.Type == unitType)
+                return definition;
+        }
+
+        return null;
+    }
+
+    public BuildingDefinition GetBuildingDefinition(BuildingType buildingType)
+    {
+        for (int i = 0; i < buildingRoster.Count; i++)
+        {
+            BuildingDefinition definition = buildingRoster[i];
+
+            if (definition != null && definition.Type == buildingType)
                 return definition;
         }
 

@@ -18,7 +18,8 @@ public class UnitMotor : MonoBehaviour
     [SerializeField] private int navMeshAreaMask = NavMesh.AllAreas;
 
     [Header("Debug")]
-    [SerializeField] private bool drawPathGizmos = true;
+    private bool drawPathGizmos = true;
+    [SerializeField] private bool drawOccupancyGizmo = true;
     [SerializeField] private float gizmoSampleSpacing = 0.5f;
     [SerializeField] private float gizmoHeightOffset = 0.05f;
 
@@ -29,16 +30,22 @@ public class UnitMotor : MonoBehaviour
     private GridNavigationStateSystem navigationState;
     private LocalSteeringSystem localSteeringSystem;
     private float moveSpeed;
-    private Vector3 currentVelocity;
+    private Vector3 currentVelocity; // actual resulting movement
+    private Vector3 preferredVelocity; // navigation intent
 
     private readonly List<Vector3> path = new List<Vector3>();
     private int pathIndex;
     private bool hasPath;
+    private float pathLookAheadCells = 1;
+    private float maxLookAheadTurnAngle = 35f;
+    private Vector3 debugLookAheadTarget;
+    private float finalArrivalFraction = 0.15f;
 
     public bool HasPath { get { return hasPath; } }
     public bool HasArrived { get { return !hasPath; } }
 
     public Vector3 CurrentVelocity => currentVelocity;
+    public Vector3 PreferredVelocity => preferredVelocity;
 
     public void Initialize(UnitBase owner, 
         IPathfindingService pathfindingService, 
@@ -134,13 +141,17 @@ public class UnitMotor : MonoBehaviour
 
     private void MoveTowardsTarget(Vector3 target)
     {
-        if (HasReachedTarget(target))
+        bool isFinalWaypoint = pathIndex >= path.Count - 1;
+
+        // only the actual destination must be reached exactly.
+        if (isFinalWaypoint && HasReachedTarget(target))
         {
-            CompleteWaypoint(target);
+            CompleteDestination(target);
             return;
         }
 
-        Vector3 preferredVelocity = CalculateDesiredVelocity(target);
+        //preferredVelocity = CalculateDesiredVelocity(target); // navigation intent
+        preferredVelocity = CalculatePathFollowingVelocity(target);
         Vector3 finalVelocity = preferredVelocity;
 
         if (localSteeringSystem != null)
@@ -148,48 +159,62 @@ public class UnitMotor : MonoBehaviour
             finalVelocity = localSteeringSystem.CalculateVelocity(preferredVelocity, moveSpeed);
         }
 
-        ApplyVelocity(finalVelocity, target);
+        //ApplyVelocity(finalVelocity, target, isFinalWaypoint);
+        ApplyVelocity(finalVelocity);
 
-        if (HasReachedTarget(target))
+        if (isFinalWaypoint && HasReachedTarget(target))
         {
-            CompleteWaypoint(target);
+            CompleteDestination(target);
         }
     }
 
-    private Vector3 CalculateDesiredVelocity(Vector3 target)
+
+    //private Vector3 CalculateDesiredVelocity(Vector3 target)
+    //{
+    //    Vector3 direction = target - transform.position;
+    //    direction.y = 0f;
+
+    //    if (direction.sqrMagnitude <= Mathf.Epsilon)
+    //        return Vector3.zero;
+
+    //    return direction.normalized * moveSpeed;
+    //}
+
+    private Vector3 CalculatePathFollowingVelocity(
+    Vector3 target)
     {
-        Vector3 direction = target - transform.position;
+        Vector3 steeringTarget = CalculateLookAheadTarget(target);
+
+        debugLookAheadTarget =
+            steeringTarget;
+
+        Vector3 direction =
+            steeringTarget -
+            transform.position;
+
         direction.y = 0f;
 
-        if (direction.sqrMagnitude <= Mathf.Epsilon)
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
             return Vector3.zero;
+        }
 
-        return direction.normalized * moveSpeed;
+        return direction.normalized *
+            moveSpeed;
     }
 
-    private void ApplyVelocity(Vector3 velocity, Vector3 target)
+    private void ApplyVelocity(Vector3 velocity)
     {
         Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
-        Vector3 targetFlat = new Vector3(target.x, 0f, target.z);
 
-        float moveDistance = velocity.magnitude * Time.deltaTime;
-        float targetDistance = Vector3.Distance(currentFlat, targetFlat);
-
-        Vector3 nextFlat;
-
-        if (moveDistance >= targetDistance)
-        {
-            nextFlat = targetFlat;
-        }
-        else
-        {
-            nextFlat = currentFlat + velocity * Time.deltaTime;
-        }
+        Vector3 nextFlat = currentFlat + velocity * Time.deltaTime;
 
         Vector3 nextPosition = new Vector3(nextFlat.x, transform.position.y, nextFlat.z);
+
         nextPosition = ProjectPositionToGround(nextPosition);
 
         Vector3 previousPosition = transform.position;
+
         transform.position = nextPosition;
 
         if (Time.deltaTime > Mathf.Epsilon)
@@ -207,24 +232,74 @@ public class UnitMotor : MonoBehaviour
         RotateTowardsMovement(nextPosition - previousPosition);
     }
 
+    //private void ApplyVelocity(Vector3 velocity, Vector3 target, bool isFinalWaypoint)
+    //{
+    //    Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
+    //    Vector3 targetFlat = new Vector3(target.x, 0f, target.z);
 
-    private void CompleteWaypoint(Vector3 target)
+    //    float moveDistance = velocity.magnitude * Time.deltaTime;
+    //    float targetDistance = Vector3.Distance(currentFlat, targetFlat);
+
+    //    Vector3 nextFlat;
+
+    //    if (isFinalWaypoint && moveDistance >= targetDistance)
+    //    {
+    //        nextFlat = targetFlat;
+    //    }
+    //    else
+    //    {
+    //        nextFlat = currentFlat + velocity * Time.deltaTime;
+    //    }
+
+    //    Vector3 nextPosition = new Vector3(nextFlat.x, transform.position.y, nextFlat.z);
+    //    nextPosition = ProjectPositionToGround(nextPosition);
+
+    //    Vector3 previousPosition = transform.position;
+    //    transform.position = nextPosition;
+
+    //    if (Time.deltaTime > Mathf.Epsilon)
+    //    {
+    //        currentVelocity = (nextPosition - previousPosition) / Time.deltaTime;
+    //        currentVelocity.y = 0f;
+    //    }
+    //    else
+    //    {
+    //        currentVelocity = Vector3.zero;
+    //    }
+
+    //    //UpdateUnitOccupancy();
+
+    //    RotateTowardsMovement(nextPosition - previousPosition);
+    //}
+
+
+    //private void CompleteWaypoint(Vector3 target)
+    //{
+    //    SnapToTarget(target);
+
+    //    pathIndex++;
+
+    //    if (pathIndex >= path.Count)
+    //    {
+    //        ClearPath();
+    //    }
+    //}
+
+    private void CompleteDestination(Vector3 target)
     {
         SnapToTarget(target);
-
-        pathIndex++;
-
-        if (pathIndex >= path.Count)
-        {
-            ClearPath();
-        }
+        ClearPath();
     }
 
     private void AdvanceIntermediateWaypoints()
     {
         while (pathIndex < path.Count - 1)
         {
-            if (!IsWithinWaypointReach(path[pathIndex]))
+            bool reached = IsWithinWaypointReach(path[pathIndex]);
+
+            bool passed = HasPassedIntermediateWaypoint(pathIndex);
+
+            if (!reached && !passed)
                 return;
 
             pathIndex++;
@@ -236,7 +311,9 @@ public class UnitMotor : MonoBehaviour
         Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
         Vector3 targetFlat = new Vector3(target.x, 0f, target.z);
 
-        return (targetFlat - currentFlat).sqrMagnitude <= 0.000001f;
+        float arrivalDistance = FinalArrivalReachDistance();
+
+        return (targetFlat - currentFlat).sqrMagnitude <= arrivalDistance * arrivalDistance;
     }
 
     private bool IsWithinWaypointReach(Vector3 waypoint)
@@ -249,12 +326,64 @@ public class UnitMotor : MonoBehaviour
         return (waypointFlat - currentFlat).sqrMagnitude <= reachDistance * reachDistance;
     }
 
+    private bool HasPassedIntermediateWaypoint(int index)
+    {
+        if (index < 0 ||
+               index >= path.Count - 1)
+        {
+            return false;
+        }
+
+        Vector3 waypoint =
+            path[index];
+
+        Vector3 direction;
+
+        if (index == 0)
+        {
+            // First waypoint has no previous path point.
+            // Use the direction toward the next waypoint.
+            direction =
+                path[index + 1] -
+                waypoint;
+        }
+        else
+        {
+            direction =
+                waypoint -
+                path[index - 1];
+        }
+
+        waypoint.y = 0f;
+        direction.y = 0f;
+
+        Vector3 current =
+            transform.position;
+
+        current.y = 0f;
+
+        if (direction.sqrMagnitude <= 0.0001f)
+            return false;
+
+        return Vector3.Dot(
+            current - waypoint,
+            direction) > 0f;
+    }
+
     private float WaypointReachDistance()
     {
         if (terrainGrid == null)
             return 0.25f;
         
         return terrainGrid.CellSize * waypointReachFraction;
+    }
+
+    private float FinalArrivalReachDistance()
+    {
+        if (terrainGrid == null)
+            return 0.30f;
+
+        return terrainGrid.CellSize * finalArrivalFraction;
     }
 
     private void SnapToTarget(Vector3 target)
@@ -269,6 +398,7 @@ public class UnitMotor : MonoBehaviour
         pathIndex = 0;
         hasPath = false;
         currentVelocity = Vector3.zero;
+        preferredVelocity = Vector3.zero;   
     }
 
     // ---------------------------------------------------------------------
@@ -346,12 +476,200 @@ public class UnitMotor : MonoBehaviour
         navigationState.UpdateUnitOccupancy(owner, currentCell);
     }
 
+    public void ApplyDepenetration(Vector3 displacement)
+    {
+        displacement.y = 0f;
+
+        if (displacement.sqrMagnitude <= Mathf.Epsilon)
+            return;
+
+        Vector3 nextPosition = transform.position + displacement;
+
+        nextPosition = ProjectPositionToGround(nextPosition);
+
+        transform.position = nextPosition;
+
+        UpdateUnitOccupancy();
+    }
+
+    // ---------------------------------------------------------------------
+    // LookAhead Calculation
+    // ---------------------------------------------------------------------
+    private Vector3 CalculateLookAheadTarget(
+        Vector3 target)
+    {
+        if (pathIndex <= 0 ||
+            pathIndex >= path.Count)
+        {
+            return target;
+        }
+
+        Vector3 segmentStart =
+            path[pathIndex - 1];
+
+        Vector3 segmentEnd =
+            path[pathIndex];
+
+        segmentStart.y = 0f;
+        segmentEnd.y = 0f;
+
+        Vector3 current =
+            transform.position;
+
+        current.y = 0f;
+
+        Vector3 segment =
+            segmentEnd - segmentStart;
+
+        float segmentLength =
+            segment.magnitude;
+
+        if (segmentLength <= 0.0001f)
+        {
+            return target;
+        }
+
+        Vector3 segmentDirection =
+            segment / segmentLength;
+
+        // ---------------------------------------------------------
+        // Find where we currently are along this path segment.
+        // ---------------------------------------------------------
+
+        float t =
+            Vector3.Dot(
+                current - segmentStart,
+                segment)
+            / segment.sqrMagnitude;
+
+        t = Mathf.Clamp01(t);
+
+        Vector3 lookAheadPoint =
+            segmentStart +
+            segment * t;
+
+        float remainingLookAhead =
+            PathLookAheadDistance();
+
+        // ---------------------------------------------------------
+        // First consume the remaining part of the current segment.
+        // ---------------------------------------------------------
+
+        float distanceToSegmentEnd =
+            Vector3.Distance(
+                lookAheadPoint,
+                segmentEnd);
+
+        if (remainingLookAhead <= distanceToSegmentEnd)
+        {
+            lookAheadPoint +=
+                segmentDirection *
+                remainingLookAhead;
+
+            return ProjectPositionToGround(
+                lookAheadPoint);
+        }
+
+        remainingLookAhead -=
+            distanceToSegmentEnd;
+
+        lookAheadPoint =
+            segmentEnd;
+
+        // ---------------------------------------------------------
+        // Continue through following path segments,
+        // but only while the path stays approximately straight.
+        // ---------------------------------------------------------
+
+        Vector3 previousDirection =
+            segmentDirection;
+
+        int nextIndex =
+            pathIndex + 1;
+
+        while (nextIndex < path.Count &&
+               remainingLookAhead > 0f)
+        {
+            Vector3 nextPoint =
+                path[nextIndex];
+
+            nextPoint.y = 0f;
+
+            Vector3 nextSegment =
+                nextPoint -
+                lookAheadPoint;
+
+            float nextSegmentLength =
+                nextSegment.magnitude;
+
+            if (nextSegmentLength <= 0.0001f)
+            {
+                nextIndex++;
+                continue;
+            }
+
+            Vector3 nextDirection =
+                nextSegment /
+                nextSegmentLength;
+
+            float turnAngle =
+                Vector3.Angle(
+                    previousDirection,
+                    nextDirection);
+
+            // Do not look through an actual corner.
+            if (turnAngle >
+                maxLookAheadTurnAngle)
+            {
+                break;
+            }
+
+            float distanceToTravel =
+                Mathf.Min(
+                    remainingLookAhead,
+                    nextSegmentLength);
+
+            lookAheadPoint +=
+                nextDirection *
+                distanceToTravel;
+
+            remainingLookAhead -=
+                distanceToTravel;
+
+            // We stopped somewhere inside this segment.
+            if (distanceToTravel <
+                nextSegmentLength)
+            {
+                break;
+            }
+
+            previousDirection =
+                nextDirection;
+
+            nextIndex++;
+        }
+
+        return ProjectPositionToGround(
+            lookAheadPoint);
+    }
+
+    private float PathLookAheadDistance()
+    {
+        if (terrainGrid == null)
+            return 1f;
+
+        return terrainGrid.CellSize *
+            pathLookAheadCells;
+    }
+
     // ---------------------------------------------------------------------
     // Debug
     // ---------------------------------------------------------------------
 
     private void OnDrawGizmos()
     {
+        DrawOccupancyGizmo(); 
+
         if (!drawPathGizmos || path == null || path.Count == 0)
             return;
 
@@ -364,6 +682,28 @@ public class UnitMotor : MonoBehaviour
 
             if (i < path.Count - 1)
                 DrawGroundedGizmoLine(path[i], path[i + 1]);
+        }
+
+        if (hasPath)
+        {
+            Vector3 point =
+                GetGizmoGroundPoint(
+                    debugLookAheadTarget);
+
+            Gizmos.color =
+                new Color(1f, 0.5f, 0f);
+
+            Gizmos.DrawSphere(
+                point,
+                0.12f);
+
+            Vector3 unitPosition =
+                GetGizmoGroundPoint(
+                    transform.position);
+
+            Gizmos.DrawLine(
+                unitPosition,
+                point);
         }
     }
 
@@ -431,6 +771,84 @@ public class UnitMotor : MonoBehaviour
 
         Gizmos.color = color;
         Gizmos.DrawWireCube(center, size);
+    }
+
+    private void DrawOccupancyGizmo()
+    {
+        if (!drawOccupancyGizmo ||
+            owner == null ||
+            terrainGrid == null ||
+            navigationState == null)
+        {
+            return;
+        }
+
+        GridCoord physicalCell = terrainGrid.WorldToCell(transform.position);
+        GridCoord? registeredCell = navigationState.GetOccupiedCell(owner);
+
+        float cellSize = terrainGrid.CellSize;
+
+        // No occupancy registered at all.
+        if (!registeredCell.HasValue)
+        {
+            Gizmos.color = Color.yellow;
+
+            Vector3 physicalCenter =
+                GetGizmoGroundPoint(terrainGrid.CellToWorld(physicalCell));
+
+            Gizmos.DrawWireCube(
+                physicalCenter,
+                new Vector3(cellSize * 0.9f, 0.15f, cellSize * 0.9f));
+
+            return;
+        }
+
+        bool cellMatches =
+            registeredCell.Value.x == physicalCell.x &&
+            registeredCell.Value.z == physicalCell.z;
+
+        int occupantCount =
+            navigationState.GetOccupantCount(registeredCell.Value);
+
+        if (!cellMatches)
+        {
+            // Navigation state is stale / incorrect.
+            Gizmos.color = Color.magenta;
+        }
+        else if (occupantCount > 1)
+        {
+            // Multiple units registered in the exact same cell.
+            Gizmos.color = Color.red;
+        }
+        else
+        {
+            // Everything healthy.
+            Gizmos.color = Color.green;
+        }
+
+        Vector3 registeredCenter =
+            GetGizmoGroundPoint(
+                terrainGrid.CellToWorld(registeredCell.Value));
+
+        Gizmos.DrawWireCube(
+            registeredCenter,
+            new Vector3(cellSize * 0.9f, 0.15f, cellSize * 0.9f));
+
+        // If physical position and registered occupancy disagree,
+        // also draw the physical cell.
+        if (!cellMatches)
+        {
+            Gizmos.color = Color.yellow;
+
+            Vector3 physicalCenter =
+                GetGizmoGroundPoint(
+                    terrainGrid.CellToWorld(physicalCell));
+
+            Gizmos.DrawWireCube(
+                physicalCenter,
+                new Vector3(cellSize * 0.65f, 0.2f, cellSize * 0.65f));
+        }
+
     }
 
 }

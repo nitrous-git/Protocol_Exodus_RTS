@@ -51,6 +51,11 @@ public sealed class GridNavigationStateSystem
         if (!terrainGrid.IsWalkable(coord))
             return false;
 
+        // A final destination may never be a cell currently
+        // occupied by another unit.
+        if (IsOccupiedByOtherUnit(coord, owner))
+            return false;
+
         destinationsByCell.Add(coord, owner);
 
         if (!destinationsByUnit.TryGetValue(owner, out List<GridCoord> destinations))
@@ -247,5 +252,28 @@ public sealed class GridNavigationStateSystem
     private bool IsSameCoord(GridCoord first, GridCoord second)
     {
         return first.x == second.x && first.z == second.z;
+    }
+
+    // ---------------------------------------------------------------------
+    // Getter
+    // ---------------------------------------------------------------------
+
+    public GridCoord? GetOccupiedCell(UnitBase unit)
+    {
+        if (unit == null)
+            return null;
+
+        if (!occupiedCellByUnit.TryGetValue(unit, out GridCoord coord))
+            return null;
+
+        return coord;
+    }
+
+    public int GetOccupantCount(GridCoord coord)
+    {
+        if (!occupantsByCell.TryGetValue(coord, out HashSet<UnitBase> occupants))
+            return 0;
+
+        return occupants.Count;
     }
 }

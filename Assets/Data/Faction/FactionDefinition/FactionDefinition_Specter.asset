@@ -21,6 +21,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 520add825dc70e047a389bc6359b1f35, type: 2}
   colorVariants:
   - colorType: 6
-    displayName: Spectral Red
-    factionColor: {r: 0.8584906, g: 0.10933607, b: 0.10933607, a: 0}
-    selectionRingColor: {r: 0.6792453, g: 0.15699539, b: 0.15699539, a: 0.6431373}
+    displayName: Spectral Purple
+    factionColor: {r: 0.85882354, g: 0.109803915, b: 0.77867764, a: 0}
+    selectionRingColor: {r: 0.6784314, g: 0.15686275, b: 0.6470825, a: 0.6509804}

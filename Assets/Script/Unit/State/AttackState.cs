@@ -1,19 +1,45 @@
-using UnityEngine;
-
-public class AttackState : IUnitState
+public sealed class AttackState : UnitState<CombatUnit>
 {
-    public void OnEnter(UnitBase unit)
+    private ITargetable target;
+
+    public AttackState(ITargetable target)
     {
-        throw new System.NotImplementedException();
+        this.target = target;
     }
 
-    public void OnExit(UnitBase unit)
+    protected override void OnEnterTyped(CombatUnit unit)
     {
-        throw new System.NotImplementedException();
+        unit.Motor?.Stop();
+        unit.SetCurrentTarget(target);
+        unit.View?.PlayAnim("Idle");
     }
 
-    public void Tick(UnitBase unit, float deltaTime)
+    protected override void TickTyped(CombatUnit unit, float deltaTime)
     {
-        throw new System.NotImplementedException();
+        if (!unit.IsValidAttackTarget(target))
+        {
+            unit.ClearCurrentTarget();
+
+            if (unit.Sensor == null || !unit.Sensor.IsReady)
+                return;
+
+            target = unit.FindClosestAttackTarget();
+
+            if (target == null)
+            {
+                unit.EnterCombatIdle();
+                return;
+            }
+
+            unit.SetCurrentTarget(target);
+        }
+
+        unit.UpdateAttack(deltaTime);
+    }
+
+    protected override void OnExitTyped(CombatUnit unit)
+    {
+        unit.CancelAttackAnimation();
+        unit.ClearCurrentTarget();
     }
 }
