@@ -32,6 +32,8 @@ public sealed class MatchWorld : MonoBehaviour
     [Header("Building Placement")]
     [SerializeField] private BuildingPlacementPreview buildingPlacementPreviewPrefab;
 
+    private UnitDepenetrationSystem unitDepenetrationSystem;
+
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
     public Transform ResourceNodesRoot => resourceNodesRoot;
@@ -77,6 +79,8 @@ public sealed class MatchWorld : MonoBehaviour
         ProjectileManager = projectileManager;
         PlayerFaction = playerFaction;
 
+        unitDepenetrationSystem = new UnitDepenetrationSystem(gameContext.AllUnits);
+
         PathfindingService = pathfindingServiceComponent as IPathfindingService;
 
         if (PathfindingService == null)
@@ -97,6 +101,9 @@ public sealed class MatchWorld : MonoBehaviour
     public void TickSimulation(float deltaTime)
     {
         FactionManager?.Tick(deltaTime);
+
+        unitDepenetrationSystem?.Tick();
+
         ResourceNodeRepository?.Tick(deltaTime);
         ProjectileManager?.Tick(deltaTime);
 

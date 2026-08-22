@@ -5,7 +5,7 @@ public sealed class FormationDestinationAllocator
     private readonly TerrainGrid terrainGrid;
     private readonly GridNavigationStateSystem navigationState;
 
-    private int spacing = 3;
+    private int spacing = 2;
 
     public FormationDestinationAllocator(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState)
     {
