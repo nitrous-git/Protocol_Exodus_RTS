@@ -114,6 +114,9 @@ public class CombatUnit : UnitBase
         if (!IsValidAttackTarget(currentTarget))
             return;
 
+        if (!IsWithinAttackRange(currentTarget))
+            return;
+         
         FaceTarget(currentTarget, deltaTime);
 
         if (attackAnimationActive)
@@ -194,7 +197,7 @@ public class CombatUnit : UnitBase
         if (sensor == null)
             return false;
 
-        return sensor.IsValidEnemyTarget(target) && IsWithinAttackRange(target);
+        return sensor.IsValidEnemyTarget(target);
     }
 
     public ITargetable FindClosestAttackTarget()
@@ -202,7 +205,7 @@ public class CombatUnit : UnitBase
         if (!CanAttack())
             return null;
 
-        return sensor.FindClosestEnemy(GetAttackRange());
+        return sensor.FindClosestEnemy(definition.visionRange);
     }
 
     public void FaceTarget(ITargetable target, float deltaTime)
