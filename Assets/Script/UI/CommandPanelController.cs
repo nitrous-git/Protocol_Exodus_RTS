@@ -329,14 +329,14 @@ public sealed class CommandPanelController : MonoBehaviour
     {
         ConfigureGameplaySlot(MoveSlot, "M", true, CommandPanelAction.Move());
         ConfigureGameplaySlot(HoldPositionSlot, "H", true, CommandPanelAction.HoldPosition());
-        ConfigureGameplaySlot(AttackSlot, "A", false, CommandPanelAction.Attack());
+        ConfigureGameplaySlot(AttackSlot, "A", true, CommandPanelAction.Attack());
     }
 
     private void ShowMultipleUnitCommands()
     {
         ConfigureGameplaySlot(MoveSlot, "M", true, CommandPanelAction.Move());
         ConfigureGameplaySlot(HoldPositionSlot, "H", true, CommandPanelAction.HoldPosition());
-        ConfigureGameplaySlot(AttackSlot, "A", false, CommandPanelAction.Attack());
+        ConfigureGameplaySlot(AttackSlot, "A", true, CommandPanelAction.Attack());
     }
 
     // ---------------------------------------------------------------------

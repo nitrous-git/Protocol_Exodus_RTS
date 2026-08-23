@@ -25,31 +25,13 @@ public sealed class AttackState : UnitState<CombatUnit>
     protected override void TickTyped(CombatUnit unit, float deltaTime)
     {
         // ---------------------------------------------------------
-        // Validate / reacquire target
+        // Validate target
         // ---------------------------------------------------------
 
         if (!unit.IsValidAttackTarget(target))
         {
-            ReleaseAttackPosition(unit);
-
-            unit.ClearCurrentTarget();
-
-            if (unit.Sensor == null || !unit.Sensor.IsReady)
-            {
-                return;
-            }
-
-            target = unit.FindClosestAttackTarget();
-
-            if (target == null)
-            {
-                unit.EnterCombatIdle();
-                return;
-            }
-
-            unit.SetCurrentTarget(target);
-
-            RequestAttackPosition(unit);
+            unit.FinishCombatEngagement();
+            return;
         }
 
         // ---------------------------------------------------------
@@ -93,6 +75,13 @@ public sealed class AttackState : UnitState<CombatUnit>
     private void RequestAttackPosition(CombatUnit unit)
     {
         pathRequested = false;
+
+        // Already in a legal firing position.
+        // Tactical placement is not mandatory.
+        if (unit.IsWithinAttackRange(target))
+        {
+            return;
+        }
 
         if (unit.Motor == null ||
             unit.TerrainGrid == null ||

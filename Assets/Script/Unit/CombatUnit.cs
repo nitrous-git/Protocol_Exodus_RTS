@@ -71,6 +71,7 @@ public class CombatUnit : UnitBase
         switch (commandType)
         {
             case CommandType.Move:
+            case CommandType.AttackMove:
                 SetState(new MoveState(context.WorldPosition, context.FormationSlotIndex, context.FormationUnitCount));
                 break;
 
@@ -101,7 +102,31 @@ public class CombatUnit : UnitBase
         if (currentState is AttackState)
             return;
 
-        ITargetable target = FindClosestAttackTarget();
+        float awarenessRange;
+
+        switch (CurrentCommand)
+        {
+            // Aggressive travel:
+            // enemies inside vision may interrupt movement.
+            case CommandType.AttackMove:
+                awarenessRange = definition.visionRange;
+                break;
+
+            // Passive combat:
+            // may fire at something already reachable,
+            // but must not pursue.
+            case CommandType.Idle:
+            case CommandType.HoldPosition:
+                awarenessRange = GetAttackRange();
+                break;
+
+            // Strict Move and every other explicit command
+            // must not be interrupted by automatic awareness.
+            default:
+                return;
+        }
+
+        ITargetable target = FindClosestAttackTarget(awarenessRange);
 
         if (target == null)
             return;
@@ -168,6 +193,34 @@ public class CombatUnit : UnitBase
         SetState(new CombatIdleState());
     }
 
+    public void FinishCombatEngagement()
+    {
+        if (CurrentCommand == CommandType.AttackMove && currentContext.HasWorldPosition)
+        {
+            ResumeAttackMove();
+            return;
+        }
+
+        if (CurrentCommand == CommandType.HoldPosition)
+        {
+            SetState(new CombatIdleState());
+            return;
+        }
+
+        EnterCombatIdle();
+    }
+
+    private void ResumeAttackMove()
+    {
+        if (CurrentCommand != CommandType.AttackMove || !currentContext.HasWorldPosition)
+        {
+            EnterCombatIdle();
+            return;
+        }
+
+        SetState(new MoveState(currentContext.WorldPosition, currentContext.FormationSlotIndex, currentContext.FormationUnitCount));
+    }
+
     public void ClearCurrentTarget()
     {
         currentTarget = null;
@@ -200,12 +253,15 @@ public class CombatUnit : UnitBase
         return sensor.IsValidEnemyTarget(target);
     }
 
-    public ITargetable FindClosestAttackTarget()
+    public ITargetable FindClosestAttackTarget(float searchRange)
     {
         if (!CanAttack())
             return null;
 
-        return sensor.FindClosestEnemy(definition.visionRange);
+        if (searchRange < 0f)
+            return null;
+
+        return sensor.FindClosestEnemy(searchRange);
     }
 
     public void FaceTarget(ITargetable target, float deltaTime)

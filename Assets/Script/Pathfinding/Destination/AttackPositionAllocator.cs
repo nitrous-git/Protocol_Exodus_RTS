@@ -28,13 +28,19 @@ public sealed class AttackPositionAllocator
         if (attackRange <= 0f || cellSize <= 0f)
             return null;
 
-        // Stage A:
-        // Treat combat targets as a 1x1 footprint.
-        //
-        // Building footprints can be added later without
-        // changing the overall allocator design.
-        GridCoord targetCell = terrainGrid.WorldToCell(target.Position);
-        Vector2Int targetFootprint = Vector2Int.one;
+        GridCoord targetCell;
+        Vector2Int targetFootprint;
+
+        if (target is BuildingBase building && building.Definition != null)
+        {
+            targetCell = building.FootprintOrigin;
+            targetFootprint = building.Definition.footprintSize;
+        }
+        else
+        {
+            targetCell = terrainGrid.WorldToCell(target.Position);
+            targetFootprint = Vector2Int.one;
+        }
 
         // Search every meaningful ring that can still
         // contain a valid firing position.

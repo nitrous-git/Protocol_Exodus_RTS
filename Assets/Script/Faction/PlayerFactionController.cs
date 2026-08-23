@@ -141,7 +141,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 break;
 
             case CommandPanelActionType.BeginAttackTargeting:
-                //BeginAttackTargeting();
+                BeginAttackTargeting();
                 break;
 
             case CommandPanelActionType.BeginBuildingPlacement:
@@ -255,6 +255,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
             case PlayerInteractionMode.MoveTargeting:
                 HandleMoveTargetingInteraction();
+                break;
+
+            case PlayerInteractionMode.AttackTarget:
+                HandleAttackTargetingInteraction();
                 break;
 
             case PlayerInteractionMode.BuildPlacement:
@@ -426,6 +430,61 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     }
 
     // ---------------------------------------------------------------------
+    // Attack Targeting interaction
+    // ---------------------------------------------------------------------
+
+    private void BeginAttackTargeting()
+    {
+        if (currentInteractionMode != PlayerInteractionMode.Default)
+        {
+            return;
+        }
+
+        SetInteractionMode(PlayerInteractionMode.AttackTarget);
+    }
+
+    // Actual Blizzard Attack targeting behavior. 
+    private void HandleAttackTargetingInteraction()
+    {
+        if (mouseInputHandler.SecondaryPressed)
+        {
+            CancelCurrentInteraction();
+            return;
+        }
+
+        if (!mouseInputHandler.PrimaryPressed)
+            return;
+
+        if (IsWorldPointerBlocked())
+            return;
+
+        Vector2 pointerPosition = mouseInputHandler.PointerPosition;
+
+        // First resolve an actual unit/building.
+        ITargetable attackTarget = commandIssuer.FindAttackTargetFromScreen(pointerPosition);
+
+        bool commandIssued;
+
+        if (attackTarget != null)
+        {
+            // Attack command + clicked target
+            // = explicit focused Attack.
+            commandIssued = commandIssuer.TryIssueAttackCommand(attackTarget);
+        }
+        else
+        {
+            // Attack command + clicked terrain
+            // = Attack-Move.
+            commandIssued = commandIssuer.TryIssueAttackMoveCommandFromScreen(pointerPosition);
+        }
+
+        if (commandIssued)
+        {
+            SetInteractionMode(PlayerInteractionMode.Default);
+        }
+    }
+
+    // ---------------------------------------------------------------------
     // Interaction-mode lifecycle
     // ---------------------------------------------------------------------
 
@@ -456,6 +515,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 EnterMoveTargeting();
                 break;
 
+            case PlayerInteractionMode.AttackTarget:
+                EnterAttackTargeting();
+                break;
+
             case PlayerInteractionMode.BuildPlacement:
                 EnterBuildingPlacement();
                 break;
@@ -473,6 +536,11 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             case PlayerInteractionMode.MoveTargeting:
                 ExitMoveTargeting();
                 break;
+
+            case PlayerInteractionMode.AttackTarget:
+                ExitAttackTargeting();
+                break;
+
 
             case PlayerInteractionMode.BuildPlacement:
                 ExitBuildingPlacement();
@@ -518,6 +586,17 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     {
         pendingBuildingDefinition = null;
         buildingPlacementController?.Cancel();
+    }
+
+    // Attack
+    private void EnterAttackTargeting()
+    {
+        CancelSelectionGesture();
+    }
+
+    private void ExitAttackTargeting()
+    {
+
     }
 
     // ---------------------------------------------------------------------

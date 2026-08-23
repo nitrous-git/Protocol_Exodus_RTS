@@ -7,9 +7,10 @@ public enum CommandType
     HoldPosition,
     Attack,
 
-    // Later:
     Gather,
     Deliver,
     Repair,
-    Build
+    Build,
+
+    AttackMove
 }
