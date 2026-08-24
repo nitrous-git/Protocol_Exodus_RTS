@@ -106,7 +106,7 @@ public class GameBuilder : MonoBehaviour
             matchWorld.CommandIssuer, 
             matchWorld.CameraController,
             matchWorld.TerrainGrid,
-            matchWorld.TargetMarkerPrefab,
+            matchWorld.TargetMarkers,
             matchWorld.BuildingPlacementPreviewPrefab,
             matchWorld.InteractionMarkersRoot
         );

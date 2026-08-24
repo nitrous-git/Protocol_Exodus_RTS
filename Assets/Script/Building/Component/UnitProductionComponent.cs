@@ -17,6 +17,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     [SerializeField] private List<UnitType> producibleUnitTypes = new();
 
     [Header("Spawn Search")]
+    [SerializeField] private Transform SpawnPoint;
     [SerializeField, Min(1)] private int initialSpawnDepth = 1;
     [SerializeField, Min(0)] private int maximumExtraSpawnDepth = 4;
     [SerializeField, Min(0)] private int spawnOpennessRadius = 2;
@@ -351,14 +352,15 @@ public sealed class UnitProductionComponent : MonoBehaviour
         if (building.Definition == null)
             return null;
 
-        Vector2Int gridForward = GetBuildingGridForward();
 
-        GridCoord preferredFrontCell = 
-            PlacementUtil.GetFootprintSideCenter(
-                building.FootprintOrigin,
-                building.Definition.FootprintSize,
-                gridForward,
-                distance: initialSpawnDepth);
+        GridCoord spawnPointCell = terrainGrid.WorldToCell(SpawnPoint.position);
+
+        //GridCoord preferredFrontCell = 
+        //    PlacementUtil.GetFootprintSideCenter(
+        //        building.FootprintOrigin,
+        //        building.Definition.FootprintSize,
+        //        gridForward,
+        //        distance: initialSpawnDepth);
 
         return PlacementUtil
             .GetPlacementAroundFootprintScoredWithFallback(
@@ -367,7 +369,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
                 building.Definition.FootprintSize,
                 initialDepth: initialSpawnDepth,
                 maxExtraDepth: maximumExtraSpawnDepth,
-                preferredCell: preferredFrontCell,
+                preferredCell: spawnPointCell,
                 policy:
                     PlacementUtil.PlacementPolicy.OpenThenClose,
                 openRadius: spawnOpennessRadius,

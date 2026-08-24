@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public sealed class BuildingView : MonoBehaviour
 {
@@ -96,12 +97,12 @@ public sealed class BuildingView : MonoBehaviour
 
         float visibility = Mathf.Lerp(transitionStartVisibility, 1f, curvedTime);
 
-        ApplyConstructionVisibility(visibility);
+        ApplyConstructionVisibility(visibility, false);
 
         if (normalizedTime >= 1f)
         {
             isTransitioningToOperational = false;
-            ApplyConstructionVisibility(1f);
+            ApplyConstructionVisibility(1f, true);
         }
     }
 
@@ -117,7 +118,7 @@ public sealed class BuildingView : MonoBehaviour
         isTransitioningToOperational = false;
         transitionElapsed = 0f;
 
-        ApplyConstructionVisibility(underConstructionVisibility);
+        ApplyConstructionVisibility(underConstructionVisibility, false);
     }
 
     /// <summary>
@@ -150,10 +151,10 @@ public sealed class BuildingView : MonoBehaviour
         isTransitioningToOperational = false;
         transitionElapsed = 0f;
 
-        ApplyConstructionVisibility(1f);
+        ApplyConstructionVisibility(1f, true);
     }
 
-    private void ApplyConstructionVisibility(float visibility)
+    private void ApplyConstructionVisibility(float visibility, bool setOpaque)
     {
         currentConstructionVisibility = Mathf.Clamp01(visibility);
 
@@ -165,10 +166,14 @@ public sealed class BuildingView : MonoBehaviour
                 continue;
 
             GetPropertyBlock(buildingRenderer);
-
             propertyBlock.SetFloat(ConstructionVisibilityID, currentConstructionVisibility);
-
             buildingRenderer.SetPropertyBlock(propertyBlock);
+
+            if (setOpaque)
+            {
+                Material mat = buildingRenderer.material;
+                SetMaterialOpaque(mat);
+            }
         }
     }
 
@@ -231,4 +236,44 @@ public sealed class BuildingView : MonoBehaviour
         propertyBlock.Clear();
         targetRenderer.GetPropertyBlock(propertyBlock);
     }
+
+    // ---------------------------------------------------------------------
+    // Material Surface type methods
+    // ---------------------------------------------------------------------
+
+    public void SetMaterialOpaque(Material mat)
+    {
+        if (mat == null)
+            return;
+
+        // set surface type to opaque
+        mat.SetFloat("_Surface", 0f);
+
+        // Opaque blending
+        mat.SetInt("_SrcBlend", (int)BlendMode.One);
+        mat.SetInt("_DstBlend", (int)BlendMode.Zero);
+
+        if (mat.HasProperty("_SrcBlendAlpha"))
+            mat.SetInt("_SrcBlendAlpha", (int)BlendMode.One);
+
+        if (mat.HasProperty("_DstBlendAlpha"))
+            mat.SetInt("_DstBlendAlpha", (int)BlendMode.Zero);
+
+        // Enable writing to depth buffer
+        mat.SetInt("_ZWrite", 1);
+
+        // URP surface keyword
+        mat.DisableKeyword("_SURFACE_TYPE_TRANSPARENT");
+
+        // Transparency-related keywords
+        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        mat.DisableKeyword("_ALPHAMODULATE_ON");
+
+        // We do not use alpha clipping
+        mat.DisableKeyword("_ALPHATEST_ON");
+
+        // Opaque render queue
+        mat.renderQueue = (int)RenderQueue.Geometry;
+    }
+
 }
