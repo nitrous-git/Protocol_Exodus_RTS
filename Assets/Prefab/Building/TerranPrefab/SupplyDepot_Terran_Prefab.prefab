@@ -636,8 +636,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.7623444, y: 1.257324, z: 1.7733154}
-  m_Center: {x: 0.053024292, y: 0.54370284, z: 0.02909851}
+  m_Size: {x: 4.197384, y: 3.5451403, z: 3.7325897}
+  m_Center: {x: 0.08395958, y: 1.6876109, z: 0.06829071}
 --- !u!208 &6300144835133034689
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -645,7 +645,7 @@ NavMeshObstacle:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8889662148041584611}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Shape: 1
   m_Extents: {x: 0.5, y: 0.5, z: 0.5}

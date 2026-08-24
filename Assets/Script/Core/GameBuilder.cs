@@ -16,7 +16,7 @@ public class GameBuilder : MonoBehaviour
     [Header("Starting Units")]
     //[SerializeField] private UnitBase combatUnitPrefab;
     [SerializeField] private int startingCombatCount = 3;
-    [SerializeField] private float startingUnitSpacing = 2f;
+    [SerializeField] private float startingUnitSpacing = 1f;
 
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }

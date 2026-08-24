@@ -21,7 +21,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     [SerializeField, Min(1)] private int initialSpawnDepth = 1;
     [SerializeField, Min(0)] private int maximumExtraSpawnDepth = 4;
     [SerializeField, Min(0)] private int spawnOpennessRadius = 2;
-    [SerializeField, Min(0)] private int spawnOpennessWeight = 4;
+    [SerializeField, Min(0)] private int spawnOpennessWeight = 1;
     [SerializeField, Min(0)] private int spawnDistanceWeight = 2;
 
     [Header("Physical Clearance")]
@@ -370,8 +370,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
                 initialDepth: initialSpawnDepth,
                 maxExtraDepth: maximumExtraSpawnDepth,
                 preferredCell: spawnPointCell,
-                policy:
-                    PlacementUtil.PlacementPolicy.OpenThenClose,
+                policy: PlacementUtil.PlacementPolicy.OpenThenClose,
                 openRadius: spawnOpennessRadius,
                 openWeight: spawnOpennessWeight,
                 distanceWeight: spawnDistanceWeight,

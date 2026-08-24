@@ -206,7 +206,7 @@ MonoBehaviour:
   initialSpawnDepth: 1
   maximumExtraSpawnDepth: 4
   spawnOpennessRadius: 2
-  spawnOpennessWeight: 4
+  spawnOpennessWeight: 1
   spawnDistanceWeight: 2
   spawnBlockingMask:
     serializedVersion: 2
@@ -295,8 +295,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 5.312504, y: 1.5578748, z: 3.6292114}
-  m_Center: {x: 0.7821369, y: 0.69397825, z: 0.029067993}
+  m_Size: {x: 5.977257, y: 2.7214725, z: 8.876434}
+  m_Center: {x: 0.17422867, y: 1.2757772, z: -0.010177612}
 --- !u!208 &1754436295182932677
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -304,7 +304,7 @@ NavMeshObstacle:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6808655509733998403}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Shape: 1
   m_Extents: {x: 1.5, y: 1.5, z: 1.5}
