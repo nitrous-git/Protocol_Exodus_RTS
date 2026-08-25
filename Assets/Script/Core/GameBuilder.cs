@@ -161,7 +161,7 @@ public class GameBuilder : MonoBehaviour
         if (faction == null || matchWorld == null)
             return;
 
-        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
 
         if (combatDefinition.Prefab == null)
         {

@@ -1265,7 +1265,7 @@ MonoBehaviour:
   baseHeightOffset: 0
   navMeshSampleRadius: 2
   navMeshAreaMask: -1
-  drawPathGizmos: 1
+  drawOccupancyGizmo: 1
   gizmoSampleSpacing: 0.5
   gizmoHeightOffset: 0.05
 --- !u!114 &3357238435559361137
@@ -1280,13 +1280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77f252b23ad834429a15c679e454713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalSteeringSystem
-  separationPadding: 0.15
-  separationWeight: 1
-  predictionTime: 0.75
-  avoidancePadding: 0.2
-  avoidanceWeight: 1.25
   drawSteeringGizmos: 1
-  gizmoCircleSegments: 32
 --- !u!114 &7275380924339051778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1360,9 +1354,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.54717445
-  m_Height: 2.0648336
+  m_Height: 2.5986497
   m_Direction: 1
-  m_Center: {x: 0.006570816, y: 0.89012957, z: -0.015060425}
+  m_Center: {x: 0.006570816, y: 1.1570371, z: -0.015060425}
 --- !u!114 &3224694999369868980
 MonoBehaviour:
   m_ObjectHideFlags: 0
