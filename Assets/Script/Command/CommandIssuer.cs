@@ -59,30 +59,28 @@ public class CommandIssuer : MonoBehaviour
 
         DefaultCommandTarget target = ResolveDefaultCommandTarget(screenPosition);
 
-        // Worker -> ResourceNode
+        // Worker Gather
         if (target.ResourceNode != null && TryIssueGatherCommand(target.ResourceNode))
         {
             return true;
         }
 
-        // Worker carrying cargo -> own CommandCenter
+        // Worker Deliver
         if (target.Building != null && TryIssueDeliverCommand(target.Building))
         {
             return true;
         }
 
-        // Later:
-        //
         // if (target.Building != null &&
         //     TryIssueRepairCommand(target.Building))
         // {
         //     return true;
         // }
-        //
-        // if (TryIssueAttackCommand(target))
-        // {
-        //     return true;
-        // }
+        
+        if (TryIssueAttackCommand(target))
+        {
+            return true;
+        }
 
         // Nothing contextual applied.
         return TryIssueMoveCommandFromScreen(screenPosition);
@@ -287,6 +285,126 @@ public class CommandIssuer : MonoBehaviour
 
             CommandContext context = CommandContext.MoveTo(destinationCenter, i, commandableCount);
             controllable.IssueCommand(CommandType.Move, context);
+
+            issuedAnyCommand = true;
+        }
+
+        return issuedAnyCommand;
+    }
+
+    // ---------------------------------------------------------------------
+    // Attack
+    // ---------------------------------------------------------------------
+
+    public ITargetable FindAttackTargetFromScreen(Vector2 screenPosition)
+    {
+        if (!CanIssueCommands() || worldCamera == null)
+            return null;
+
+        DefaultCommandTarget target = ResolveDefaultCommandTarget(screenPosition);
+
+        if (target.Unit != null)
+            return target.Unit;
+
+        if (target.Building != null)
+            return target.Building;
+
+        return null;
+    }
+
+    public bool TryIssueAttackCommand(ITargetable target)
+    {
+        if (!CanIssueCommands() || target == null)
+            return false;
+
+        CollectCommandableSelectedUnits();
+
+        bool issuedAnyCommand = false;
+
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            CombatUnit combatUnit = commandableUnits[i] as CombatUnit;
+
+            if (combatUnit == null)
+                continue;
+
+            if (!combatUnit.CanAttack())
+                continue;
+
+            if (!combatUnit.IsValidAttackTarget(target))
+                continue;
+
+            combatUnit.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
+
+            issuedAnyCommand = true;
+        }
+
+        return issuedAnyCommand;
+    }
+
+    private bool TryIssueAttackCommand(DefaultCommandTarget target)
+    {
+        ITargetable attackTarget = null;
+
+        if (target.Unit != null)
+        {
+            attackTarget = target.Unit;
+        }
+        else if (target.Building != null)
+        {
+            attackTarget = target.Building;
+        }
+
+        return TryIssueAttackCommand(attackTarget);
+    }
+
+    // ---------------------------------------------------------------------
+    // Attack-Move
+    // ---------------------------------------------------------------------
+
+    public bool TryIssueAttackMoveCommandFromScreen(Vector2 screenPosition)
+    {
+        if (!TryResolveGroundPositionFromScreen(screenPosition))
+        {
+            return false;
+        }
+
+        return TryIssueAttackMoveCommand(currentGroundPosition);
+    }
+
+    public bool TryIssueAttackMoveCommand(Vector3 destinationCenter)
+    {
+        if (!CanIssueCommands())
+            return false;
+
+        CollectCommandableSelectedUnits();
+
+        int commandableCount = commandableUnits.Count;
+
+        if (commandableCount == 0)
+            return false;
+
+        bool issuedAnyCommand = false;
+
+        for (int i = 0; i < commandableCount; i++)
+        {
+            UnitBase unit = commandableUnits[i];
+            IControllable controllable = unit as IControllable;
+
+            if (controllable == null)
+                continue;
+
+            CommandContext context = CommandContext.AttackMoveTo(destinationCenter, i, commandableCount);
+
+            if (unit is CombatUnit combatUnit && combatUnit.CanAttack())
+            {
+                controllable.IssueCommand(CommandType.AttackMove, context);
+            }
+            else
+            {
+                // Non-combat units still travel with the group.
+                controllable.IssueCommand(CommandType.Move, context);
+            }
 
             issuedAnyCommand = true;
         }

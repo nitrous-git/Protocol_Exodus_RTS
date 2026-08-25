@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1065576183240281377
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4612522233545990119}
+  m_Layer: 8
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4612522233545990119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065576183240281377}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.61, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6199801733921121469}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4014892969430726452
 GameObject:
   m_ObjectHideFlags: 0
@@ -128,6 +159,7 @@ Transform:
   m_Children:
   - {fileID: 1919983092373979024}
   - {fileID: 1560095059782851742}
+  - {fileID: 4612522233545990119}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &815761704318080444
@@ -170,10 +202,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitProductionComponent
   producibleUnitTypes: 00000000
+  SpawnPoint: {fileID: 4612522233545990119}
   initialSpawnDepth: 1
   maximumExtraSpawnDepth: 4
   spawnOpennessRadius: 2
-  spawnOpennessWeight: 4
+  spawnOpennessWeight: 1
   spawnDistanceWeight: 2
   spawnBlockingMask:
     serializedVersion: 2
@@ -262,8 +295,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 5.312504, y: 1.5578748, z: 3.6292114}
-  m_Center: {x: 0.7821369, y: 0.69397825, z: 0.029067993}
+  m_Size: {x: 5.977257, y: 2.7214725, z: 8.876434}
+  m_Center: {x: 0.17422867, y: 1.2757772, z: -0.010177612}
 --- !u!208 &1754436295182932677
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -271,7 +304,7 @@ NavMeshObstacle:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6808655509733998403}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Shape: 1
   m_Extents: {x: 1.5, y: 1.5, z: 1.5}

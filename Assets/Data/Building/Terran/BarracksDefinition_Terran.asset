@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildingDefinition
   buildingType: 0
   displayName: Barracks
-  prefab: {fileID: 2214791904597345691, guid: 3bd5cf3a8a303a24ebecbe1f352fec67, type: 3}
+  prefab: {fileID: 2214791904597345691, guid: d5025b1354f06d5409cc51bdfb4a16b4, type: 3}
   cost:
     minerals: 100
     gas: 0
     supply: 0
-  footprintSize: {x: 3, y: 5}
+  footprintSize: {x: 13, y: 7}
   maxHealth: 150
+  constructionDuration: 10

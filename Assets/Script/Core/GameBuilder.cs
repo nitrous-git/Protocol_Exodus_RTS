@@ -16,7 +16,7 @@ public class GameBuilder : MonoBehaviour
     [Header("Starting Units")]
     //[SerializeField] private UnitBase combatUnitPrefab;
     [SerializeField] private int startingCombatCount = 3;
-    [SerializeField] private float startingUnitSpacing = 2f;
+    [SerializeField] private float startingUnitSpacing = 1f;
 
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }
@@ -106,7 +106,7 @@ public class GameBuilder : MonoBehaviour
             matchWorld.CommandIssuer, 
             matchWorld.CameraController,
             matchWorld.TerrainGrid,
-            matchWorld.TargetMarkerPrefab,
+            matchWorld.TargetMarkers,
             matchWorld.BuildingPlacementPreviewPrefab,
             matchWorld.InteractionMarkersRoot
         );
@@ -161,7 +161,7 @@ public class GameBuilder : MonoBehaviour
         if (faction == null || matchWorld == null)
             return;
 
-        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
 
         if (combatDefinition.Prefab == null)
         {

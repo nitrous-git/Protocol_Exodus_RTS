@@ -26,7 +26,7 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private List<Transform> factionSpawnPoints = new();
 
     [Header("Interaction Presentation")]
-    [SerializeField] private GameObject targetMarkerPrefab;
+    [SerializeField] private List<TargetMarker> targetMarkers;
     [SerializeField] private Transform interactionMarkersRoot;
 
     [Header("Building Placement")]
@@ -50,7 +50,7 @@ public sealed class MatchWorld : MonoBehaviour
     public ProjectileManager ProjectileManager { get; private set; }
     public IPathfindingService PathfindingService { get; private set; }
 
-    public GameObject TargetMarkerPrefab => targetMarkerPrefab;
+    public List<TargetMarker> TargetMarkers => targetMarkers;
     public Transform InteractionMarkersRoot => interactionMarkersRoot;
 
     public TerrainGrid TerrainGrid => terrainGridSystem != null ? terrainGridSystem.Grid : null;

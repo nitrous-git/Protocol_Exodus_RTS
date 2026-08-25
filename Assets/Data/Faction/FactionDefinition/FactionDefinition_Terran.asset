@@ -19,6 +19,7 @@ MonoBehaviour:
   unitRoster:
   - {fileID: 11400000, guid: 304feabee14809247ad10ee0adab9085, type: 2}
   - {fileID: 11400000, guid: 16f327cc775da4d4bb66ea89dbbdfff4, type: 2}
+  - {fileID: 11400000, guid: 7520e1f92045a5a428f5a2f07a8df376, type: 2}
   buildingRoster:
   - {fileID: 11400000, guid: ede45adabc5d310449a52735a88b0715, type: 2}
   - {fileID: 11400000, guid: 285fa27c69b84764292bab8873a17d6b, type: 2}

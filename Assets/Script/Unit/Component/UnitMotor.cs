@@ -65,7 +65,7 @@ public class UnitMotor : MonoBehaviour
             terrain = Terrain.activeTerrain;
 
         SnapToGround();
-        //SnapToCurrentCellCenter();
+        SnapToCurrentCellCenter(terrainGrid.WorldToCell(owner.transform.position));
 
         UpdateUnitOccupancy();
     }

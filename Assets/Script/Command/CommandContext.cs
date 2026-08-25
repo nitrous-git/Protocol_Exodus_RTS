@@ -34,6 +34,19 @@ public struct CommandContext
         };
     }
 
+    public static CommandContext AttackMoveTo(Vector3 worldPosition, int formationSlotIndex = 0, int formationUnitCount = 1)
+    {
+        return new CommandContext
+        {
+            WorldPosition = worldPosition,
+            HasWorldPosition = true,
+
+            FormationSlotIndex = formationSlotIndex,
+            FormationUnitCount = formationUnitCount
+        };
+    }
+
+
     public static CommandContext AttackTarget(ITargetable target)
     {
         return new CommandContext

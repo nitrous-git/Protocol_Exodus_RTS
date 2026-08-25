@@ -12,9 +12,9 @@ public readonly struct CommandPanelAction
     public UnitDefinition UnitDefinition { get; }
 
     private CommandPanelAction(
-    CommandPanelActionType type,
-    BuildingDefinition buildingDefinition = null,
-    UnitDefinition unitDefinition = null)
+        CommandPanelActionType type,
+        BuildingDefinition buildingDefinition = null,
+        UnitDefinition unitDefinition = null)
     {
         Type = type;
         BuildingDefinition = buildingDefinition;
