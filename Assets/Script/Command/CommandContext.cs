@@ -7,6 +7,7 @@ public struct CommandContext
     public Vector2Int GridCell;
     public int FormationSlotIndex;
     public int FormationUnitCount;
+    public float FormationMaxNavigationRadius;
 
     public ITargetable Target;
     public ResourceNode ResourceNode;
@@ -22,7 +23,11 @@ public struct CommandContext
         return new CommandContext();
     }
 
-    public static CommandContext MoveTo(Vector3 worldPosition, int formationSlotIndex = 0, int formationUnitCount = 1)
+    public static CommandContext MoveTo(
+        Vector3 worldPosition, 
+        int formationSlotIndex = 0, 
+        int formationUnitCount = 1, 
+        float formationMaxNavigationRadius = 1f)
     {
         return new CommandContext
         {
@@ -30,11 +35,16 @@ public struct CommandContext
             HasWorldPosition = true,
 
             FormationSlotIndex = formationSlotIndex,
-            FormationUnitCount = formationUnitCount
+            FormationUnitCount = formationUnitCount,
+            FormationMaxNavigationRadius = formationMaxNavigationRadius
         };
     }
 
-    public static CommandContext AttackMoveTo(Vector3 worldPosition, int formationSlotIndex = 0, int formationUnitCount = 1)
+    public static CommandContext AttackMoveTo(
+        Vector3 worldPosition, 
+        int formationSlotIndex = 0, 
+        int formationUnitCount = 1, 
+        float formationMaxNavigationRadius = 1f)
     {
         return new CommandContext
         {
@@ -42,7 +52,8 @@ public struct CommandContext
             HasWorldPosition = true,
 
             FormationSlotIndex = formationSlotIndex,
-            FormationUnitCount = formationUnitCount
+            FormationUnitCount = formationUnitCount,
+            FormationMaxNavigationRadius = formationMaxNavigationRadius
         };
     }
 

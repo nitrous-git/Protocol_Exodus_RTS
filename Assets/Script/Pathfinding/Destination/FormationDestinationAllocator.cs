@@ -18,6 +18,7 @@ public sealed class FormationDestinationAllocator
         GridCoord formationCenter,
         int slotIndex,
         int unitCount,
+        float formationMaxNavigationRadius,
         int maxFallbackDepth = 3)
     {
         if (unit == null ||
@@ -30,7 +31,9 @@ public sealed class FormationDestinationAllocator
             return null;
         }
 
-        GridCoord preferredCell = GetPreferredSlot(formationCenter, slotIndex, unitCount);
+        int spacing = CalculateSpacing(unit, formationMaxNavigationRadius);
+
+        GridCoord preferredCell = GetPreferredSlot(formationCenter, slotIndex, unitCount, spacing);
 
         if (navigationState.TryReserveDestination(preferredCell, unit))
         {
@@ -39,7 +42,7 @@ public sealed class FormationDestinationAllocator
 
         for (int depth = 1; depth <= maxFallbackDepth; depth++)
         {
-            GridCoord? fallback = TryAllocateAround(unit, preferredCell, depth);
+            GridCoord? fallback = TryAllocateAround(unit, preferredCell, depth, spacing);
 
             if (fallback.HasValue)
                 return fallback;
@@ -51,7 +54,8 @@ public sealed class FormationDestinationAllocator
     private GridCoord GetPreferredSlot(
         GridCoord formationCenter,
         int slotIndex,
-        int unitCount)
+        int unitCount,
+        int spacing)
     {
         int columns = Mathf.CeilToInt(Mathf.Sqrt(unitCount));
         int rows = Mathf.CeilToInt((float)unitCount / columns);
@@ -70,7 +74,8 @@ public sealed class FormationDestinationAllocator
     private GridCoord? TryAllocateAround(
         UnitBase unit,
         GridCoord center,
-        int depth)
+        int depth, 
+        int spacing)
     {
         for (int z = -depth; z <= depth; z++)
         {
@@ -91,5 +96,20 @@ public sealed class FormationDestinationAllocator
         }
 
         return null;
+    }
+
+    // ---------------------------------------------------------------------
+    // Helpers 
+    // ---------------------------------------------------------------------
+
+    private int CalculateSpacing(UnitBase unit, float formationMaxNavigationRadius)
+    {
+        float requiredRadius = Mathf.Max(unit.NavigationRadius, formationMaxNavigationRadius);
+
+        float requiredWorldSpacing = requiredRadius * 2f;
+        int requiredCellSpacing = Mathf.CeilToInt((requiredWorldSpacing + 1) / terrainGrid.CellSize);
+        // Mathf.CeilToInt((requiredWorldSpacing + 1) / terrainGrid.CellSize);  // + padding
+
+        return Mathf.Max(1, requiredCellSpacing);
     }
 }

@@ -161,19 +161,28 @@ public class GameBuilder : MonoBehaviour
         if (faction == null || matchWorld == null)
             return;
 
-        UnitDefinition combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
+        UnitDefinition combatDefinition; // = faction.Definition?.GetUnitDefinition(UnitType.Mech);
 
-        if (combatDefinition.Prefab == null)
-        {
-            Debug.LogWarning("GameBuilder has no workerUnitPrefab assigned.");
-            return;
-        }
+        //if (combatDefinition.Prefab == null)
+        //{
+        //    Debug.LogWarning("GameBuilder has no workerUnitPrefab assigned.");
+        //    return;
+        //}
 
         Vector3 origin = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
 
         for (int i = 0; i < startingCombatCount; i++)
         {
+            if (i%2 == 0)
+            {
+                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
+            }
+            else
+            {
+                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+            }
+
             Vector3 spawnPosition = origin + GetStartingUnitOffset(i);
 
             faction.UnitManager.SpawnUnit(

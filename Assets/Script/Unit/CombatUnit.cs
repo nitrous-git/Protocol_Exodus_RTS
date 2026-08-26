@@ -72,7 +72,11 @@ public class CombatUnit : UnitBase
         {
             case CommandType.Move:
             case CommandType.AttackMove:
-                SetState(new MoveState(context.WorldPosition, context.FormationSlotIndex, context.FormationUnitCount));
+                SetState(new MoveState(
+                    context.WorldPosition, 
+                    context.FormationSlotIndex, 
+                    context.FormationUnitCount,
+                    context.FormationMaxNavigationRadius));
                 break;
 
             case CommandType.Attack:
@@ -218,7 +222,11 @@ public class CombatUnit : UnitBase
             return;
         }
 
-        SetState(new MoveState(currentContext.WorldPosition, currentContext.FormationSlotIndex, currentContext.FormationUnitCount));
+        SetState(new MoveState(
+            currentContext.WorldPosition, 
+            currentContext.FormationSlotIndex, 
+            currentContext.FormationUnitCount,
+            currentContext.FormationMaxNavigationRadius));
     }
 
     public void ClearCurrentTarget()
@@ -298,7 +306,10 @@ public class CombatUnit : UnitBase
         currentTarget = target;
     }
 
+    // ---------------------------------------------------------------------
     // Gizmos 
+    // ---------------------------------------------------------------------
+
     private void OnDrawGizmosSelected()
     {
         if (definition == null)

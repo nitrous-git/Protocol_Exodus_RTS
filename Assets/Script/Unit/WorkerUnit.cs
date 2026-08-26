@@ -27,7 +27,11 @@ public sealed class WorkerUnit : UnitBase
         switch (commandType)
         {
             case CommandType.Move:
-                SetState(new MoveState(context.WorldPosition, context.FormationSlotIndex, context.FormationUnitCount));
+                SetState(new MoveState(
+                    context.WorldPosition, 
+                    context.FormationSlotIndex, 
+                    context.FormationUnitCount, 
+                    context.FormationMaxNavigationRadius));
                 break;
 
             case CommandType.Gather:

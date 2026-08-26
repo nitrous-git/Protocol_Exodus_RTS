@@ -8,12 +8,18 @@ public class MoveState : UnitState<UnitBase>
 
     private GridCoord? reservedDestinationCell;
     private bool pathRequested;
+    private float formationMaxNavigationRadius;
 
-    public MoveState(Vector3 formationCenter, int formationSlotIndex, int formationUnitCount)
+    public MoveState(
+        Vector3 formationCenter, 
+        int formationSlotIndex, 
+        int formationUnitCount, 
+        float formationMaxNavigationRadius)
     {
         this.formationCenter = formationCenter;
         this.formationSlotIndex = formationSlotIndex;
         this.formationUnitCount = formationUnitCount;
+        this.formationMaxNavigationRadius = formationMaxNavigationRadius;
     }
 
     protected override void OnEnterTyped(UnitBase unit)
@@ -29,7 +35,13 @@ public class MoveState : UnitState<UnitBase>
 
         GridCoord centerCell = unit.TerrainGrid.WorldToCell(formationCenter);
 
-        reservedDestinationCell = unit.DestinationAllocationSystem.Formation.TryAllocate(unit, centerCell, formationSlotIndex, formationUnitCount);
+        reservedDestinationCell = 
+            unit.DestinationAllocationSystem.Formation.TryAllocate(
+                unit, 
+                centerCell, 
+                formationSlotIndex, 
+                formationUnitCount, 
+                formationMaxNavigationRadius);
 
         if (!reservedDestinationCell.HasValue)
         {

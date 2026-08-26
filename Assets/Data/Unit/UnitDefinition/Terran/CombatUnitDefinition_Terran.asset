@@ -22,7 +22,7 @@ MonoBehaviour:
     supply: 1
   productionDuration: 6
   maxHealth: 1000
-  moveSpeed: 2.2
+  moveSpeed: 2.5
   visionRange: 18
   canAttack: 1
   attackRange: 16

@@ -39,7 +39,6 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public bool IsInitialized { get; private set; }
     public int UnitId { get; private set; } = -1;
 
-
     public bool CanReceiveCommands => canReceiveCommands;
     public bool CanBeSelected => canBeSelected;
 
@@ -48,11 +47,10 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public UnitSensor Sensor => sensor;
     public UnitView View => view;
 
-
     public Vector3 Position => transform.position;
     public bool IsAlive => health != null && health.IsAlive;
     public Transform AimPoint => aimPoint != null ? aimPoint : transform;
-
+    public  float NavigationRadius => definition != null ? definition.NavigationRadius : 0.45f;
     public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
 
     public TerrainGrid TerrainGrid => gameContext?.TerrainGrid;
@@ -150,7 +148,11 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         switch (commandType)
         {
             case CommandType.Move:
-                SetState(new MoveState(context.WorldPosition, context.FormationSlotIndex, context.FormationUnitCount));
+                SetState(new MoveState(
+                    context.WorldPosition, 
+                    context.FormationSlotIndex, 
+                    context.FormationUnitCount,
+                    context.FormationMaxNavigationRadius));
                 break;
 
             case CommandType.HoldPosition:

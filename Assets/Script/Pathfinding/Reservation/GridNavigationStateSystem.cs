@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class GridNavigationStateSystem
 {
@@ -44,16 +45,7 @@ public sealed class GridNavigationStateSystem
             return existingOwner == owner;
         }
 
-        // TerrainGrid still handles:
-        // - terrain walkability
-        // - hard occupancy
-        // - Reserved mirror
-        if (!terrainGrid.IsWalkable(coord))
-            return false;
-
-        // A final destination may never be a cell currently
-        // occupied by another unit.
-        if (IsOccupiedByOtherUnit(coord, owner))
+        if (!CanStandAt(coord, owner))
             return false;
 
         destinationsByCell.Add(coord, owner);
@@ -197,6 +189,166 @@ public sealed class GridNavigationStateSystem
     }
 
     // ---------------------------------------------------------------------
+    // Radius Based Clearance
+    // ---------------------------------------------------------------------
+
+    public bool CanStandAt(GridCoord coord, UnitBase unit)
+    {
+        if (terrainGrid == null || unit == null)
+            return false;
+
+        if (!terrainGrid.IsInside(coord))
+            return false;
+
+        GridCell candidateCell = terrainGrid.GetCell(coord);
+        if (candidateCell == null)
+            return false;
+
+        float radius = unit.NavigationRadius;
+        Vector3 center = candidateCell.WorldCenter;
+        
+        if (!HasHardClearance(coord, center, radius))
+            return false;
+
+        if (OverlapsOccupiedUnit(center, radius, unit))
+            return false;
+
+        if (OverlapsReservedDestination(center, radius, unit))
+            return false;
+
+        return true;
+    }
+
+    private bool HasHardClearance(GridCoord centerCoord, Vector3 center, float radius)
+    {
+        GridCell centerCell = terrainGrid.GetCell(centerCoord);
+
+        if (centerCell == null)
+            return false;
+
+        // Important:
+        // Reserved is NOT checked here.
+        //
+        // Reserved mobile destinations are handled separately through
+        // destinationsByCell. Here we only care about hard geometry.
+        if (!centerCell.Walkable || centerCell.Occupied)
+            return false;
+
+        if (radius <= 0f)
+            return true;
+
+        float cellSize = terrainGrid.CellSize;
+        float halfCellSize = cellSize * 0.5f;
+
+        // ------------------------------------------------------------
+        // Grid boundary clearance
+        // ------------------------------------------------------------
+
+        GridCell firstCell = terrainGrid.GetCell(new GridCoord(0, 0));
+        GridCell lastCell = terrainGrid.GetCell( new GridCoord(terrainGrid.Width - 1, terrainGrid.Height - 1));
+
+        if (firstCell == null || lastCell == null)
+            return false;
+
+        float minX = firstCell.WorldCenter.x - halfCellSize;
+        float maxX = lastCell.WorldCenter.x + halfCellSize;
+        float minZ = firstCell.WorldCenter.z - halfCellSize;
+        float maxZ = lastCell.WorldCenter.z + halfCellSize;
+
+        if (center.x - radius < minX || center.x + radius > maxX ||
+            center.z - radius < minZ || center.z + radius > maxZ)
+        {
+            return false;
+        }
+
+        // ------------------------------------------------------------
+        // Nearby hard cells
+        // ------------------------------------------------------------
+
+        int searchDepth = Mathf.CeilToInt((radius + halfCellSize) / cellSize);
+
+        for (int z = -searchDepth; z <= searchDepth; z++)
+        {
+            for (int x = -searchDepth; x <= searchDepth; x++)
+            {
+                GridCoord testCoord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
+
+                if (!terrainGrid.IsInside(testCoord))
+                    continue;
+
+                GridCell cell = terrainGrid.GetCell(testCoord);
+                if (cell == null)
+                    continue;
+
+                // Free hard-space cell.
+                // Ignore Reserved here intentionally.
+                if (cell.Walkable && !cell.Occupied)
+                    continue;
+
+                if (CircleOverlapsCell(center, radius, cell.WorldCenter, halfCellSize))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private bool CircleOverlapsCell(Vector3 circleCenter, float radius, Vector3 cellCenter, float halfCellSize)
+    {
+        float deltaX = Mathf.Max(Mathf.Abs(circleCenter.x - cellCenter.x) - halfCellSize, 0f);
+        float deltaZ = Mathf.Max(Mathf.Abs(circleCenter.z - cellCenter.z) - halfCellSize, 0f);
+        float distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+        return distanceSquared < radius * radius;
+    }
+
+    private bool OverlapsOccupiedUnit(Vector3 center, float radius, UnitBase requester)
+    {
+        foreach (KeyValuePair<UnitBase, GridCoord> pair in occupiedCellByUnit)
+        {
+            UnitBase other = pair.Key;
+
+            if (other == null || other == requester)
+                continue;
+
+            float requiredDistance = radius + other.NavigationRadius;
+
+            if (XZDistanceSquared(center, other.Position) < requiredDistance * requiredDistance)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool OverlapsReservedDestination(Vector3 center, float radius, UnitBase requester)
+    {
+        foreach (KeyValuePair<GridCoord, UnitBase> pair in destinationsByCell)
+        {
+            UnitBase other = pair.Value;
+
+            if (other == null || other == requester)
+                continue;
+
+            GridCell reservedCell = terrainGrid.GetCell(pair.Key);
+            if (reservedCell == null)
+                continue;
+
+            float requiredDistance =
+                radius + other.NavigationRadius;
+
+            if (XZDistanceSquared(center, reservedCell.WorldCenter) < requiredDistance * requiredDistance)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // ---------------------------------------------------------------------
     // General Cleanup
     // ---------------------------------------------------------------------
 
@@ -252,6 +404,13 @@ public sealed class GridNavigationStateSystem
     private bool IsSameCoord(GridCoord first, GridCoord second)
     {
         return first.x == second.x && first.z == second.z;
+    }
+
+    private float XZDistanceSquared(Vector3 first, Vector3 second)
+    {
+        float deltaX = first.x - second.x;
+        float deltaZ = first.z - second.z;
+        return deltaX * deltaX + deltaZ * deltaZ;
     }
 
     // ---------------------------------------------------------------------
