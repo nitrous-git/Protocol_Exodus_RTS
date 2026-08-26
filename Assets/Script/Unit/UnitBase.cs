@@ -27,7 +27,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     protected UnitMotor motor;
     protected UnitSensor sensor;
     protected UnitView view;
-    protected LocalSteeringSystem localSteeringSystem;
+    //protected LocalSteeringSystem localSteeringSystem;
 
     public UnitDefinition Definition => definition;
     public Faction OwnerFaction => ownerFaction;
@@ -68,7 +68,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         motor = GetComponent<UnitMotor>();
         sensor = GetComponent<UnitSensor>();
         view = GetComponent<UnitView>();
-        localSteeringSystem = GetComponent<LocalSteeringSystem>(); 
+        //localSteeringSystem = GetComponent<LocalSteeringSystem>(); 
     }
 
     public virtual void Initialize(Faction ownerFaction, 
@@ -108,8 +108,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
-        localSteeringSystem?.Initialize(this, gameContext.AllUnits);
-        motor?.Initialize(this, pathfindingService, TerrainGrid, GridNavigationStateSystem, localSteeringSystem, definition.moveSpeed);
+        //localSteeringSystem?.Initialize(this, gameContext.AllUnits);
+        motor?.Initialize(this, pathfindingService, TerrainGrid, GridNavigationStateSystem, definition.moveSpeed);
         sensor?.Initialize(this, gameContext);
         view?.Initialize(this);
 
@@ -125,7 +125,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
         sensor?.Tick(deltaTime);
         currentState?.Tick(this, deltaTime);
-        motor?.Tick();
+        //motor?.Tick();
+        motor?.PrepareMovement();
     }
 
     public virtual void TickLate(float deltaTime)

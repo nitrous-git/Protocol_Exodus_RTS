@@ -12,7 +12,7 @@ public class NavMeshPathfindingService : MonoBehaviour, IPathfindingService
     [SerializeField] private float endpointSampleRadius = 2f;
     [SerializeField] private bool logPathFailures = true;
 
-    public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState)
+    public void Initialize(TerrainGrid terrainGrid)
     {
         // NavMesh does not use the grid reservation system.
     }

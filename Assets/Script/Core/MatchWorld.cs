@@ -33,6 +33,7 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private BuildingPlacementPreview buildingPlacementPreviewPrefab;
 
     private UnitDepenetrationSystem unitDepenetrationSystem;
+    private CrowdAvoidanceSystem crowdAvoidanceSystem;
 
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
@@ -80,6 +81,7 @@ public sealed class MatchWorld : MonoBehaviour
         PlayerFaction = playerFaction;
 
         unitDepenetrationSystem = new UnitDepenetrationSystem(gameContext.AllUnits);
+        crowdAvoidanceSystem = new CrowdAvoidanceSystem(gameContext);
 
         PathfindingService = pathfindingServiceComponent as IPathfindingService;
 
@@ -102,6 +104,7 @@ public sealed class MatchWorld : MonoBehaviour
     {
         FactionManager?.Tick(deltaTime);
 
+        crowdAvoidanceSystem?.Tick(deltaTime);
         unitDepenetrationSystem?.Tick();
 
         ResourceNodeRepository?.Tick(deltaTime);

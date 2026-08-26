@@ -394,6 +394,75 @@ public sealed class GridNavigationStateSystem
         return deltaX * deltaX + deltaZ * deltaZ;
     }
 
+    public void GetNearbyUnits(
+        UnitBase requester,
+        float searchRadius,
+        List<UnitBase> results)
+    {
+        results.Clear();
+
+        if (terrainGrid == null ||
+            requester == null ||
+            searchRadius <= 0f)
+        {
+            return;
+        }
+
+        GridCoord centerCoord = terrainGrid.WorldToCell(requester.Position);
+
+        int searchDepth =
+            Mathf.CeilToInt(
+                searchRadius /
+                terrainGrid.CellSize);
+
+        float searchRadiusSq = searchRadius * searchRadius;
+
+        for (int z = -searchDepth; z <= searchDepth; z++)
+        {
+            for (int x = -searchDepth; x <= searchDepth; x++)
+            {
+                GridCoord coord =
+                    new GridCoord(
+                        centerCoord.x + x,
+                        centerCoord.z + z);
+
+                if (!terrainGrid.IsInside(coord))
+                    continue;
+
+                if (!occupantsByCell.TryGetValue(
+                        coord,
+                        out HashSet<UnitBase> occupants))
+                {
+                    continue;
+                }
+
+                foreach (UnitBase other in occupants)
+                {
+                    if (other == null ||
+                        other == requester ||
+                        !other.IsAlive)
+                    {
+                        continue;
+                    }
+
+                    Vector3 delta =
+                        other.Position -
+                        requester.Position;
+
+                    delta.y = 0f;
+
+                    if (delta.sqrMagnitude >
+                        searchRadiusSq)
+                    {
+                        continue;
+                    }
+
+                    results.Add(other);
+                }
+            }
+        }
+    }
+
     // ---------------------------------------------------------------------
     // Getter
     // ---------------------------------------------------------------------

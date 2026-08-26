@@ -72,13 +72,13 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     private const int StraightCost = 10;
     private const int DiagonalCost = 14;
 
-    [Header("Dynamic Occupancy")]
-    private int unitOccupancyPenalty = 0; //25;
+    //[Header("Dynamic Occupancy")]
+    //private int unitOccupancyPenalty = 25;
 
-    public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigateState)
+    public void Initialize(TerrainGrid terrainGrid)
     {
         this.terrainGrid = terrainGrid;
-        this.navigateState = navigateState;
+        //this.navigateState = navigateState;
 
         if (terrainGrid == null)
         {
@@ -200,7 +200,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
                 int movementCost = diagonal ? DiagonalCost : StraightCost;
 
-                movementCost += GetUnitOccupancyPenalty(neighborCoord, requester);
+                //movementCost += GetUnitOccupancyPenalty(neighborCoord, requester);
 
                 int newGCost = currentNode.GCost + movementCost;
 
@@ -218,20 +218,20 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         }
     }
 
-    private int GetUnitOccupancyPenalty(GridCoord coord, UnitBase requester)
-    {
-        if (navigateState == null)
-        {
-            return 0;
-        }
+    //private int GetUnitOccupancyPenalty(GridCoord coord, UnitBase requester)
+    //{
+    //    if (navigateState == null)
+    //    {
+    //        return 0;
+    //    }
 
-        if (!navigateState.WouldOverlapOccupiedUnit(coord, requester))
-        {
-            return 0;
-        }
+    //    if (!navigateState.WouldOverlapOccupiedUnit(coord, requester))
+    //    {
+    //        return 0;
+    //    }
 
-        return unitOccupancyPenalty;
-    }
+    //    return unitOccupancyPenalty;
+    //}
 
     private bool CanMoveDiagonally(GridCoord from, int xOffset, int zOffset, GridCoord startCoord, UnitBase requester)
     {
@@ -262,8 +262,8 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             return false;
         }
 
-        if (navigateState != null && navigateState.IsDestinationReservedByOther(coord, requester))
-            return false;
+        //if (navigateState != null && navigateState.IsDestinationReservedByOther(coord, requester))
+        //    return false;
 
         return true;
     }

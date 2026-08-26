@@ -62,7 +62,7 @@ public class GameBuilder : MonoBehaviour
         DestinationAllocationSystem = new DestinationAllocationSystem(matchWorld.TerrainGrid, GridNavigationStateSystem);
         GameContext.SetDestinationAllocationSystem(DestinationAllocationSystem);
 
-        matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid, GridNavigationStateSystem);
+        matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid);
 
         // Nodes reserve their cells after TerrainGrid (after ResolveServices()) 
         ResourceNodeRepository = new ResourceNodeRepository(GameContext, matchWorld.TerrainGrid); 
@@ -176,7 +176,7 @@ public class GameBuilder : MonoBehaviour
         {
             if (i%2 == 0)
             {
-                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
             }
             else
             {
