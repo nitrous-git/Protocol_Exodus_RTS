@@ -225,7 +225,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             return 0;
         }
 
-        if (!navigateState.IsOccupiedByOtherUnit(coord, requester))
+        if (!navigateState.WouldOverlapOccupiedUnit(coord, requester))
         {
             return 0;
         }
@@ -255,8 +255,12 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             return true;
         }
 
-        if (cell.Occupied)
+        float navigationRadius = requester != null ? requester.NavigationRadius : 0f;
+
+        if (!terrainGrid.HasNavigationClearance(coord, navigationRadius))
+        {
             return false;
+        }
 
         if (navigateState != null && navigateState.IsDestinationReservedByOther(coord, requester))
             return false;
