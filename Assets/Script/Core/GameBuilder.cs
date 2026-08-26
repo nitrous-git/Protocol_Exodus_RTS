@@ -176,7 +176,7 @@ public class GameBuilder : MonoBehaviour
         {
             if (i%2 == 0)
             {
-                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
+                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
             }
             else
             {

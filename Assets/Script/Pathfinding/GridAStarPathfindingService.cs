@@ -73,7 +73,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     private const int DiagonalCost = 14;
 
     [Header("Dynamic Occupancy")]
-    [SerializeField][Min(0)] private int unitOccupancyPenalty = 25;
+    private int unitOccupancyPenalty = 0; //25;
 
     public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigateState)
     {

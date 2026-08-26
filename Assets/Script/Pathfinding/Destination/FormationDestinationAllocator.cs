@@ -107,7 +107,7 @@ public sealed class FormationDestinationAllocator
         float requiredRadius = Mathf.Max(unit.NavigationRadius, formationMaxNavigationRadius);
 
         float requiredWorldSpacing = requiredRadius * 2f;
-        int requiredCellSpacing = Mathf.CeilToInt((requiredWorldSpacing) / terrainGrid.CellSize);
+        int requiredCellSpacing = Mathf.CeilToInt((requiredWorldSpacing + 1) / terrainGrid.CellSize);
         // Mathf.CeilToInt((requiredWorldSpacing + 1) / terrainGrid.CellSize);  // + padding
 
         return Mathf.Max(1, requiredCellSpacing);
