@@ -1196,7 +1196,6 @@ GameObject:
   - component: {fileID: 7212222650217604856}
   - component: {fileID: 996817896516791789}
   - component: {fileID: 2366001063682065258}
-  - component: {fileID: 3224694999369868980}
   - component: {fileID: 5150068889771855816}
   m_Layer: 7
   m_Name: CombatUnit_Terran_Prefab
@@ -1275,12 +1274,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4513600959885354868}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b77f252b23ad834429a15c679e454713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalSteeringSystem
-  drawSteeringGizmos: 1
+  drawSteeringGizmos: 0
 --- !u!114 &7275380924339051778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1357,19 +1356,6 @@ CapsuleCollider:
   m_Height: 2.5986497
   m_Direction: 1
   m_Center: {x: 0.006570816, y: 1.1570371, z: -0.015060425}
---- !u!114 &3224694999369868980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4513600959885354868}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1278caabfa0cc040bf3b6357d045c8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UnitSensor
-  sensorInterval: 0.2
 --- !u!114 &5150068889771855816
 MonoBehaviour:
   m_ObjectHideFlags: 0

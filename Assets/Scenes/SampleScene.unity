@@ -4413,7 +4413,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0aae5aebe520f245bbc1e26454471ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridAStarPathfindingService
-  unitOccupancyPenalty: 25
 --- !u!1001 &1625794929
 PrefabInstance:
   m_ObjectHideFlags: 0

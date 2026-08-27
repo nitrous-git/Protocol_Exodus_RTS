@@ -1,14 +1,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Local reciprocal collision avoidance for moving units.
+///
+/// Architecture:
+///
+/// A* / path following
+///      ¡ý
+/// PreferredVelocity
+///      ¡ý
+/// CrowdAvoidanceSystem
+///      ¡ý
+/// ORCA safe velocity
+///      ¡ý
+/// UnitMotor.ApplyCrowdVelocity()
+///
+/// C3 baseline:
+/// - Agent-agent ORCA only.
+/// - Moving <-> Moving only.
+/// - Reciprocal 50 / 50 responsibility.
+/// - No radius padding.
+/// - No passing bias.
+/// - No custom fallback direction.
+/// - No stationary-unit responsibility policy.
+/// - Static obstacles remain handled by radius-aware A*.
+///
+/// ORCA math follows the standard RVO2 agent-agent formulation.
+/// </summary>
 public sealed class CrowdAvoidanceSystem
 {
     private const float Epsilon = 0.00001f;
 
-    // Initial experimental values.
-    private const float NeighborDistance = 6f;
+    // C3 baseline parameters.
+    //
+    // At moveSpeed = 2.5:
+    // two head-on units have a relative closing speed of 5.
+    // With a 2 second horizon, 10 world units is a sensible
+    // initial neighbor distance.
+    private const float NeighborDistance = 10f;
     private const float TimeHorizon = 2f;
-    private const float RadiusPadding = 0.05f;
+    private const float StationaryPassingBias = 0.50f;
 
     private readonly GameContext gameContext;
     private readonly GridNavigationStateSystem navigationState;
@@ -21,15 +53,31 @@ public sealed class CrowdAvoidanceSystem
 
     private readonly Dictionary<UnitBase, Vector3> solvedVelocities = new Dictionary<UnitBase, Vector3>();
 
+    private readonly HashSet<UnitBase> movingLastFrame =
+    new HashSet<UnitBase>();
+
+    private readonly HashSet<UnitBase> movingThisFrame =
+        new HashSet<UnitBase>();
+
     private struct OrcaLine
     {
         public Vector2 Point;
         public Vector2 Direction;
+
+        public OrcaLine(
+            Vector2 point,
+            Vector2 direction)
+        {
+            Point = point;
+            Direction = direction;
+        }
     }
 
-    public CrowdAvoidanceSystem(GameContext gameContext)
+    public CrowdAvoidanceSystem(
+        GameContext gameContext)
     {
         this.gameContext = gameContext;
+
         navigationState =
             gameContext != null
                 ? gameContext.GridNavigationStateSystem
@@ -42,66 +90,120 @@ public sealed class CrowdAvoidanceSystem
 
     public void Tick(float deltaTime)
     {
-        if (gameContext == null)
+        if (gameContext == null ||
+            deltaTime <= Epsilon)
+        {
             return;
+        }
 
         IReadOnlyList<UnitBase> units =
             gameContext.AllUnits;
 
         solvedVelocities.Clear();
+        movingThisFrame.Clear();
+
+        // Determine the complete moving set before solving anybody.
+        for (int i = 0; i < units.Count; i++)
+        {
+            UnitBase unit =
+                units[i];
+
+            if (CanSolve(unit))
+            {
+                movingThisFrame.Add(unit);
+            }
+        }
 
         // -------------------------------------------------------------
-        // Phase 1:
-        // Solve everybody from the same position / velocity snapshot.
-        // Do NOT move units in this loop.
+        // Solve
         // -------------------------------------------------------------
 
         for (int i = 0; i < units.Count; i++)
         {
-            UnitBase unit = units[i];
+            UnitBase unit =
+                units[i];
 
-            if (!CanSolve(unit))
+            if (!movingThisFrame.Contains(unit))
                 continue;
 
-            Vector3 safeVelocity =
+            Vector3 solvedVelocity =
                 SolveVelocity(
                     unit,
                     deltaTime);
 
             solvedVelocities[unit] =
-                safeVelocity;
+                solvedVelocity;
         }
 
         // -------------------------------------------------------------
-        // Phase 2:
-        // Only after all solutions are known do we move the units.
+        // Apply
         // -------------------------------------------------------------
 
         for (int i = 0; i < units.Count; i++)
         {
-            UnitBase unit = units[i];
+            UnitBase unit =
+                units[i];
 
             if (unit == null)
                 continue;
 
             if (!solvedVelocities.TryGetValue(
                     unit,
-                    out Vector3 safeVelocity))
+                    out Vector3 solvedVelocity))
             {
                 continue;
             }
 
             unit.Motor?.ApplyCrowdVelocity(
-                safeVelocity);
+                solvedVelocity);
+        }
+
+        // -------------------------------------------------------------
+        // Save movement state for next frame.
+        // -------------------------------------------------------------
+
+        movingLastFrame.Clear();
+
+        foreach (UnitBase unit in movingThisFrame)
+        {
+            movingLastFrame.Add(unit);
         }
     }
 
-    private static bool CanSolve(UnitBase unit)
+    private static bool CanSolve(
+        UnitBase unit)
     {
-        return unit != null &&
-               unit.IsAlive &&
-               unit.Motor != null &&
-               unit.Motor.HasPreparedMovement;
+        return
+            unit != null &&
+            unit.IsAlive &&
+            unit.Motor != null &&
+            unit.Motor.HasPreparedMovement;
+    }
+
+    private Vector2 GetSolverVelocity(
+        UnitBase unit)
+    {
+        UnitMotor motor =
+            unit.Motor;
+
+        if (!motor.HasPreparedMovement)
+        {
+            return Vector2.zero;
+        }
+
+        if (!movingLastFrame.Contains(unit))
+        {
+            Vector2 preferred =
+                To2D(
+                    motor.PreferredVelocity);
+
+            return Vector2.ClampMagnitude(
+                preferred,
+                motor.MaxSpeed);
+        }
+
+        return To2D(
+            motor.CurrentVelocity);
     }
 
     // ---------------------------------------------------------------------
@@ -112,9 +214,18 @@ public sealed class CrowdAvoidanceSystem
         UnitBase unit,
         float deltaTime)
     {
-        UnitMotor motor = unit.Motor;
+        UnitMotor motor =
+            unit.Motor;
 
         lines.Clear();
+
+        // We currently have no ORCA obstacle constraints.
+        // Static world navigation remains the responsibility of A*.
+        const int numObstacleLines = 0;
+
+        // -------------------------------------------------------------
+        // Agent neighbors
+        // -------------------------------------------------------------
 
         if (navigationState != null)
         {
@@ -123,40 +234,60 @@ public sealed class CrowdAvoidanceSystem
                 NeighborDistance,
                 neighbors);
 
-            for (int i = 0; i < neighbors.Count; i++)
+            // RVO2 keeps agent neighbors ordered from closest to
+            // furthest. It is irrelevant for the 1v1 tests, but this
+            // keeps our input ordering closer to the reference solver.
+            SortNeighborsByDistance(
+                unit);
+
+            for (int i = 0;
+                 i < neighbors.Count;
+                 i++)
             {
                 UnitBase other =
                     neighbors[i];
 
                 if (other == null ||
+                    !other.IsAlive ||
                     other.Motor == null)
                 {
                     continue;
                 }
 
-                // C3:
-                // only reciprocal Moving <-> Moving for now.
-                //
-                // Hold / Arrived responsibility is deliberately C6.
-                if (!other.Motor.HasPreparedMovement)
-                    continue;
+                bool otherIsMoving = other.Motor.HasPreparedMovement;
+
+                float responsibility =
+                    otherIsMoving
+                        ? 0.5f
+                        : 1.0f;
 
                 OrcaLine line =
                     BuildAgentLine(
                         unit,
                         other,
-                        deltaTime);
+                        deltaTime,
+                        responsibility);
 
                 lines.Add(line);
             }
         }
 
+        // -------------------------------------------------------------
+        // Preferred velocity
+        // -------------------------------------------------------------
+
         Vector2 preferredVelocity =
-            To2D(motor.PreferredVelocity);
+            To2D(
+                motor.PreferredVelocity);
+
+        // before LP2  -> ApplyStationaryPassingBias
+        preferredVelocity = ApplyStationaryPassingBias(unit, preferredVelocity);
 
         float maxSpeed =
             motor.MaxSpeed;
 
+        // PreferredVelocity should already respect moveSpeed,
+        // but keep the solver input valid regardless.
         if (preferredVelocity.sqrMagnitude >
             maxSpeed * maxSpeed)
         {
@@ -164,6 +295,11 @@ public sealed class CrowdAvoidanceSystem
                 preferredVelocity.normalized *
                 maxSpeed;
         }
+
+        // -------------------------------------------------------------
+        // Solve velocity closest to PreferredVelocity while satisfying
+        // all ORCA half-plane constraints.
+        // -------------------------------------------------------------
 
         Vector2 result =
             Vector2.zero;
@@ -176,10 +312,12 @@ public sealed class CrowdAvoidanceSystem
                 false,
                 ref result);
 
-        if (failedLine < lines.Count)
+        if (failedLine <
+            lines.Count)
         {
             LinearProgram3(
                 lines,
+                numObstacleLines,
                 failedLine,
                 maxSpeed,
                 ref result);
@@ -188,22 +326,27 @@ public sealed class CrowdAvoidanceSystem
         return To3D(result);
     }
 
+    // ---------------------------------------------------------------------
+    // Agent ORCA Constraint
+    // ---------------------------------------------------------------------
+
     private OrcaLine BuildAgentLine(
         UnitBase self,
         UnitBase other,
-        float deltaTime)
+        float deltaTime,
+        float responsability)
     {
         Vector2 selfPosition =
-            To2D(self.Position);
+            To2D(
+                self.Position);
 
         Vector2 otherPosition =
-            To2D(other.Position);
+            To2D(
+                other.Position);
 
-        Vector2 selfVelocity =
-            To2D(self.Motor.CurrentVelocity);
+        Vector2 selfVelocity = GetSolverVelocity(self);
 
-        Vector2 otherVelocity =
-            To2D(other.Motor.CurrentVelocity);
+        Vector2 otherVelocity = GetSolverVelocity(other);
 
         Vector2 relativePosition =
             otherPosition -
@@ -216,33 +359,36 @@ public sealed class CrowdAvoidanceSystem
         float distanceSq =
             relativePosition.sqrMagnitude;
 
+        // IMPORTANT:
+        //
+        // No arbitrary padding in the C3 reference baseline.
+        // NavigationRadius is the actual ORCA agent radius.
         float combinedRadius =
             self.NavigationRadius +
-            other.NavigationRadius +
-            RadiusPadding;
+            other.NavigationRadius;
 
         float combinedRadiusSq =
             combinedRadius *
             combinedRadius;
 
-        OrcaLine line =
-            new OrcaLine();
-
+        Vector2 direction;
         Vector2 correction;
 
         // -------------------------------------------------------------
-        // Not currently overlapping.
-        // Predict collision using the time horizon.
+        // No current collision.
+        //
+        // Construct the velocity obstacle using TimeHorizon.
         // -------------------------------------------------------------
 
-        if (distanceSq > combinedRadiusSq)
+        if (distanceSq >
+            combinedRadiusSq)
         {
             float inverseTimeHorizon =
                 1f /
-                Mathf.Max(
-                    TimeHorizon,
-                    0.001f);
+                TimeHorizon;
 
+            // Vector from the cutoff-circle center to the current
+            // relative velocity.
             Vector2 w =
                 relativeVelocity -
                 inverseTimeHorizon *
@@ -251,40 +397,29 @@ public sealed class CrowdAvoidanceSystem
             float wLengthSq =
                 w.sqrMagnitude;
 
-            float dot =
+            float dotProduct1 =
                 Vector2.Dot(
                     w,
                     relativePosition);
 
             // ---------------------------------------------------------
-            // Closest point lies on the cutoff circle.
+            // Project on cutoff circle.
             // ---------------------------------------------------------
 
-            if (dot < 0f &&
-                dot * dot >
+            if (dotProduct1 < 0f &&
+                dotProduct1 * dotProduct1 >
                 combinedRadiusSq *
                 wLengthSq)
             {
                 float wLength =
-                    Mathf.Sqrt(wLengthSq);
+                    Mathf.Sqrt(
+                        wLengthSq);
 
-                Vector2 unitW;
+                Vector2 unitW =
+                    w /
+                    wLength;
 
-                if (wLength > Epsilon)
-                {
-                    unitW =
-                        w / wLength;
-                }
-                else
-                {
-                    unitW =
-                        GetFallbackDirection(
-                            self,
-                            other,
-                            relativePosition);
-                }
-
-                line.Direction =
+                direction =
                     new Vector2(
                         unitW.y,
                         -unitW.x);
@@ -299,24 +434,22 @@ public sealed class CrowdAvoidanceSystem
             }
 
             // ---------------------------------------------------------
-            // Closest point lies on one of the VO legs.
+            // Project on velocity-obstacle legs.
             // ---------------------------------------------------------
 
             else
             {
                 float leg =
                     Mathf.Sqrt(
-                        Mathf.Max(
-                            0f,
-                            distanceSq -
-                            combinedRadiusSq));
+                        distanceSq -
+                        combinedRadiusSq);
 
                 if (Det(
                         relativePosition,
                         w) > 0f)
                 {
                     // Left leg.
-                    line.Direction =
+                    direction =
                         new Vector2(
                             relativePosition.x *
                                 leg -
@@ -327,13 +460,14 @@ public sealed class CrowdAvoidanceSystem
                                 combinedRadius +
                             relativePosition.y *
                                 leg)
-                        / distanceSq;
+                        /
+                        distanceSq;
                 }
                 else
                 {
                     // Right leg.
-                    Vector2 direction =
-                        new Vector2(
+                    direction =
+                        -new Vector2(
                             relativePosition.x *
                                 leg +
                             relativePosition.y *
@@ -343,35 +477,34 @@ public sealed class CrowdAvoidanceSystem
                                 combinedRadius +
                             relativePosition.y *
                                 leg)
-                        / distanceSq;
-
-                    line.Direction =
-                        -direction;
+                        /
+                        distanceSq;
                 }
 
-                correction =
+                float dotProduct2 =
                     Vector2.Dot(
                         relativeVelocity,
-                        line.Direction) *
-                    line.Direction -
+                        direction);
+
+                correction =
+                    dotProduct2 *
+                    direction -
                     relativeVelocity;
             }
         }
 
         // -------------------------------------------------------------
-        // Already overlapping.
+        // Already colliding / overlapping.
         //
-        // Use this frame's timestep rather than the longer horizon so
-        // the solver immediately requests separation.
+        // ORCA uses the current simulation timestep instead of the
+        // longer prediction horizon.
         // -------------------------------------------------------------
 
         else
         {
             float inverseTimeStep =
                 1f /
-                Mathf.Max(
-                    deltaTime,
-                    0.001f);
+                deltaTime;
 
             Vector2 w =
                 relativeVelocity -
@@ -381,23 +514,11 @@ public sealed class CrowdAvoidanceSystem
             float wLength =
                 w.magnitude;
 
-            Vector2 unitW;
+            Vector2 unitW =
+                w /
+                wLength;
 
-            if (wLength > Epsilon)
-            {
-                unitW =
-                    w / wLength;
-            }
-            else
-            {
-                unitW =
-                    GetFallbackDirection(
-                        self,
-                        other,
-                        relativePosition);
-            }
-
-            line.Direction =
+            direction =
                 new Vector2(
                     unitW.y,
                     -unitW.x);
@@ -411,24 +532,31 @@ public sealed class CrowdAvoidanceSystem
                 unitW;
         }
 
-        // Reciprocal part:
-        // each moving unit assumes half of the correction.
-        line.Point =
+        // -------------------------------------------------------------
+        // Reciprocal responsibility.
+        //
+        // Standard ORCA:
+        // each moving agent takes exactly half the required correction.
+        // -------------------------------------------------------------
+
+        Vector2 point =
             selfVelocity +
-            0.5f *
+            responsability *
             correction;
 
-        return line;
+        return new OrcaLine(
+            point,
+            direction);
     }
 
     // ---------------------------------------------------------------------
-    // Linear Program
+    // Linear Program 1
     // ---------------------------------------------------------------------
 
     private static bool LinearProgram1(
         List<OrcaLine> constraints,
         int lineIndex,
-        float maxSpeed,
+        float radius,
         Vector2 optimalVelocity,
         bool directionOnly,
         ref Vector2 result)
@@ -436,47 +564,57 @@ public sealed class CrowdAvoidanceSystem
         OrcaLine line =
             constraints[lineIndex];
 
-        float dot =
+        float dotProduct =
             Vector2.Dot(
                 line.Point,
                 line.Direction);
 
         float discriminant =
-            dot * dot +
-            maxSpeed * maxSpeed -
+            dotProduct *
+            dotProduct +
+            radius *
+            radius -
             line.Point.sqrMagnitude;
 
+        // The speed circle does not intersect this constraint.
         if (discriminant < 0f)
             return false;
 
         float sqrtDiscriminant =
-            Mathf.Sqrt(discriminant);
+            Mathf.Sqrt(
+                discriminant);
 
         float tLeft =
-            -dot -
+            -dotProduct -
             sqrtDiscriminant;
 
         float tRight =
-            -dot +
+            -dotProduct +
             sqrtDiscriminant;
 
-        for (int i = 0; i < lineIndex; i++)
+        // Restrict the valid interval according to all previous
+        // constraints.
+        for (int i = 0;
+             i < lineIndex;
+             i++)
         {
-            OrcaLine other =
+            OrcaLine previous =
                 constraints[i];
 
             float denominator =
                 Det(
                     line.Direction,
-                    other.Direction);
+                    previous.Direction);
 
             float numerator =
                 Det(
-                    other.Direction,
+                    previous.Direction,
                     line.Point -
-                    other.Point);
+                    previous.Point);
 
-            if (Mathf.Abs(denominator) <= Epsilon)
+            // Nearly parallel constraints.
+            if (Mathf.Abs(denominator) <=
+                Epsilon)
             {
                 if (numerator < 0f)
                     return false;
@@ -503,12 +641,16 @@ public sealed class CrowdAvoidanceSystem
                         t);
             }
 
-            if (tLeft > tRight)
+            if (tLeft >
+                tRight)
+            {
                 return false;
+            }
         }
 
         if (directionOnly)
         {
+            // Optimize only the direction.
             if (Vector2.Dot(
                     optimalVelocity,
                     line.Direction) > 0f)
@@ -528,47 +670,68 @@ public sealed class CrowdAvoidanceSystem
         }
         else
         {
+            // Find the point on this valid interval closest to the
+            // desired velocity.
             float t =
                 Vector2.Dot(
                     line.Direction,
                     optimalVelocity -
                     line.Point);
 
-            t =
-                Mathf.Clamp(
-                    t,
-                    tLeft,
-                    tRight);
-
-            result =
-                line.Point +
-                t *
-                line.Direction;
+            if (t <
+                tLeft)
+            {
+                result =
+                    line.Point +
+                    tLeft *
+                    line.Direction;
+            }
+            else if (t >
+                     tRight)
+            {
+                result =
+                    line.Point +
+                    tRight *
+                    line.Direction;
+            }
+            else
+            {
+                result =
+                    line.Point +
+                    t *
+                    line.Direction;
+            }
         }
 
         return true;
     }
 
+    // ---------------------------------------------------------------------
+    // Linear Program 2
+    // ---------------------------------------------------------------------
+
     private static int LinearProgram2(
         List<OrcaLine> constraints,
-        float maxSpeed,
+        float radius,
         Vector2 optimalVelocity,
         bool directionOnly,
         ref Vector2 result)
     {
+        // Initial candidate velocity.
         if (directionOnly)
         {
             result =
                 optimalVelocity *
-                maxSpeed;
+                radius;
         }
         else if (
             optimalVelocity.sqrMagnitude >
-            maxSpeed * maxSpeed)
+            radius *
+            radius)
         {
             result =
                 optimalVelocity.normalized *
-                maxSpeed;
+                radius;
         }
         else
         {
@@ -576,6 +739,7 @@ public sealed class CrowdAvoidanceSystem
                 optimalVelocity;
         }
 
+        // Enforce each ORCA constraint.
         for (int i = 0;
              i < constraints.Count;
              i++)
@@ -583,6 +747,8 @@ public sealed class CrowdAvoidanceSystem
             OrcaLine line =
                 constraints[i];
 
+            // Positive determinant means the current result violates
+            // this half-plane.
             if (Det(
                     line.Direction,
                     line.Point -
@@ -597,7 +763,7 @@ public sealed class CrowdAvoidanceSystem
             if (!LinearProgram1(
                     constraints,
                     i,
-                    maxSpeed,
+                    radius,
                     optimalVelocity,
                     directionOnly,
                     ref result))
@@ -612,10 +778,15 @@ public sealed class CrowdAvoidanceSystem
         return constraints.Count;
     }
 
+    // ---------------------------------------------------------------------
+    // Linear Program 3
+    // ---------------------------------------------------------------------
+
     private void LinearProgram3(
         List<OrcaLine> constraints,
+        int numObstacleLines,
         int beginLine,
-        float maxSpeed,
+        float radius,
         ref Vector2 result)
     {
         float distance =
@@ -634,37 +805,60 @@ public sealed class CrowdAvoidanceSystem
                     current.Point -
                     result);
 
-            if (violation <= distance)
+            if (violation <=
+                distance)
+            {
                 continue;
+            }
+
+            // ---------------------------------------------------------
+            // Current result violates constraint i.
+            //
+            // Build a new projected linear program.
+            // ---------------------------------------------------------
 
             projectedLines.Clear();
 
-            for (int j = 0; j < i; j++)
+            // We currently have no obstacle ORCA lines, but retain the
+            // same structure as standard RVO2 so obstacle constraints
+            // could be supported later without changing the LP.
+            for (int obstacleIndex = 0;
+                 obstacleIndex < numObstacleLines;
+                 obstacleIndex++)
+            {
+                projectedLines.Add(
+                    constraints[obstacleIndex]);
+            }
+
+            for (int j = numObstacleLines;
+                 j < i;
+                 j++)
             {
                 OrcaLine previous =
                     constraints[j];
 
-                OrcaLine projected =
-                    new OrcaLine();
+                Vector2 point;
 
                 float determinant =
                     Det(
                         current.Direction,
                         previous.Direction);
 
-                if (Mathf.Abs(determinant) <= Epsilon)
+                if (Mathf.Abs(determinant) <=
+                    Epsilon)
                 {
-                    // Same direction:
-                    // previous constraint adds nothing.
+                    // Parallel lines.
                     if (Vector2.Dot(
                             current.Direction,
                             previous.Direction) > 0f)
                     {
+                        // Same direction:
+                        // previous line adds no new restriction.
                         continue;
                     }
 
-                    // Opposing parallel constraints.
-                    projected.Point =
+                    // Opposite directions.
+                    point =
                         0.5f *
                         (
                             current.Point +
@@ -673,7 +867,7 @@ public sealed class CrowdAvoidanceSystem
                 }
                 else
                 {
-                    projected.Point =
+                    point =
                         current.Point +
                         (
                             Det(
@@ -687,20 +881,15 @@ public sealed class CrowdAvoidanceSystem
                 }
 
                 Vector2 direction =
-                    previous.Direction -
-                    current.Direction;
-
-                if (direction.sqrMagnitude <=
-                    Epsilon * Epsilon)
-                {
-                    continue;
-                }
-
-                projected.Direction =
-                    direction.normalized;
+                    (
+                        previous.Direction -
+                        current.Direction
+                    ).normalized;
 
                 projectedLines.Add(
-                    projected);
+                    new OrcaLine(
+                        point,
+                        direction));
             }
 
             Vector2 previousResult =
@@ -711,19 +900,20 @@ public sealed class CrowdAvoidanceSystem
                     -current.Direction.y,
                     current.Direction.x);
 
-            int failed =
+            int failedLine =
                 LinearProgram2(
                     projectedLines,
-                    maxSpeed,
+                    radius,
                     optimizationDirection,
                     true,
                     ref result);
 
-            if (failed <
+            if (failedLine <
                 projectedLines.Count)
             {
-                // Numerical degeneracy.
-                // Keep the previous feasible result.
+                // The previous result was already feasible in theory.
+                // Failure here can only come from floating-point
+                // precision, so retain it.
                 result =
                     previousResult;
             }
@@ -737,16 +927,161 @@ public sealed class CrowdAvoidanceSystem
     }
 
     // ---------------------------------------------------------------------
-    // Helpers
+    // Neighbor Ordering
+    // ---------------------------------------------------------------------
+
+    private void SortNeighborsByDistance(
+        UnitBase unit)
+    {
+        Vector3 origin =
+            unit.Position;
+
+        // Small insertion sort.
+        //
+        // Neighbor counts are expected to be low because
+        // GridNavigationStateSystem has already spatially filtered the
+        // candidate set.
+        for (int i = 1;
+             i < neighbors.Count;
+             i++)
+        {
+            UnitBase candidate =
+                neighbors[i];
+
+            float candidateDistanceSq =
+                XZDistanceSquared(
+                    origin,
+                    candidate.Position);
+
+            int j =
+                i - 1;
+
+            while (j >= 0)
+            {
+                UnitBase previous =
+                    neighbors[j];
+
+                float previousDistanceSq =
+                    XZDistanceSquared(
+                        origin,
+                        previous.Position);
+
+                if (previousDistanceSq <=
+                    candidateDistanceSq)
+                {
+                    break;
+                }
+
+                neighbors[j + 1] =
+                    previous;
+
+                j--;
+            }
+
+            neighbors[j + 1] =
+                candidate;
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // Stationary Bias
+    // ---------------------------------------------------------------------
+
+    private Vector2 ApplyStationaryPassingBias(
+    UnitBase self,
+    Vector2 preferredVelocity)
+    {
+        if (preferredVelocity.sqrMagnitude <= Epsilon)
+            return preferredVelocity;
+
+        Vector2 forward =
+            preferredVelocity.normalized;
+
+        for (int i = 0; i < neighbors.Count; i++)
+        {
+            UnitBase other =
+                neighbors[i];
+
+            if (other == null ||
+                other.Motor == null ||
+                other.Motor.HasPreparedMovement)
+            {
+                continue;
+            }
+
+            Vector2 toOther =
+                To2D(
+                    other.Position -
+                    self.Position);
+
+            float distance =
+                toOther.magnitude;
+
+            if (distance <= Epsilon)
+                continue;
+
+            Vector2 directionToOther =
+                toOther / distance;
+
+            // Only care about stationary units substantially ahead.
+            if (Vector2.Dot(
+                    forward,
+                    directionToOther) < 0.75f)
+            {
+                continue;
+            }
+
+            Vector2 right =
+                new Vector2(
+                    forward.y,
+                    -forward.x);
+
+            Vector2 biased =
+                preferredVelocity +
+                right *
+                self.Motor.MaxSpeed *
+                StationaryPassingBias;
+
+            return Vector2.ClampMagnitude(
+                biased,
+                self.Motor.MaxSpeed);
+        }
+
+        return preferredVelocity;
+    }
+
+    // ---------------------------------------------------------------------
+    // Math Helpers
     // ---------------------------------------------------------------------
 
     private static float Det(
-        Vector2 a,
-        Vector2 b)
+        Vector2 first,
+        Vector2 second)
     {
         return
-            a.x * b.y -
-            a.y * b.x;
+            first.x *
+            second.y -
+            first.y *
+            second.x;
+    }
+
+    private static float XZDistanceSquared(
+        Vector3 first,
+        Vector3 second)
+    {
+        float deltaX =
+            first.x -
+            second.x;
+
+        float deltaZ =
+            first.z -
+            second.z;
+
+        return
+            deltaX *
+            deltaX +
+            deltaZ *
+            deltaZ;
     }
 
     private static Vector2 To2D(
@@ -764,26 +1099,5 @@ public sealed class CrowdAvoidanceSystem
             vector.x,
             0f,
             vector.y);
-    }
-
-    private static Vector2 GetFallbackDirection(
-        UnitBase self,
-        UnitBase other,
-        Vector2 relativePosition)
-    {
-        if (relativePosition.sqrMagnitude >
-            Epsilon * Epsilon)
-        {
-            // Move away from the other agent.
-            return
-                -relativePosition.normalized;
-        }
-
-        // Extremely rare exact same-position case.
-        // UnitId makes both units choose opposite directions.
-        return
-            self.UnitId < other.UnitId
-                ? Vector2.right
-                : Vector2.left;
     }
 }
