@@ -135,22 +135,78 @@ public sealed class FormationMovementGroup
 
     private void BuildInitialTopologyAssignment()
     {
-        slotByUnit.Clear();
+        BuildTopologyAssignment(members, slotByUnit);
+    }
 
-        if (members.Count == 0)
+    // ---------------------------------------------------------------------
+    // Final assignment
+    // ---------------------------------------------------------------------
+
+    private void PerformFinalReassignment()
+    {
+        //
+        // Rebuild assignment from the group's
+        // ACTUAL post-obstacle topology.
+        //
+        BuildTopologyAssignment(activeMembers, pendingAssignments);
+
+        //
+        // Release all previous destination reservations
+        // first so slots can be exchanged cleanly.
+        //
+        for (int i = 0; i < activeMembers.Count; i++)
+        {
+            activeMembers[i]
+                .ReleaseFormationDestinationForReassignment(
+                    MovementGroupId);
+        }
+
+        //
+        // This is the one and only reassignment.
+        //
+        FinalAssignmentDone = true;
+
+        foreach (KeyValuePair<UnitBase, int> pair in pendingAssignments)
+        {
+            UnitBase unit = pair.Key;
+
+            int slotIndex = pair.Value;
+
+            slotByUnit[unit] = slotIndex;
+
+            unit.ReassignFormationSlot(MovementGroupId, slotIndex);
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // Build Group Topology
+    // ---------------------------------------------------------------------
+
+    private void BuildTopologyAssignment(IReadOnlyList<UnitBase> units, Dictionary<UnitBase, int> result)
+    {
+        result.Clear();
+
+        if (units == null ||
+            units.Count == 0)
+        {
             return;
+        }
 
         Vector3 groupCenter =
-            CalculateGroupCenter(
-                members);
+            CalculateGroupCenter(units);
 
         float unitExtentX = 0f;
         float unitExtentZ = 0f;
 
-        for (int i = 0; i < members.Count; i++)
+        for (int i = 0; i < units.Count; i++)
         {
+            UnitBase unit = units[i];
+
+            if (unit == null)
+                continue;
+
             Vector3 offset =
-                members[i].Position -
+                unit.Position -
                 groupCenter;
 
             unitExtentX =
@@ -167,7 +223,9 @@ public sealed class FormationMovementGroup
         float slotExtentX = 0f;
         float slotExtentZ = 0f;
 
-        for (int i = 0; i < slotPositions.Count; i++)
+        for (int i = 0;
+             i < slotPositions.Count;
+             i++)
         {
             Vector3 offset =
                 slotPositions[i] -
@@ -184,26 +242,18 @@ public sealed class FormationMovementGroup
                     Mathf.Abs(offset.z));
         }
 
-        unitExtentX =
-            Mathf.Max(unitExtentX, 0.001f);
+        unitExtentX = Mathf.Max(unitExtentX, 0.001f);
+        unitExtentZ = Mathf.Max(unitExtentZ, 0.001f);
+        slotExtentX = Mathf.Max(slotExtentX, 0.001f);
+        slotExtentZ = Mathf.Max(slotExtentZ, 0.001f);
 
-        unitExtentZ =
-            Mathf.Max(unitExtentZ, 0.001f);
+        PrepareUnassignedLists(members);
 
-        slotExtentX =
-            Mathf.Max(slotExtentX, 0.001f);
-
-        slotExtentZ =
-            Mathf.Max(slotExtentZ, 0.001f);
-
-        PrepareUnassignedLists(
-            members);
-
-        while (unassignedUnits.Count > 0 &&
-               unassignedSlots.Count > 0)
+        while (unassignedUnits.Count > 0 && unassignedSlots.Count > 0)
         {
             UnitBase bestUnit = null;
             int bestSlot = -1;
+
             float bestCost =
                 float.PositiveInfinity;
 
@@ -227,7 +277,8 @@ public sealed class FormationMovementGroup
                         unitExtentZ);
 
                 for (int slotListIndex = 0;
-                     slotListIndex < unassignedSlots.Count;
+                     slotListIndex <
+                     unassignedSlots.Count;
                      slotListIndex++)
                 {
                     int slotIndex =
@@ -262,9 +313,14 @@ public sealed class FormationMovementGroup
                         continue;
                     }
 
-                    bestUnit = unit;
-                    bestSlot = slotIndex;
-                    bestCost = cost;
+                    bestUnit =
+                        unit;
+
+                    bestSlot =
+                        slotIndex;
+
+                    bestCost =
+                        cost;
                 }
             }
 
@@ -274,7 +330,7 @@ public sealed class FormationMovementGroup
                 break;
             }
 
-            slotByUnit[bestUnit] =
+            result[bestUnit] =
                 bestSlot;
 
             unassignedUnits.Remove(
@@ -285,131 +341,7 @@ public sealed class FormationMovementGroup
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Final assignment
-    // ---------------------------------------------------------------------
 
-    private void PerformFinalReassignment()
-    {
-        pendingAssignments.Clear();
-
-        PrepareUnassignedLists(
-            activeMembers);
-
-        //
-        // At this point the group is already near the target.
-        //
-        // We no longer care about preserving its ORIGINAL topology.
-        // We care about assigning each unit to a sensible nearby
-        // remaining formation slot.
-        //
-        while (unassignedUnits.Count > 0 &&
-               unassignedSlots.Count > 0)
-        {
-            UnitBase bestUnit = null;
-            int bestSlot = -1;
-            float bestCost =
-                float.PositiveInfinity;
-
-            for (int unitIndex = 0;
-                 unitIndex < unassignedUnits.Count;
-                 unitIndex++)
-            {
-                UnitBase unit =
-                    unassignedUnits[
-                        unitIndex];
-
-                for (int slotListIndex = 0;
-                     slotListIndex < unassignedSlots.Count;
-                     slotListIndex++)
-                {
-                    int slotIndex =
-                        unassignedSlots[
-                            slotListIndex];
-
-                    Vector3 difference =
-                        slotPositions[slotIndex] -
-                        unit.Position;
-
-                    difference.y = 0f;
-
-                    float cost =
-                        difference.sqrMagnitude;
-
-                    if (!IsBetterPair(
-                            unit,
-                            slotIndex,
-                            cost,
-                            bestUnit,
-                            bestSlot,
-                            bestCost))
-                    {
-                        continue;
-                    }
-
-                    bestUnit = unit;
-                    bestSlot = slotIndex;
-                    bestCost = cost;
-                }
-            }
-
-            if (bestUnit == null ||
-                bestSlot < 0)
-            {
-                break;
-            }
-
-            pendingAssignments[
-                bestUnit] =
-                bestSlot;
-
-            unassignedUnits.Remove(
-                bestUnit);
-
-            unassignedSlots.Remove(
-                bestSlot);
-        }
-
-        //
-        // Important:
-        // release EVERY old group destination first.
-        //
-        // Otherwise A cannot take B's old slot while B still
-        // has it reserved.
-        //
-        for (int i = 0;
-             i < activeMembers.Count;
-             i++)
-        {
-            activeMembers[i]
-                .ReleaseFormationDestinationForReassignment(
-                    MovementGroupId);
-        }
-
-        //
-        // Mark the pass complete before paths start updating.
-        // There will never be a second reshuffle.
-        //
-        FinalAssignmentDone = true;
-
-        foreach (
-            KeyValuePair<UnitBase, int> pair
-            in pendingAssignments)
-        {
-            UnitBase unit =
-                pair.Key;
-
-            int slotIndex =
-                pair.Value;
-
-            slotByUnit[unit] =
-                slotIndex;
-
-            unit.ReassignFormationSlot(
-                MovementGroupId,
-                slotIndex);
-        }
-    }
 
     // ---------------------------------------------------------------------
     // Formation geometry
@@ -464,8 +396,7 @@ public sealed class FormationMovementGroup
                 terrainGrid.CellSize * 4f,
                 formationMaxNavigationRadius * 4f);
 
-        return formationRadius +
-               assemblyBuffer;
+        return formationRadius + assemblyBuffer;
     }
 
     // ---------------------------------------------------------------------

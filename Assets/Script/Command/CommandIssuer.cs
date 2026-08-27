@@ -303,7 +303,7 @@ public class CommandIssuer : MonoBehaviour
 
             CommandContext context = CommandContext.MoveTo(
                 destinationCenter, 
-                i, 
+                slotIndex, 
                 commandableCount, 
                 formationMaxNavigationRadius, 
                 movementGroupId,
