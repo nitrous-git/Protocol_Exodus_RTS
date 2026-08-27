@@ -152,7 +152,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
                     context.WorldPosition, 
                     context.FormationSlotIndex, 
                     context.FormationUnitCount,
-                    context.FormationMaxNavigationRadius));
+                    context.FormationMaxNavigationRadius,
+                    context.FormationGroup));
                 break;
 
             case CommandType.HoldPosition:
@@ -237,4 +238,33 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         owningUnitManager?.UnregisterUnit(this);
     }
 
+    // ---------------------------------------------------------------------
+    // Retain Group Topology
+    // ---------------------------------------------------------------------
+
+    public void ReleaseFormationDestinationForReassignment(int movementGroupId)
+    {
+        if (MovementGroupId != movementGroupId)
+        {
+            return;
+        }
+
+        if (currentState is MoveState moveState)
+        {
+            moveState.ReleaseForFormationReassignment(this, movementGroupId);
+        }
+    }
+
+    public bool ReassignFormationSlot(int movementGroupId, int slotIndex)
+    {
+        if (MovementGroupId != movementGroupId)
+        {
+            return false;
+        }
+
+        if (currentState is not MoveState moveState)
+            return false;
+
+        return moveState.ReassignFormationSlot(this, movementGroupId, slotIndex);
+    }
 }

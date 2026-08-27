@@ -31,7 +31,7 @@ public sealed class FormationDestinationAllocator
             return null;
         }
 
-        int spacing = CalculateSpacing(unit, formationMaxNavigationRadius);
+        int spacing = CalculateSpacing(formationMaxNavigationRadius);
 
         GridCoord preferredCell = GetPreferredSlot(formationCenter, slotIndex, unitCount, spacing);
 
@@ -71,6 +71,18 @@ public sealed class FormationDestinationAllocator
         return new GridCoord(startX + indexInRow * spacing, startZ + row * spacing);
     }
 
+
+    public GridCoord GetPreferredSlot(
+        GridCoord formationCenter,
+        int slotIndex,
+        int unitCount,
+        float formationMaxNavigationRadius)
+    {
+        int spacing = CalculateSpacing(formationMaxNavigationRadius);
+        return GetPreferredSlot(formationCenter, slotIndex, unitCount, spacing);
+    }
+
+
     private GridCoord? TryAllocateAround(
         UnitBase unit,
         GridCoord center,
@@ -102,7 +114,7 @@ public sealed class FormationDestinationAllocator
     // Helpers 
     // ---------------------------------------------------------------------
 
-    private int CalculateSpacing(UnitBase unit, float formationMaxNavigationRadius)
+    private int CalculateSpacing(float formationMaxNavigationRadius)
     {
         float requiredWorldSpacing = formationMaxNavigationRadius * 2f;
         int requiredCellSpacing = Mathf.CeilToInt((requiredWorldSpacing) / terrainGrid.CellSize);

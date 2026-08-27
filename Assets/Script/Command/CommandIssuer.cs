@@ -275,6 +275,15 @@ public class CommandIssuer : MonoBehaviour
         int movementGroupId = gameContext.AllocateMovementGroupId();
         PrepareMovementGroup(movementGroupId); // mark all units before Astar starts
 
+        FormationMovementGroup formationGroup =
+            new FormationMovementGroup(
+                movementGroupId, 
+                commandableUnits, 
+                destinationCenter, 
+                formationMaxNavigationRadius, 
+                gameContext.TerrainGrid, 
+                gameContext.DestinationAllocationSystem.Formation);
+
         bool issuedAnyCommand = false;
 
         for (int i = 0; i < commandableCount; i++)
@@ -285,10 +294,21 @@ public class CommandIssuer : MonoBehaviour
             if (controllable == null)
                 continue;
 
-            //Vector3 destination = destinationCenter + GetSimpleDestinationOffset(i, commandableCount);
-            //controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+            int slotIndex = formationGroup.GetAssignedSlotIndex(unit);
 
-            CommandContext context = CommandContext.MoveTo(destinationCenter, i, commandableCount, formationMaxNavigationRadius, movementGroupId);
+            if (slotIndex < 0)
+            {
+                continue;
+            }
+
+            CommandContext context = CommandContext.MoveTo(
+                destinationCenter, 
+                i, 
+                commandableCount, 
+                formationMaxNavigationRadius, 
+                movementGroupId,
+                formationGroup);
+
             controllable.IssueCommand(CommandType.Move, context);
 
             issuedAnyCommand = true;
