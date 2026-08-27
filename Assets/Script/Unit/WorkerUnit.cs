@@ -20,9 +20,8 @@ public sealed class WorkerUnit : UnitBase
     {
         if (!CanReceiveCommands)
             return;
-
-        CurrentCommand = commandType;
-        currentContext = context;
+        
+        ApplyCommandContext(commandType, context);
 
         switch (commandType)
         {

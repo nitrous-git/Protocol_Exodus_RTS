@@ -65,8 +65,7 @@ public class CombatUnit : UnitBase
         if (!CanReceiveCommands)
             return;
 
-        CurrentCommand = commandType;
-        currentContext = context;
+        ApplyCommandContext(commandType, context);
 
         switch (commandType)
         {
@@ -191,8 +190,7 @@ public class CombatUnit : UnitBase
 
     public void EnterCombatIdle()
     {
-        CurrentCommand = CommandType.Idle;
-        currentContext = CommandContext.None();
+        ApplyCommandContext(CommandType.Idle, CommandContext.None());
 
         SetState(new CombatIdleState());
     }

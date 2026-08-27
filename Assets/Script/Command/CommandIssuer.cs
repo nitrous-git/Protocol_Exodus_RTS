@@ -76,7 +76,7 @@ public class CommandIssuer : MonoBehaviour
         // {
         //     return true;
         // }
-        
+
         if (TryIssueAttackCommand(target))
         {
             return true;
@@ -272,6 +272,9 @@ public class CommandIssuer : MonoBehaviour
 
         float formationMaxNavigationRadius = GetCommandGroupMaxNavigationRadius();
 
+        int movementGroupId = gameContext.AllocateMovementGroupId();
+        PrepareMovementGroup(movementGroupId); // mark all units before Astar starts
+
         bool issuedAnyCommand = false;
 
         for (int i = 0; i < commandableCount; i++)
@@ -285,7 +288,7 @@ public class CommandIssuer : MonoBehaviour
             //Vector3 destination = destinationCenter + GetSimpleDestinationOffset(i, commandableCount);
             //controllable.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
 
-            CommandContext context = CommandContext.MoveTo(destinationCenter, i, commandableCount, formationMaxNavigationRadius);
+            CommandContext context = CommandContext.MoveTo(destinationCenter, i, commandableCount, formationMaxNavigationRadius, movementGroupId);
             controllable.IssueCommand(CommandType.Move, context);
 
             issuedAnyCommand = true;
@@ -388,6 +391,8 @@ public class CommandIssuer : MonoBehaviour
 
         float formationMaxNavigationRadius = GetCommandGroupMaxNavigationRadius();
 
+        int movementGroupId = gameContext.AllocateMovementGroupId();
+
         bool issuedAnyCommand = false;
 
         for (int i = 0; i < commandableCount; i++)
@@ -398,7 +403,7 @@ public class CommandIssuer : MonoBehaviour
             if (controllable == null)
                 continue;
 
-            CommandContext context = CommandContext.AttackMoveTo(destinationCenter, i, commandableCount, formationMaxNavigationRadius);
+            CommandContext context = CommandContext.AttackMoveTo(destinationCenter, i, commandableCount, formationMaxNavigationRadius, movementGroupId);
 
             if (unit is CombatUnit combatUnit && combatUnit.CanAttack())
             {
@@ -518,4 +523,19 @@ public class CommandIssuer : MonoBehaviour
         return maxRadius;
     }
 
+    private void PrepareMovementGroup(int movementGroupId)
+    {
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            UnitBase unit = commandableUnits[i];
+
+            if (unit == null)
+            {
+                continue;
+            }
+
+            unit.PrepareMovementGroup(movementGroupId);
+        }
+
+    }
 }

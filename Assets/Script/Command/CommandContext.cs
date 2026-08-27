@@ -5,6 +5,7 @@ public struct CommandContext
 {
     public Vector3 WorldPosition;
     public Vector2Int GridCell;
+    public int MovementGroupId;
     public int FormationSlotIndex;
     public int FormationUnitCount;
     public float FormationMaxNavigationRadius;
@@ -27,13 +28,15 @@ public struct CommandContext
         Vector3 worldPosition, 
         int formationSlotIndex = 0, 
         int formationUnitCount = 1, 
-        float formationMaxNavigationRadius = 1f)
+        float formationMaxNavigationRadius = 1f,
+        int movementGroupId = 0)
     {
         return new CommandContext
         {
             WorldPosition = worldPosition,
             HasWorldPosition = true,
 
+            MovementGroupId = movementGroupId,
             FormationSlotIndex = formationSlotIndex,
             FormationUnitCount = formationUnitCount,
             FormationMaxNavigationRadius = formationMaxNavigationRadius
@@ -44,13 +47,15 @@ public struct CommandContext
         Vector3 worldPosition, 
         int formationSlotIndex = 0, 
         int formationUnitCount = 1, 
-        float formationMaxNavigationRadius = 1f)
+        float formationMaxNavigationRadius = 1f, 
+        int movementGroupId = 0)
     {
         return new CommandContext
         {
             WorldPosition = worldPosition,
             HasWorldPosition = true,
 
+            MovementGroupId = movementGroupId,
             FormationSlotIndex = formationSlotIndex,
             FormationUnitCount = formationUnitCount,
             FormationMaxNavigationRadius = formationMaxNavigationRadius

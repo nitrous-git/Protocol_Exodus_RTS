@@ -174,9 +174,9 @@ public class GameBuilder : MonoBehaviour
 
         for (int i = 0; i < startingCombatCount; i++)
         {
-            if (i%2 == 0)
+            if (i%3 == 0)
             {
-                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
             }
             else
             {
@@ -196,11 +196,14 @@ public class GameBuilder : MonoBehaviour
 
     private Vector3 GetStartingUnitOffset(int index)
     {
-        int rowSize = 3;
-        int row = index / rowSize;
-        int column = index % rowSize;
+ 
+        int columns = Mathf.CeilToInt(Mathf.Sqrt(startingCombatCount));
+        int rows = Mathf.CeilToInt((float)startingCombatCount / columns);
 
-        float x = (column - 1) * startingUnitSpacing;
+        int row = index / columns;
+        int column = index % columns;
+
+        float x = column * startingUnitSpacing;
         float z = row * startingUnitSpacing;
 
         return new Vector3(x, 0f, z);

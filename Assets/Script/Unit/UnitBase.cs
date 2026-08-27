@@ -38,6 +38,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public bool IsSelected { get; private set; }
     public bool IsInitialized { get; private set; }
     public int UnitId { get; private set; } = -1;
+    public int MovementGroupId { get; private set; }
 
     public bool CanReceiveCommands => canReceiveCommands;
     public bool CanBeSelected => canBeSelected;
@@ -139,8 +140,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     {
         if (!CanReceiveCommands) return;
 
-        CurrentCommand = commandType;
-        currentContext = context;
+        ApplyCommandContext(commandType, context);
 
         //IUnitState nextState = CreateStateForCommand(commandType, context);
         //SetState(nextState);
@@ -215,6 +215,18 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public virtual void ReleaseDestination(GridCoord destinationCell)
     {
         GridNavigationStateSystem?.ReleaseDestination(destinationCell, this);
+    }
+
+    public void PrepareMovementGroup(int movementGroupId)
+    {
+        MovementGroupId = movementGroupId;
+    }
+
+    protected void ApplyCommandContext(CommandType commandType, CommandContext context)
+    {
+        CurrentCommand = commandType;
+        currentContext = context;   
+        MovementGroupId = context.MovementGroupId;
     }
 
     protected virtual void OnDestroy()

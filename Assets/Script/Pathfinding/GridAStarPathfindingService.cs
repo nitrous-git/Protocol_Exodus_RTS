@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static GridNavigationStateSystem;
 
 /// <summary>
 /// Grid-based A* pathfinding using TerrainGrid walkability,
@@ -73,7 +74,9 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     private const int DiagonalCost = 14;
 
     [Header("Dynamic Occupancy")]
-    private int unitOccupancyPenalty = 0; //25;
+    [SerializeField, Min(0)] private int sameMovementGroupPenalty = 0;
+    [SerializeField, Min(0)] private int otherMovingUnitPenalty = 8;
+    [SerializeField, Min(0)] private int stationaryUnitPenalty = 25;
 
     public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigateState)
     {
@@ -221,16 +224,25 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     private int GetUnitOccupancyPenalty(GridCoord coord, UnitBase requester)
     {
         if (navigateState == null)
-        {
             return 0;
-        }
 
-        if (!navigateState.WouldOverlapOccupiedUnit(coord, requester))
+        DynamicOccupancyRelation relation = navigateState.GetDynamicOccupancyRelation(coord, requester);
+
+        switch (relation)
         {
-            return 0;
-        }
+            case DynamicOccupancyRelation.SameMovementGroup:
+                return sameMovementGroupPenalty;
 
-        return unitOccupancyPenalty;
+            case DynamicOccupancyRelation.MovingUnit:
+                return otherMovingUnitPenalty;
+
+            case DynamicOccupancyRelation.StationaryUnit:
+                return stationaryUnitPenalty;
+
+            case DynamicOccupancyRelation.None:
+            default:
+                return 0;
+        }
     }
 
     private bool CanMoveDiagonally(GridCoord from, int xOffset, int zOffset, GridCoord startCoord, UnitBase requester)

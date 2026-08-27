@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +24,14 @@ public sealed class GridNavigationStateSystem
     public int OccupiedCellCount => occupantsByCell.Count;
 
     private float maxOccupiedNavigationRadius;
+
+    public enum DynamicOccupancyRelation
+    {
+        None, 
+        SameMovementGroup,
+        MovingUnit,
+        StationaryUnit
+    }
 
     public GridNavigationStateSystem(TerrainGrid terrainGrid)
     {
@@ -232,14 +241,60 @@ public sealed class GridNavigationStateSystem
         return true;
     }
 
-    private bool OverlapsOccupiedUnit(Vector3 center, float radius, UnitBase requester)
+    //private bool OverlapsOccupiedUnit(Vector3 center, float radius, UnitBase requester)
+    //{
+    //    if (occupantsByCell.Count == 0)
+    //        return false;
+
+    //    GridCoord centerCoord = terrainGrid.WorldToCell(center);
+
+    //    int searchDepth = Mathf.CeilToInt((radius + maxOccupiedNavigationRadius) / terrainGrid.CellSize) + 1;
+
+    //    for (int z = -searchDepth; z <= searchDepth; z++)
+    //    {
+    //        for (int x = -searchDepth; x <= searchDepth; x++)
+    //        {
+    //            GridCoord coord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
+
+    //            if (!terrainGrid.IsInside(coord))
+    //                continue;
+
+    //            if (!occupantsByCell.TryGetValue(coord, out HashSet<UnitBase> occupants))
+    //            {
+    //                continue;
+    //            }
+
+    //            foreach (UnitBase other in occupants)
+    //            {
+    //                if (other == null || other == requester)
+    //                {
+    //                    continue;
+    //                }
+
+    //                float requiredDistance = radius + other.NavigationRadius;
+
+    //                if (XZDistanceSquared(center, other.Position) < requiredDistance * requiredDistance)
+    //                {
+    //                    return true;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //    return false;
+    //}
+
+    private DynamicOccupancyRelation GetDynamicOccupancyRelation(Vector3 center, float radius, UnitBase requester)
     {
         if (occupantsByCell.Count == 0)
-            return false;
+            return DynamicOccupancyRelation.None;
 
         GridCoord centerCoord = terrainGrid.WorldToCell(center);
 
         int searchDepth = Mathf.CeilToInt((radius + maxOccupiedNavigationRadius) / terrainGrid.CellSize) + 1;
+
+        bool foundSameMovementGroup = false;
+        bool foundMovingUnit = false;
 
         for (int z = -searchDepth; z <= searchDepth; z++)
         {
@@ -264,15 +319,41 @@ public sealed class GridNavigationStateSystem
 
                     float requiredDistance = radius + other.NavigationRadius;
 
-                    if (XZDistanceSquared(center, other.Position) < requiredDistance * requiredDistance)
+                    if (XZDistanceSquared(center, other.Position) >= requiredDistance * requiredDistance)
                     {
-                        return true;
+                        continue;
                     }
+
+                    // same active command group
+                    if (requester.MovementGroupId > 0 && requester.MovementGroupId == other.MovementGroupId)
+                    {
+                        foundSameMovementGroup = true;
+                        continue;
+                    }
+
+                    // Moving, but not with us
+                    if (other.Motor != null && other.Motor.HasPath)
+                    {
+                        foundMovingUnit = true;
+                    }
+
+                    // A truely stationary unit, dynamic obstacle
+                    return DynamicOccupancyRelation.StationaryUnit;
                 }
             }
         }
 
-        return false;
+        if (foundMovingUnit)
+        {
+            return DynamicOccupancyRelation.MovingUnit;
+        }
+
+        if (foundSameMovementGroup)
+        {
+            return DynamicOccupancyRelation.SameMovementGroup;
+        }
+
+        return DynamicOccupancyRelation.None;
     }
 
     public bool WouldOverlapOccupiedUnit(GridCoord coord, UnitBase requester)
@@ -288,6 +369,26 @@ public sealed class GridNavigationStateSystem
             return false;
 
         return OverlapsOccupiedUnit(candidateCell.WorldCenter, requester.NavigationRadius, requester);
+    }
+
+    private bool OverlapsOccupiedUnit(Vector3 worldCenter, float navigationRadius, UnitBase requester)
+    {
+        return GetDynamicOccupancyRelation(worldCenter, navigationRadius, requester) != DynamicOccupancyRelation.None;
+    }
+
+    public DynamicOccupancyRelation GetDynamicOccupancyRelation(GridCoord coord, UnitBase requester)
+    {
+        if (terrainGrid == null || requester == null || !terrainGrid.IsInside(coord))
+        {
+            return DynamicOccupancyRelation.None;
+        }
+
+        GridCell candidateCell = terrainGrid.GetCell(coord);
+
+        if (candidateCell == null)
+            return DynamicOccupancyRelation.None;
+
+        return GetDynamicOccupancyRelation(candidateCell.WorldCenter, requester.NavigationRadius, requester);
     }
 
     private bool OverlapsReservedDestination(Vector3 center, float radius, UnitBase requester)

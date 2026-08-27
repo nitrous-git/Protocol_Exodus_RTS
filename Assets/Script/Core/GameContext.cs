@@ -13,6 +13,7 @@ public sealed class GameContext
     private ResourceNode selectedResourceNode;
 
     private int nextUnitId = 1;
+    private int nextMovementGroupId = 1;
 
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
     public IReadOnlyList<BuildingBase> AllBuildings => allBuildings;
@@ -325,6 +326,7 @@ public sealed class GameContext
         DestinationAllocationSystem = null;
 
         nextUnitId = 1;
+        nextMovementGroupId = 1;
     }
 
     // ---------------------------------------------------------------------
@@ -337,5 +339,13 @@ public sealed class GameContext
         nextUnitId++;
 
         return unitId;
+    }
+
+    public int AllocateMovementGroupId()
+    {
+        int movementGroupId = nextMovementGroupId;
+        nextMovementGroupId++;
+
+        return movementGroupId;
     }
 }
