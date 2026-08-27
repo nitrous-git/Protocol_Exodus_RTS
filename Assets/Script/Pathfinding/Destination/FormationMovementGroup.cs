@@ -8,6 +8,7 @@ public sealed class FormationMovementGroup
     private readonly TerrainGrid terrainGrid;
     private readonly FormationDestinationAllocator formationAllocator;
 
+    // Topology
     private readonly List<UnitBase> members = new List<UnitBase>();
     private readonly List<Vector3> slotPositions = new List<Vector3>();
     private readonly Dictionary<UnitBase, int> slotByUnit = new Dictionary<UnitBase, int>();
@@ -16,17 +17,24 @@ public sealed class FormationMovementGroup
     private readonly List<UnitBase> unassignedUnits = new List<UnitBase>();
     private readonly List<int> unassignedSlots = new List<int>();
 
+    // Slot Assignement
+    private readonly HashSet<UnitBase> committedUnits = new HashSet<UnitBase>();
+    private readonly HashSet<int> committedSlots = new HashSet<int>(); 
+
     private readonly GridCoord formationCenterCell;
     private readonly Vector3 formationCenterWorld;
 
     private readonly float formationMaxNavigationRadius;
     private readonly float assemblyRadius;
+    private readonly float arrivalTolerance;
+
     private int lastEvaluationFrame = -1;
 
     public int MovementGroupId { get; }
     public bool FinalAssignmentDone { get; private set; }
 
     public int UnitCount => members.Count;
+    public float ArrivalTolerance => arrivalTolerance;
 
 
     public FormationMovementGroup(
@@ -41,8 +49,7 @@ public sealed class FormationMovementGroup
 
         this.terrainGrid = terrainGrid;
         this.formationAllocator = formationAllocator;
-        this.formationMaxNavigationRadius =
-            formationMaxNavigationRadius;
+        this.formationMaxNavigationRadius = formationMaxNavigationRadius;
 
         for (int i = 0; i < units.Count; i++)
         {
@@ -54,18 +61,14 @@ public sealed class FormationMovementGroup
             members.Add(unit);
         }
 
-        formationCenterCell =
-            terrainGrid.WorldToCell(
-                formationCenter);
-
-        formationCenterWorld =
-            terrainGrid.CellToWorld(
-                formationCenterCell);
+        formationCenterCell = terrainGrid.WorldToCell(formationCenter);
+        formationCenterWorld = terrainGrid.CellToWorld(formationCenterCell);
 
         BuildSlotPositions();
 
-        assemblyRadius =
-            CalculateAssemblyRadius();
+        assemblyRadius = CalculateAssemblyRadius();
+
+        arrivalTolerance = terrainGrid.CellSize * 0.25f;
 
         BuildInitialTopologyAssignment();
     }
@@ -74,15 +77,12 @@ public sealed class FormationMovementGroup
     // Public
     // ---------------------------------------------------------------------
 
-    public int GetAssignedSlotIndex(
-        UnitBase unit)
+    public int GetAssignedSlotIndex(UnitBase unit)
     {
         if (unit == null)
             return -1;
 
-        if (!slotByUnit.TryGetValue(
-                unit,
-                out int slotIndex))
+        if (!slotByUnit.TryGetValue(unit, out int slotIndex))
         {
             return -1;
         }
@@ -110,18 +110,13 @@ public sealed class FormationMovementGroup
             return;
         }
 
-        Vector3 groupCenter =
-            CalculateGroupCenter(
-                activeMembers);
+        Vector3 groupCenter = CalculateGroupCenter(activeMembers);
 
-        Vector3 difference =
-            formationCenterWorld -
-            groupCenter;
+        Vector3 difference = formationCenterWorld - groupCenter;
 
         difference.y = 0f;
 
-        if (difference.sqrMagnitude >
-            assemblyRadius * assemblyRadius)
+        if (difference.sqrMagnitude > assemblyRadius * assemblyRadius)
         {
             return;
         }
@@ -156,6 +151,11 @@ public sealed class FormationMovementGroup
         //
         for (int i = 0; i < activeMembers.Count; i++)
         {
+            UnitBase unit = activeMembers[i];
+
+            if (IsCommitted(unit))
+                continue;
+           
             activeMembers[i]
                 .ReleaseFormationDestinationForReassignment(
                     MovementGroupId);
@@ -169,7 +169,6 @@ public sealed class FormationMovementGroup
         foreach (KeyValuePair<UnitBase, int> pair in pendingAssignments)
         {
             UnitBase unit = pair.Key;
-
             int slotIndex = pair.Value;
 
             slotByUnit[unit] = slotIndex;
@@ -186,14 +185,12 @@ public sealed class FormationMovementGroup
     {
         result.Clear();
 
-        if (units == null ||
-            units.Count == 0)
+        if (units == null || units.Count == 0)
         {
             return;
         }
 
-        Vector3 groupCenter =
-            CalculateGroupCenter(units);
+        Vector3 groupCenter = CalculateGroupCenter(units);
 
         float unitExtentX = 0f;
         float unitExtentZ = 0f;
@@ -205,9 +202,7 @@ public sealed class FormationMovementGroup
             if (unit == null)
                 continue;
 
-            Vector3 offset =
-                unit.Position -
-                groupCenter;
+            Vector3 offset = unit.Position - groupCenter;
 
             unitExtentX =
                 Mathf.Max(
@@ -223,23 +218,12 @@ public sealed class FormationMovementGroup
         float slotExtentX = 0f;
         float slotExtentZ = 0f;
 
-        for (int i = 0;
-             i < slotPositions.Count;
-             i++)
+        for (int i = 0; i < slotPositions.Count; i++)
         {
-            Vector3 offset =
-                slotPositions[i] -
-                formationCenterWorld;
+            Vector3 offset = slotPositions[i] - formationCenterWorld;
 
-            slotExtentX =
-                Mathf.Max(
-                    slotExtentX,
-                    Mathf.Abs(offset.x));
-
-            slotExtentZ =
-                Mathf.Max(
-                    slotExtentZ,
-                    Mathf.Abs(offset.z));
+            slotExtentX = Mathf.Max(slotExtentX, Mathf.Abs(offset.x));
+            slotExtentZ = Mathf.Max(slotExtentZ, Mathf.Abs(offset.z));
         }
 
         unitExtentX = Mathf.Max(unitExtentX, 0.001f);
@@ -257,16 +241,11 @@ public sealed class FormationMovementGroup
             float bestCost =
                 float.PositiveInfinity;
 
-            for (int unitIndex = 0;
-                 unitIndex < unassignedUnits.Count;
-                 unitIndex++)
+            for (int unitIndex = 0; unitIndex < unassignedUnits.Count; unitIndex++)
             {
-                UnitBase unit =
-                    unassignedUnits[unitIndex];
+                UnitBase unit = unassignedUnits[unitIndex];
 
-                Vector3 unitOffset =
-                    unit.Position -
-                    groupCenter;
+                Vector3 unitOffset = unit.Position - groupCenter;
 
                 Vector2 unitTopology =
                     new Vector2(
@@ -276,18 +255,11 @@ public sealed class FormationMovementGroup
                         unitOffset.z /
                         unitExtentZ);
 
-                for (int slotListIndex = 0;
-                     slotListIndex <
-                     unassignedSlots.Count;
-                     slotListIndex++)
+                for (int slotListIndex = 0; slotListIndex < unassignedSlots.Count; slotListIndex++)
                 {
-                    int slotIndex =
-                        unassignedSlots[
-                            slotListIndex];
+                    int slotIndex = unassignedSlots[slotListIndex];
 
-                    Vector3 slotOffset =
-                        slotPositions[slotIndex] -
-                        formationCenterWorld;
+                    Vector3 slotOffset = slotPositions[slotIndex] - formationCenterWorld;
 
                     Vector2 slotTopology =
                         new Vector2(
@@ -297,10 +269,7 @@ public sealed class FormationMovementGroup
                             slotOffset.z /
                             slotExtentZ);
 
-                    float cost =
-                        (unitTopology -
-                         slotTopology)
-                        .sqrMagnitude;
+                    float cost = (unitTopology - slotTopology).sqrMagnitude;
 
                     if (!IsBetterPair(
                             unit,
@@ -313,31 +282,21 @@ public sealed class FormationMovementGroup
                         continue;
                     }
 
-                    bestUnit =
-                        unit;
-
-                    bestSlot =
-                        slotIndex;
-
-                    bestCost =
-                        cost;
+                    bestUnit = unit;
+                    bestSlot = slotIndex;
+                    bestCost = cost;
                 }
             }
 
-            if (bestUnit == null ||
-                bestSlot < 0)
+            if (bestUnit == null || bestSlot < 0)
             {
                 break;
             }
 
-            result[bestUnit] =
-                bestSlot;
+            result[bestUnit] = bestSlot;
 
-            unassignedUnits.Remove(
-                bestUnit);
-
-            unassignedSlots.Remove(
-                bestSlot);
+            unassignedUnits.Remove(bestUnit);
+            unassignedSlots.Remove(bestSlot);
         }
     }
 
@@ -361,9 +320,7 @@ public sealed class FormationMovementGroup
                         members.Count,
                         formationMaxNavigationRadius);
 
-            slotPositions.Add(
-                terrainGrid.CellToWorld(
-                    cell));
+            slotPositions.Add(terrainGrid.CellToWorld(cell));
         }
     }
 
@@ -371,13 +328,9 @@ public sealed class FormationMovementGroup
     {
         float formationRadius = 0f;
 
-        for (int i = 0;
-             i < slotPositions.Count;
-             i++)
+        for (int i = 0; i < slotPositions.Count; i++)
         {
-            Vector3 difference =
-                slotPositions[i] -
-                formationCenterWorld;
+            Vector3 difference =slotPositions[i] - formationCenterWorld;
 
             difference.y = 0f;
 
@@ -391,12 +344,56 @@ public sealed class FormationMovementGroup
         // We want the final pass before units are deeply packed
         // into the destination formation.
         //
-        float assemblyBuffer =
-            Mathf.Max(
-                terrainGrid.CellSize * 4f,
-                formationMaxNavigationRadius * 4f);
+        float assemblyBuffer = Mathf.Max(terrainGrid.CellSize * 4f, formationMaxNavigationRadius * 4f);
 
         return formationRadius + assemblyBuffer;
+    }
+
+    // ---------------------------------------------------------------------
+    // Commitement API 
+    // ---------------------------------------------------------------------
+
+    public bool IsCommitted(UnitBase unit)
+    {
+        return unit != null && committedUnits.Contains(unit);
+    }
+
+    public bool TryCommit(UnitBase unit, int slotIndex)
+    {
+        if (unit == null)
+            return false;
+
+        if (unit.MovementGroupId != MovementGroupId)
+        {
+            return false;
+        }
+
+        if (!slotByUnit.TryGetValue(unit, out int assignedSlot))
+        {
+            return false;
+        }
+
+        //
+        // A unit may only commit the slot
+        // it currently owns.
+        //
+        if (assignedSlot != slotIndex)
+            return false;
+
+        if (committedUnits.Contains(unit))
+            return true;
+
+        //
+        // Defensive check.
+        // This should normally be impossible.
+        //
+        if (committedSlots.Contains(slotIndex))
+            return false;
+
+        committedUnits.Add(unit);
+        committedSlots.Add(slotIndex);
+
+        return true;
     }
 
     // ---------------------------------------------------------------------
@@ -407,21 +404,16 @@ public sealed class FormationMovementGroup
     {
         activeMembers.Clear();
 
-        for (int i = 0;
-             i < members.Count;
-             i++)
+        for (int i = 0; i < members.Count; i++)
         {
-            UnitBase unit =
-                members[i];
+            UnitBase unit = members[i];
 
-            if (unit == null ||
-                !unit.IsAlive)
+            if (unit == null || !unit.IsAlive)
             {
                 continue;
             }
 
-            if (unit.MovementGroupId !=
-                MovementGroupId)
+            if (unit.MovementGroupId != MovementGroupId)
             {
                 continue;
             }
@@ -430,55 +422,50 @@ public sealed class FormationMovementGroup
         }
     }
 
-    private void PrepareUnassignedLists(
-        IReadOnlyList<UnitBase> units)
+    private void PrepareUnassignedLists(IReadOnlyList<UnitBase> units)
     {
         unassignedUnits.Clear();
         unassignedSlots.Clear();
 
-        for (int i = 0;
-             i < units.Count;
-             i++)
+        // Units
+        for (int i = 0; i < units.Count; i++)
         {
-            UnitBase unit =
-                units[i];
+            UnitBase unit = units[i];
 
-            if (unit != null)
-            {
-                unassignedUnits.Add(unit);
-            }
+            if (unit == null)
+                continue;
+
+            // Settled Unit : never participate in another assignement
+            if (committedUnits.Contains(unit))
+                continue;
+
+            unassignedUnits.Add(unit);
+            
         }
 
-        //
-        // We deliberately keep the ORIGINAL formation geometry
-        // even if some members left the command.
-        //
-        for (int slotIndex = 0;
-             slotIndex < slotPositions.Count;
-             slotIndex++)
+        // Slots
+        for (int slotIndex = 0;  slotIndex < slotPositions.Count; slotIndex++)
         {
-            unassignedSlots.Add(
-                slotIndex);
+            // Settled Slot : unavailable for everybody else
+            if (committedSlots.Contains(slotIndex))
+                continue;
+
+            unassignedSlots.Add(slotIndex);
         }
     }
 
-    private Vector3 CalculateGroupCenter(
-        IReadOnlyList<UnitBase> units)
+    private Vector3 CalculateGroupCenter(IReadOnlyList<UnitBase> units)
     {
         if (units.Count == 0)
             return formationCenterWorld;
 
-        Vector3 center =
-            Vector3.zero;
+        Vector3 center = Vector3.zero;
 
         int validCount = 0;
 
-        for (int i = 0;
-             i < units.Count;
-             i++)
+        for (int i = 0; i < units.Count; i++)
         {
-            UnitBase unit =
-                units[i];
+            UnitBase unit = units[i];
 
             if (unit == null)
                 continue;
@@ -490,8 +477,7 @@ public sealed class FormationMovementGroup
         if (validCount == 0)
             return formationCenterWorld;
 
-        return center /
-               validCount;
+        return center / validCount;
     }
 
     private bool IsBetterPair(
@@ -502,16 +488,12 @@ public sealed class FormationMovementGroup
         int currentSlot,
         float currentCost)
     {
-        if (candidateCost <
-            currentCost - CostEpsilon)
+        if (candidateCost < currentCost - CostEpsilon)
         {
             return true;
         }
 
-        if (Mathf.Abs(
-                candidateCost -
-                currentCost) >
-            CostEpsilon)
+        if (Mathf.Abs(candidateCost - currentCost) > CostEpsilon)
         {
             return false;
         }
@@ -522,19 +504,16 @@ public sealed class FormationMovementGroup
         if (currentUnit == null)
             return true;
 
-        if (candidateUnit.UnitId <
-            currentUnit.UnitId)
+        if (candidateUnit.UnitId < currentUnit.UnitId)
         {
             return true;
         }
 
-        if (candidateUnit.UnitId >
-            currentUnit.UnitId)
+        if (candidateUnit.UnitId > currentUnit.UnitId)
         {
             return false;
         }
 
-        return candidateSlot <
-               currentSlot;
+        return candidateSlot < currentSlot;
     }
 }
