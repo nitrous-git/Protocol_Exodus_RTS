@@ -12,6 +12,7 @@ public struct CommandContext
 
     public ITargetable Target;
     public ResourceNode ResourceNode;
+    public FormationMovementGroup FormationGroup;
 
     public bool HasWorldPosition;
     public bool HasGridCell;
@@ -29,7 +30,8 @@ public struct CommandContext
         int formationSlotIndex = 0, 
         int formationUnitCount = 1, 
         float formationMaxNavigationRadius = 1f,
-        int movementGroupId = 0)
+        int movementGroupId = 0,
+        FormationMovementGroup formationGroup = null)
     {
         return new CommandContext
         {
@@ -39,7 +41,8 @@ public struct CommandContext
             MovementGroupId = movementGroupId,
             FormationSlotIndex = formationSlotIndex,
             FormationUnitCount = formationUnitCount,
-            FormationMaxNavigationRadius = formationMaxNavigationRadius
+            FormationMaxNavigationRadius = formationMaxNavigationRadius,
+            FormationGroup = formationGroup
         };
     }
 
