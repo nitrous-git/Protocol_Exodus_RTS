@@ -141,8 +141,7 @@ public class LocalSteeringSystem : MonoBehaviour
                 continue;
             }
 
-            float distance =
-                Mathf.Sqrt(distanceSquared);
+            float distance = Mathf.Sqrt(distanceSquared);
 
             float strength =
                 1f -

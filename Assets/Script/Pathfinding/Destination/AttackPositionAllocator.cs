@@ -58,11 +58,8 @@ public sealed class AttackPositionAllocator
     // Reused temporary buffers
     // ---------------------------------------------------------------------
 
-    private readonly List<DeploymentEntry> deploymentBuffer =
-        new List<DeploymentEntry>(64);
-
-    private readonly List<ScoredCandidate> candidateBuffer =
-        new List<ScoredCandidate>(128);
+    private readonly List<DeploymentEntry> deploymentBuffer = new List<DeploymentEntry>(64);
+    private readonly List<ScoredCandidate> candidateBuffer = new List<ScoredCandidate>(128);
 
     private readonly struct DeploymentEntry
     {
@@ -99,9 +96,7 @@ public sealed class AttackPositionAllocator
     // Construction
     // ---------------------------------------------------------------------
 
-    public AttackPositionAllocator(
-        TerrainGrid terrainGrid,
-        GridNavigationStateSystem navigationState)
+    public AttackPositionAllocator(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState)
     {
         this.terrainGrid = terrainGrid;
         this.navigationState = navigationState;
@@ -114,9 +109,7 @@ public sealed class AttackPositionAllocator
     // combat. Group player Attack commands use AllocateGroup() below.
     // =====================================================================
 
-    public GridCoord? TryAllocate(
-        CombatUnit unit,
-        ITargetable target)
+    public GridCoord? TryAllocate(CombatUnit unit, ITargetable target)
     {
         if (unit == null ||
             target == null ||
@@ -126,42 +119,26 @@ public sealed class AttackPositionAllocator
             return null;
         }
 
-        float attackRange =
-            unit.GetAttackRange();
+        float attackRange = unit.GetAttackRange();
 
-        float cellSize =
-            terrainGrid.CellSize;
+        float cellSize = terrainGrid.CellSize;
 
-        if (attackRange <= 0f ||
-            cellSize <= 0f)
+        if (attackRange <= 0f || cellSize <= 0f)
         {
             return null;
         }
 
-        ResolveTargetFootprint(
-            target,
-            out GridCoord targetCell,
-            out Vector2Int targetFootprint);
+        ResolveTargetFootprint(target, out GridCoord targetCell, out Vector2Int targetFootprint);
 
-        int maxDepth =
-            Mathf.Max(
-                1,
-                Mathf.CeilToInt(
-                    attackRange /
-                    cellSize));
+        int maxDepth = Mathf.Max(1, Mathf.CeilToInt(attackRange / cellSize));
 
-        float desiredDistance =
-            attackRange * 0.80f;
+        float desiredDistance = attackRange * 0.80f;
+        float maximumAllowedDistance = attackRange * 0.95f;
 
-        float maximumAllowedDistance =
-            attackRange * 0.95f;
+        List<GridCoord> candidates = new List<GridCoord>();
 
-        List<GridCoord> candidates =
-            new List<GridCoord>();
-
-        for (int depth = 1;
-             depth <= maxDepth;
-             depth++)
+        // ID : Dont expand from 1, epxand from close -+1 from attack range 
+        for (int depth = 1; depth <= maxDepth; depth++)
         {
             List<GridCoord> ring =
                 PlacementUtil
@@ -172,55 +149,31 @@ public sealed class AttackPositionAllocator
                         depth,
                         cell =>
                         {
-                            Vector3 worldPosition =
-                                terrainGrid.CellToWorld(
-                                    cell);
-
-                            float distanceToTarget =
-                                FlatDistance(
-                                    worldPosition,
-                                    target.Position);
-
-                            return distanceToTarget <=
-                                   maximumAllowedDistance;
+                            Vector3 worldPosition = terrainGrid.CellToWorld(cell);
+                            float distanceToTarget = FlatDistance(worldPosition, target.Position);
+                            return distanceToTarget <= maximumAllowedDistance;
                         });
 
             candidates.AddRange(ring);
         }
 
+        // Ok but how many candiate ? careful
         while (candidates.Count > 0)
         {
             int bestIndex = -1;
 
-            float bestScore =
-                float.MaxValue;
+            float bestScore = float.MaxValue;
 
-            for (int i = 0;
-                 i < candidates.Count;
-                 i++)
+            for (int i = 0; i < candidates.Count; i++)
             {
-                Vector3 candidatePosition =
-                    terrainGrid.CellToWorld(
-                        candidates[i]);
+                Vector3 candidatePosition = terrainGrid.CellToWorld(candidates[i]);
 
-                float distanceToTarget =
-                    FlatDistance(
-                        candidatePosition,
-                        target.Position);
+                float distanceToTarget = FlatDistance(candidatePosition, target.Position);
+                float travelDistance = FlatDistance(unit.Position, candidatePosition);
 
-                float travelDistance =
-                    FlatDistance(
-                        unit.Position,
-                        candidatePosition);
+                float rangeError = Mathf.Abs(desiredDistance - distanceToTarget);
 
-                float rangeError =
-                    Mathf.Abs(
-                        desiredDistance -
-                        distanceToTarget);
-
-                float score =
-                    rangeError * 4f +
-                    travelDistance;
+                float score = rangeError * 4f + travelDistance;
 
                 if (score >= bestScore)
                     continue;
@@ -232,16 +185,11 @@ public sealed class AttackPositionAllocator
             if (bestIndex < 0)
                 break;
 
-            GridCoord candidate =
-                candidates[bestIndex];
+            GridCoord candidate = candidates[bestIndex];
 
-            candidates.RemoveAt(
-                bestIndex);
+            candidates.RemoveAt(bestIndex);
 
-            if (navigationState
-                .TryReserveDestination(
-                    candidate,
-                    unit))
+            if (navigationState.TryReserveDestination(candidate, unit))
             {
                 return candidate;
             }
@@ -254,10 +202,7 @@ public sealed class AttackPositionAllocator
     // Explicit player Attack ¡ª one-shot group deployment
     // =====================================================================
 
-    public void AllocateGroup(
-        IReadOnlyList<CombatUnit> units,
-        ITargetable target,
-        Dictionary<CombatUnit, GridCoord> result)
+    public void AllocateGroup(IReadOnlyList<CombatUnit> units, ITargetable target, Dictionary<CombatUnit, GridCoord> result)
     {
         result.Clear();
         deploymentBuffer.Clear();
@@ -271,11 +216,8 @@ public sealed class AttackPositionAllocator
             return;
         }
 
-        float minDistance =
-            float.PositiveInfinity;
-
-        float maxDistance =
-            float.NegativeInfinity;
+        float minDistance = float.PositiveInfinity;
+        float maxDistance = float.NegativeInfinity;
 
         // -------------------------------------------------------------
         // STEP A
@@ -289,37 +231,22 @@ public sealed class AttackPositionAllocator
         // in firing range.
         // -------------------------------------------------------------
 
-        for (int i = 0;
-             i < units.Count;
-             i++)
+        for (int i = 0; i < units.Count; i++)
         {
-            CombatUnit unit =
-                units[i];
+            CombatUnit unit = units[i];
 
-            if (unit == null ||
-                !unit.CanAttack())
+            if (unit == null || !unit.CanAttack())
             {
                 continue;
             }
 
-            float distance =
-                FlatDistance(
-                    unit.Position,
-                    target.Position);
+            float distance = FlatDistance(unit.Position, target.Position);
 
-            minDistance =
-                Mathf.Min(
-                    minDistance,
-                    distance);
-
-            maxDistance =
-                Mathf.Max(
-                    maxDistance,
-                    distance);
+            minDistance = Mathf.Min(minDistance, distance);
+            maxDistance = Mathf.Max(maxDistance, distance);
         }
 
-        if (float.IsInfinity(
-                minDistance))
+        if (float.IsInfinity(minDistance))
         {
             return;
         }
@@ -331,15 +258,11 @@ public sealed class AttackPositionAllocator
         // need to approach.
         // -------------------------------------------------------------
 
-        for (int i = 0;
-             i < units.Count;
-             i++)
+        for (int i = 0; i < units.Count; i++)
         {
-            CombatUnit unit =
-                units[i];
+            CombatUnit unit = units[i];
 
-            if (unit == null ||
-                !unit.CanAttack())
+            if (unit == null || !unit.CanAttack())
             {
                 continue;
             }
@@ -348,54 +271,35 @@ public sealed class AttackPositionAllocator
             // Already has firing access.
             // It is effectively already deployed.
             //
-            if (unit.IsWithinAttackRange(
-                    target))
+            if (unit.IsWithinAttackRange(target))
             {
                 continue;
             }
 
-            float distance =
-                FlatDistance(
-                    unit.Position,
-                    target.Position);
+            float distance = FlatDistance(unit.Position, target.Position);
 
             float depth01;
 
-            if (maxDistance -
-                minDistance >
-                0.001f)
+            if (maxDistance - minDistance > 0.001f)
             {
-                depth01 =
-                    Mathf.InverseLerp(
-                        minDistance,
-                        maxDistance,
-                        distance);
+                depth01 = Mathf.InverseLerp(minDistance, maxDistance, distance);
             }
             else
             {
                 depth01 = 0.5f;
             }
 
-            Vector3 approachDirection =
-                unit.Position -
-                target.Position;
-
+            Vector3 approachDirection = unit.Position - target.Position;
             approachDirection.y = 0f;
 
-            if (approachDirection
-                    .sqrMagnitude <=
-                0.0001f)
+            if (approachDirection.sqrMagnitude <= 0.0001f)
             {
                 continue;
             }
 
             approachDirection.Normalize();
 
-            deploymentBuffer.Add(
-                new DeploymentEntry(
-                    unit,
-                    depth01,
-                    approachDirection));
+            deploymentBuffer.Add(new DeploymentEntry(unit, depth01, approachDirection));
         }
 
         // -------------------------------------------------------------
@@ -409,52 +313,34 @@ public sealed class AttackPositionAllocator
         // Final UnitId tie break keeps this deterministic.
         // -------------------------------------------------------------
 
-        deploymentBuffer.Sort(
+        deploymentBuffer.Sort( // how costly is that sort ?
             (first, second) =>
             {
-                int radiusComparison =
-                    second.Unit
-                        .NavigationRadius
-                        .CompareTo(
-                            first.Unit
-                                .NavigationRadius);
+                int radiusComparison = second.Unit.NavigationRadius.CompareTo(first.Unit.NavigationRadius);
 
                 if (radiusComparison != 0)
                     return radiusComparison;
 
-                int depthComparison =
-                    first.Depth01.CompareTo(
-                        second.Depth01);
+                int depthComparison = first.Depth01.CompareTo(second.Depth01);
 
                 if (depthComparison != 0)
                     return depthComparison;
 
-                return first.Unit.UnitId
-                    .CompareTo(
-                        second.Unit.UnitId);
+                // Why do we use the Id ? 
+                return first.Unit.UnitId.CompareTo(second.Unit.UnitId);
             });
 
         // -------------------------------------------------------------
         // STEP D
         //
         // One local topology allocation per unit.
-        //
-        // No retry later.
-        // No polling.
-        // No final deployment pass.
         // -------------------------------------------------------------
 
-        for (int i = 0;
-             i < deploymentBuffer.Count;
-             i++)
+        for (int i = 0; i < deploymentBuffer.Count; i++)
         {
-            DeploymentEntry entry =
-                deploymentBuffer[i];
+            DeploymentEntry entry = deploymentBuffer[i];
 
-            if (!TryAllocateNearTopology(
-                    entry,
-                    target,
-                    out GridCoord cell))
+            if (!TryAllocateNearTopology(entry, target, out GridCoord cell))
             {
                 //
                 // No usable position.
@@ -462,11 +348,12 @@ public sealed class AttackPositionAllocator
                 // This unit simply receives no deployment cell and
                 // stays where it is.
                 //
+
+                // this shouldnt happen, unit get left behind ?
                 continue;
             }
 
-            result[entry.Unit] =
-                cell;
+            result[entry.Unit] = cell;
         }
     }
 
@@ -474,24 +361,17 @@ public sealed class AttackPositionAllocator
     // Local topology search
     // =====================================================================
 
-    private bool TryAllocateNearTopology(
-        DeploymentEntry entry,
-        ITargetable target,
-        out GridCoord result)
+    private bool TryAllocateNearTopology(DeploymentEntry entry, ITargetable target, out GridCoord result)
     {
         result = default;
 
-        CombatUnit unit =
-            entry.Unit;
+        CombatUnit unit = entry.Unit;
 
-        float attackRange =
-            unit.GetAttackRange();
+        float attackRange = unit.GetAttackRange();
 
-        float cellSize =
-            terrainGrid.CellSize;
+        float cellSize = terrainGrid.CellSize;
 
-        if (attackRange <= 0f ||
-            cellSize <= 0f)
+        if (attackRange <= 0f || cellSize <= 0f)
         {
             return false;
         }
@@ -515,46 +395,20 @@ public sealed class AttackPositionAllocator
                 MaximumRangeFraction,
                 entry.Depth01);
 
-        float preferredDistance =
-            attackRange *
-            preferredFraction;
+        float preferredDistance = attackRange * preferredFraction;
 
-        Vector3 preferredWorldPosition =
-            target.Position +
-            entry.ApproachDirection *
-            preferredDistance;
+        Vector3 preferredWorldPosition = target.Position + entry.ApproachDirection * preferredDistance;
 
-        GridCoord preferredCell =
-            terrainGrid.WorldToCell(
-                preferredWorldPosition);
+        GridCoord preferredCell = terrainGrid.WorldToCell(preferredWorldPosition);
 
         // -------------------------------------------------------------
         // Keep the search close to this specific radial layer.
         // -------------------------------------------------------------
 
-        float radialWindow =
-            Mathf.Max(
-                attackRange *
-                    RadialWindowFraction,
+        float radialWindow = Mathf.Max(attackRange * RadialWindowFraction, cellSize * MinimumRadialWindowCells);
 
-                cellSize *
-                    MinimumRadialWindowCells);
-
-        float minimumDistance =
-            Mathf.Max(
-                attackRange *
-                    PreferredMinRangeFraction,
-
-                preferredDistance -
-                    radialWindow);
-
-        float maximumDistance =
-            Mathf.Min(
-                attackRange *
-                    MaximumRangeFraction,
-
-                preferredDistance +
-                    radialWindow);
+        float minimumDistance = Mathf.Max(attackRange * PreferredMinRangeFraction, preferredDistance - radialWindow);
+        float maximumDistance = Mathf.Min(attackRange * MaximumRangeFraction, preferredDistance + radialWindow);
 
         candidateBuffer.Clear();
 
@@ -564,25 +418,14 @@ public sealed class AttackPositionAllocator
         // Radius 4 means at most 81 cells are inspected.
         // -------------------------------------------------------------
 
-        for (int z =
-                 -LocalSearchRadiusCells;
-             z <=
-                 LocalSearchRadiusCells;
-             z++)
+        // Fair enough only 81 
+        for (int z = -LocalSearchRadiusCells; z <= LocalSearchRadiusCells; z++)
         {
-            for (int x =
-                     -LocalSearchRadiusCells;
-                 x <=
-                     LocalSearchRadiusCells;
-                 x++)
+            for (int x = -LocalSearchRadiusCells; x <= LocalSearchRadiusCells; x++)
             {
-                GridCoord cell =
-                    new GridCoord(
-                        preferredCell.x + x,
-                        preferredCell.z + z);
+                GridCoord cell = new GridCoord(preferredCell.x + x, preferredCell.z + z);
 
-                if (!terrainGrid
-                    .IsInside(cell))
+                if (!terrainGrid.IsInside(cell))
                 {
                     continue;
                 }
@@ -593,61 +436,40 @@ public sealed class AttackPositionAllocator
                 // Dynamic unit occupancy and destination reservations
                 // remain the responsibility of TryReserveDestination.
                 //
-                if (!terrainGrid
-                    .HasNavigationClearance(
-                        cell,
-                        unit.NavigationRadius))
+                if (!terrainGrid.HasNavigationClearance(cell, unit.NavigationRadius)) // HasNavigationClearance does another searchDepth, careful
                 {
                     continue;
                 }
 
-                Vector3 candidatePosition =
-                    terrainGrid.CellToWorld(
-                        cell);
-
-                float distanceToTarget =
-                    FlatDistance(
-                        candidatePosition,
-                        target.Position);
+                Vector3 candidatePosition = terrainGrid.CellToWorld(cell);
+                float distanceToTarget = FlatDistance(candidatePosition, target.Position);
 
                 // -----------------------------------------------------
                 // Radial topology hard window.
                 // -----------------------------------------------------
 
-                if (distanceToTarget <
-                        minimumDistance ||
-                    distanceToTarget >
-                        maximumDistance)
+                if (distanceToTarget < minimumDistance || distanceToTarget > maximumDistance)
                 {
                     continue;
                 }
 
-                Vector3 candidateDirection =
-                    candidatePosition -
-                    target.Position;
-
+                Vector3 candidateDirection = candidatePosition - target.Position;
                 candidateDirection.y = 0f;
 
-                if (candidateDirection
-                        .sqrMagnitude <=
-                    0.0001f)
+                if (candidateDirection.sqrMagnitude <= 0.0001f)
                 {
                     continue;
                 }
 
                 candidateDirection.Normalize();
 
-                float alignment =
-                    Vector3.Dot(
-                        entry.ApproachDirection,
-                        candidateDirection);
+                float alignment = Vector3.Dot(entry.ApproachDirection, candidateDirection);
 
                 //
                 // Never deliberately move to the opposite side
                 // of the target.
                 //
-                if (alignment <
-                    MinimumAlignment)
+                if (alignment < MinimumAlignment)
                 {
                     continue;
                 }
@@ -656,42 +478,18 @@ public sealed class AttackPositionAllocator
                 // Score
                 // -----------------------------------------------------
 
-                float angularCost =
-                    1f - alignment;
+                float angularCost = 1f - alignment;
 
                 float radialCost =
-                    Mathf.Abs(
-                        distanceToTarget -
-                        preferredDistance)
-                    /
-                    Mathf.Max(
-                        radialWindow,
-                        cellSize *
-                        0.25f);
+                    Mathf.Abs(distanceToTarget - preferredDistance) / Mathf.Max(radialWindow, cellSize * 0.25f);
 
                 float travelCost =
-                    FlatDistance(
-                        unit.Position,
-                        candidatePosition)
-                    /
-                    Mathf.Max(
-                        attackRange,
-                        cellSize);
+                    FlatDistance(unit.Position, candidatePosition)
+                    / Mathf.Max(attackRange, cellSize);
 
-                float score =
-                    angularCost *
-                        AngularWeight
-                    +
-                    radialCost *
-                        RadialWeight
-                    +
-                    travelCost *
-                        TravelWeight;
+                float score = angularCost * AngularWeight + radialCost * RadialWeight + travelCost * TravelWeight;
 
-                candidateBuffer.Add(
-                    new ScoredCandidate(
-                        cell,
-                        score));
+                candidateBuffer.Add( new ScoredCandidate(cell, score));
             }
         }
 
@@ -699,27 +497,21 @@ public sealed class AttackPositionAllocator
         // Deterministic best-first order.
         // -------------------------------------------------------------
 
+        // how costly is this ?
         candidateBuffer.Sort(
             (first, second) =>
             {
-                int scoreComparison =
-                    first.Score.CompareTo(
-                        second.Score);
+                int scoreComparison = first.Score.CompareTo(second.Score);
 
                 if (scoreComparison != 0)
                     return scoreComparison;
 
-                if (first.Cell.z !=
-                    second.Cell.z)
+                if (first.Cell.z != second.Cell.z)
                 {
-                    return first.Cell.z
-                        .CompareTo(
-                            second.Cell.z);
+                    return first.Cell.z.CompareTo(second.Cell.z);
                 }
 
-                return first.Cell.x
-                    .CompareTo(
-                        second.Cell.x);
+                return first.Cell.x.CompareTo(second.Cell.x);
             });
 
         // -------------------------------------------------------------
@@ -733,17 +525,13 @@ public sealed class AttackPositionAllocator
         // reserves.
         // -------------------------------------------------------------
 
-        for (int i = 0;
-             i < candidateBuffer.Count;
-             i++)
+        // how costly is this ? 
+        for (int i = 0; i < candidateBuffer.Count; i++)
         {
-            GridCoord candidate =
-                candidateBuffer[i].Cell;
+            GridCoord candidate = candidateBuffer[i].Cell;
 
-            if (!navigationState
-                .TryReserveDestination(
-                    candidate,
-                    unit))
+            // careful, CanStandAt will do a navigationClearance searchDepth again 
+            if (!navigationState.TryReserveDestination(candidate, unit))
             {
                 continue;
             }
@@ -759,41 +547,24 @@ public sealed class AttackPositionAllocator
     // Helpers
     // =====================================================================
 
-    private void ResolveTargetFootprint(
-        ITargetable target,
-        out GridCoord targetCell,
-        out Vector2Int targetFootprint)
+    private void ResolveTargetFootprint(ITargetable target, out GridCoord targetCell, out Vector2Int targetFootprint)
     {
-        if (target is BuildingBase building &&
-            building.Definition != null)
+        if (target is BuildingBase building && building.Definition != null)
         {
-            targetCell =
-                building.FootprintOrigin;
-
-            targetFootprint =
-                building.Definition
-                    .footprintSize;
-
+            targetCell = building.FootprintOrigin;
+            targetFootprint = building.Definition.footprintSize;
             return;
         }
 
-        targetCell =
-            terrainGrid.WorldToCell(
-                target.Position);
-
-        targetFootprint =
-            Vector2Int.one;
+        targetCell = terrainGrid.WorldToCell(target.Position);
+        targetFootprint = Vector2Int.one;
     }
 
-    private static float FlatDistance(
-        Vector3 first,
-        Vector3 second)
+    private static float FlatDistance(Vector3 first, Vector3 second)
     {
         first.y = 0f;
         second.y = 0f;
 
-        return Vector3.Distance(
-            first,
-            second);
+        return Vector3.Distance(first, second);
     }
 }

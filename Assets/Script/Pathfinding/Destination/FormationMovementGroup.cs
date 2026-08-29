@@ -36,7 +36,6 @@ public sealed class FormationMovementGroup
     public int UnitCount => members.Count;
     public float ArrivalTolerance => arrivalTolerance;
 
-
     public FormationMovementGroup(
         int movementGroupId,
         IReadOnlyList<UnitBase> units,
@@ -238,8 +237,7 @@ public sealed class FormationMovementGroup
             UnitBase bestUnit = null;
             int bestSlot = -1;
 
-            float bestCost =
-                float.PositiveInfinity;
+            float bestCost = float.PositiveInfinity;
 
             for (int unitIndex = 0; unitIndex < unassignedUnits.Count; unitIndex++)
             {
