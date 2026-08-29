@@ -140,6 +140,37 @@ public sealed class GridNavigationStateSystem
         return existingOwner != owner;
     }
 
+    public bool IsDestinationTraversalBlocked(GridCoord coord, UnitBase requester)
+    {
+        if (!destinationsByCell.TryGetValue(coord, out UnitBase owner))
+        {
+            return false;
+        }
+
+        if (owner == null)
+            return false;
+
+        if (owner == requester)
+            return false;
+
+        //
+        // Future destinations belonging to the SAME active
+        // movement group do not block A* traversal.
+        //
+        // The reservation is still exclusive for ownership.
+        //
+        if (requester != null && requester.MovementGroupId > 0 
+            && owner.MovementGroupId == requester.MovementGroupId)
+        {
+            return false;
+        }
+
+        //
+        // Another command/group owns this destination.
+        //
+        return true;
+    }
+
     // ---------------------------------------------------------------------
     // Current Unit Occupancy
     // ---------------------------------------------------------------------

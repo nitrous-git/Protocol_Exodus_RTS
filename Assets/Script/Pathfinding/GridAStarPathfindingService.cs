@@ -78,6 +78,16 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     [SerializeField, Min(0)] private int otherMovingUnitPenalty = 8;
     [SerializeField, Min(0)] private int stationaryUnitPenalty = 25;
 
+    [Header("Search Budget")]
+    [SerializeField, Min(128)] private int minimumExpansionBudget = 1500;
+    [SerializeField, Min(512)] private int maximumExpansionBudget = 6000;
+    [SerializeField, Min(1)] private int expansionsPerDirectStep = 48;
+
+    [Header("Diagnostics")]
+    [SerializeField] private bool logSlowSearches = true;
+    [SerializeField, Min(0.1f)] private float slowSearchMilliseconds = 2f;
+    [SerializeField, Min(1)] private int slowSearchExpansionThreshold = 1000;
+
     public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigateState)
     {
         this.terrainGrid = terrainGrid;
@@ -103,6 +113,10 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
         GridCoord startCoord = terrainGrid.WorldToCell(start);
         GridCoord endCoord = terrainGrid.WorldToCell(end);
+
+        int expansionBudget = CalculateExpansionBudget(startCoord, endCoord);
+        int expandedNodes = 0;
+        double searchStartTime = Time.realtimeSinceStartupAsDouble;
 
         if (!terrainGrid.IsInside(startCoord) || !terrainGrid.IsInside(endCoord))
         {
@@ -142,11 +156,52 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
             if (IsSameCoord(currentNode.Coord, endCoord))
             {
-                return BuildResultPath(startNode, currentNode, result);
+                bool success = BuildResultPath(startNode, currentNode, result);
+
+                ReportSearchDiagnostics(
+                    requester,
+                    startCoord,
+                    endCoord,
+                    success,
+                    "Success",
+                    expandedNodes,
+                    expansionBudget,
+                    searchStartTime);
+
+                return success;
+            }
+
+            expandedNodes++;
+
+            if (expandedNodes >= expansionBudget)
+            {
+                result.Clear();
+
+                ReportSearchDiagnostics(
+                    requester,
+                    startCoord,
+                    endCoord,
+                    false,
+                    "BudgetExceeded",
+                    expandedNodes,
+                    expansionBudget,
+                    searchStartTime);
+
+                return false;
             }
 
             ExploreNeighbors(currentNode, startCoord, endCoord, requester);
         }
+
+        ReportSearchDiagnostics(
+            requester,
+            startCoord,
+            endCoord,
+            false,
+            "OpenSetExhausted",
+            expandedNodes,
+            expansionBudget,
+            searchStartTime);
 
         return false;
     }
@@ -274,7 +329,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             return false;
         }
 
-        if (navigateState != null && navigateState.IsDestinationReservedByOther(coord, requester))
+        if (navigateState != null && navigateState.IsDestinationTraversalBlocked(coord, requester))
             return false;
 
         return true;
@@ -341,5 +396,63 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     private bool IsSameCoord(GridCoord first, GridCoord second)
     {
         return first.x == second.x && first.z == second.z;
+    }
+
+    // ---------------------------------------------------------------------
+    // Budget
+    // ---------------------------------------------------------------------
+
+    private int CalculateExpansionBudget(GridCoord start, GridCoord end)
+    {
+        int deltaX = Mathf.Abs(start.x - end.x);
+        int deltaZ = Mathf.Abs(start.z - end.z);
+        int directSteps = Mathf.Max(deltaX, deltaZ);
+
+        long scaledBudget = (long)directSteps * expansionsPerDirectStep;
+
+        return Mathf.Clamp((int)Mathf.Min(scaledBudget, int.MaxValue), minimumExpansionBudget, maximumExpansionBudget);
+    }
+
+    private void ReportSearchDiagnostics(
+        UnitBase requester,
+        GridCoord start,
+        GridCoord end,
+        bool success,
+        string reason,
+        int expandedNodes,
+        int expansionBudget,
+        double searchStartTime)
+    {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+
+        if (!logSlowSearches)
+            return;
+
+        double elapsedMs = (Time.realtimeSinceStartupAsDouble - searchStartTime) * 1000.0;
+
+        bool interesting = !success || expandedNodes >= slowSearchExpansionThreshold || elapsedMs >= slowSearchMilliseconds;
+
+        if (!interesting)
+            return;
+
+        int dx = Mathf.Abs(start.x - end.x);
+        int dz = Mathf.Abs(start.z - end.z);
+        int directDistance = Mathf.Max(dx, dz);
+        int unitId = requester != null ? requester.UnitId : -1;
+        int movementGroup = requester != null ? requester.MovementGroupId : 0;
+
+        Debug.Log(
+            "[A*] " +
+            "Unit=" + unitId +
+            " Group=" + movementGroup +
+            " Success=" + success +
+            " Reason=" + reason +
+            " DirectCells=" + directDistance +
+            " Expanded=" + expandedNodes +
+            "/" + expansionBudget +
+            " Touched=" + touchedNodes.Count +
+            " TimeMs=" +
+            elapsedMs.ToString("F2"));
+#endif
     }
 }
