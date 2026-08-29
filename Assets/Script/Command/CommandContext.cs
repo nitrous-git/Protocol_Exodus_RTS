@@ -10,6 +10,10 @@ public struct CommandContext
     public int FormationUnitCount;
     public float FormationMaxNavigationRadius;
 
+    public GridCoord AttackPositionCell;
+    public bool HasAttackPositionCell;
+    public bool AttackDeploymentResolved;
+
     public ITargetable Target;
     public ResourceNode ResourceNode;
     public FormationMovementGroup FormationGroup;
@@ -66,12 +70,27 @@ public struct CommandContext
     }
 
 
-    public static CommandContext AttackTarget(ITargetable target)
+    public static CommandContext AttackTarget(
+        ITargetable target,
+        GridCoord? attackPositionCell = null,
+        int movementGroupId = 0,
+        bool attackDeploymentResolved = false)
     {
-        return new CommandContext
+        CommandContext context =
+            new CommandContext
+            {
+                Target = target,
+                MovementGroupId = movementGroupId,
+                AttackDeploymentResolved = attackDeploymentResolved
+            };
+
+        if (attackPositionCell.HasValue)
         {
-            Target = target
-        };
+            context.AttackPositionCell = attackPositionCell.Value;
+            context.HasAttackPositionCell = true;
+        }
+
+        return context;
     }
 
     public static CommandContext Gather(ResourceNode resourceNode)

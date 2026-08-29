@@ -39,7 +39,8 @@ public sealed class ProjectileManager
             damage,
             maxLifetime,
             collisionRadius,
-            collisionMask
+            collisionMask,
+            projectileRoot
         );
 
         projectiles.Add(projectile);

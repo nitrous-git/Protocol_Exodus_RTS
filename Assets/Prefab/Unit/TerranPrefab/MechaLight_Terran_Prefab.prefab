@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ab831c87aa7a54c9d9f3fb3a3d4c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitWeapon
-  projectilePrefab: {fileID: 3145979905131816786, guid: 21d017c4e4c8fa14d9f73903e00d09f3, type: 3}
+  projectilePrefab: {fileID: 4919975833753055912, guid: 87428c28ccb5ee343a7f80482fdf46b7, type: 3}
   firePoint: {fileID: 7571264482695874114}
   projectileSpeed: 9
   projectileLifetime: 4
@@ -332,6 +332,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8454335457979803671}
   - component: {fileID: 4572993277061698160}
+  - component: {fileID: 5382328182715399181}
   m_Layer: 0
   m_Name: ModelCharacter
   m_TagString: Untagged
@@ -378,6 +379,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5382328182715399181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706332062218101103}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97d47cf84120a8745bb6a33ccb086157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimationEventRelay
 --- !u!1 &1962967344958819829
 GameObject:
   m_ObjectHideFlags: 0

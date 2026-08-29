@@ -26,6 +26,8 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private LayerMask contextCommandMask = ~0;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
+    private readonly List<CombatUnit> attackCommandUnits = new List<CombatUnit>();
+    private readonly Dictionary<CombatUnit, GridCoord> attackAssignments = new Dictionary<CombatUnit, GridCoord>();
 
     private GameContext gameContext;
     private Faction issuingFaction;
@@ -337,14 +339,51 @@ public class CommandIssuer : MonoBehaviour
         return null;
     }
 
+    //public bool TryIssueAttackCommand(ITargetable target)
+    //{
+    //    if (!CanIssueCommands() || target == null)
+    //        return false;
+
+    //    CollectCommandableSelectedUnits();
+
+    //    bool issuedAnyCommand = false;
+
+    //    for (int i = 0; i < commandableUnits.Count; i++)
+    //    {
+    //        CombatUnit combatUnit = commandableUnits[i] as CombatUnit;
+
+    //        if (combatUnit == null)
+    //            continue;
+
+    //        if (!combatUnit.CanAttack())
+    //            continue;
+
+    //        if (!combatUnit.IsValidAttackTarget(target))
+    //            continue;
+
+    //        combatUnit.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
+
+    //        issuedAnyCommand = true;
+    //    }
+
+    //    return issuedAnyCommand;
+    //}
+
     public bool TryIssueAttackCommand(ITargetable target)
     {
         if (!CanIssueCommands() || target == null)
+        {
             return false;
+        }
 
         CollectCommandableSelectedUnits();
 
-        bool issuedAnyCommand = false;
+        attackCommandUnits.Clear();
+        attackAssignments.Clear();
+
+        // ---------------------------------------------------------
+        // Collect valid attackers.
+        // ---------------------------------------------------------
 
         for (int i = 0; i < commandableUnits.Count; i++)
         {
@@ -357,15 +396,89 @@ public class CommandIssuer : MonoBehaviour
                 continue;
 
             if (!combatUnit.IsValidAttackTarget(target))
+            {
                 continue;
+            }
 
-            combatUnit.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
-
-            issuedAnyCommand = true;
+            attackCommandUnits.Add(
+                combatUnit);
         }
 
-        return issuedAnyCommand;
+        if (attackCommandUnits.Count == 0)
+            return false;
+
+        // ---------------------------------------------------------
+        // The new player command supersedes all old
+        // destination claims before deployment is solved.
+        //
+        // This is important because allocation happens BEFORE
+        // SetState()/OnExit() is called on the old state.
+        // ---------------------------------------------------------
+
+        for (int i = 0; i < attackCommandUnits.Count; i++)
+        {
+            gameContext.GridNavigationStateSystem.ReleaseAllDestinations(attackCommandUnits[i]);
+        }
+
+        // ---------------------------------------------------------
+        // ONE deployment calculation.
+        // ---------------------------------------------------------
+
+        gameContext
+            .DestinationAllocationSystem
+            .Attack
+            .AllocateGroup(
+                attackCommandUnits,
+                target,
+                attackAssignments);
+
+        // ---------------------------------------------------------
+        // Units that actually move share one A* movement group.
+        // ---------------------------------------------------------
+
+        int movementGroupId = 0;
+
+        if (attackAssignments.Count > 0)
+        {
+            movementGroupId = gameContext.AllocateMovementGroupId();
+        }
+
+        //
+        // Pre-tag ALL movers before the first A* begins.
+        //
+        for (int i = 0; i < attackCommandUnits.Count; i++)
+        {
+            CombatUnit unit = attackCommandUnits[i];
+
+            bool hasAssignment = attackAssignments.ContainsKey(unit);
+
+            unit.PrepareMovementGroup(hasAssignment ? movementGroupId : 0);
+        }
+
+        // ---------------------------------------------------------
+        // Issue already-resolved Attack commands.
+        // ---------------------------------------------------------
+
+        for (int i = 0; i < attackCommandUnits.Count; i++)
+        {
+            CombatUnit unit = attackCommandUnits[i];
+
+            bool hasAssignment = attackAssignments.TryGetValue(unit, out GridCoord attackCell);
+
+            CommandContext context =
+                CommandContext.AttackTarget(
+                    target,
+                    attackPositionCell: hasAssignment ? attackCell : (GridCoord?)null,
+                    movementGroupId: hasAssignment ? movementGroupId : 0,
+                    attackDeploymentResolved: true);
+
+            unit.IssueCommand(CommandType.Attack, context);
+        }
+
+        return true;
     }
+
+
 
     private bool TryIssueAttackCommand(DefaultCommandTarget target)
     {

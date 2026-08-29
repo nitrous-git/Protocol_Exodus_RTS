@@ -21,12 +21,12 @@ MonoBehaviour:
     gas: 0
     supply: 1
   productionDuration: 5
-  maxHealth: 400
+  maxHealth: 1000
   moveSpeed: 2.5
   visionRange: 18
   canAttack: 1
-  attackRange: 16
-  attackDamage: 13
-  attackCooldown: 2.5
+  attackRange: 19
+  attackDamage: 25
+  attackCooldown: 2
   selectionRadius: 0.5
   navigationRadius: 1.5

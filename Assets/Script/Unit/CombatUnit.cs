@@ -80,7 +80,8 @@ public class CombatUnit : UnitBase
                 break;
 
             case CommandType.Attack:
-                SetState(new AttackState(context.Target));
+                GridCoord? attackPosition = context.HasAttackPositionCell ? context.AttackPositionCell : null;
+                SetState(new AttackState(context.Target, context.AttackDeploymentResolved, attackPosition)); 
                 break;
 
             case CommandType.HoldPosition:
@@ -156,8 +157,7 @@ public class CombatUnit : UnitBase
 
         attackTarget = currentTarget;
         attackAnimationActive = true;
-
-        view?.PlayAnim("Attack");
+        view?.PlayAnim("Attack", true);
     }
 
     public void OnWeaponFireAnimationEvent()
@@ -176,7 +176,6 @@ public class CombatUnit : UnitBase
         attackAnimationActive = false;
         attackTarget = null;
 
-        view?.PlayAnim("Idle");
     }
 
     public void CancelAttackAnimation()
