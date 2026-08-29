@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f0e0717af6d0784db147daa08c83d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorkerUnit
-  definition: {fileID: 11400000, guid: d285b029ffc3a594bbf483c809d149d0, type: 2}
+  definition: {fileID: 11400000, guid: 16f327cc775da4d4bb66ea89dbbdfff4, type: 2}
   canBeSelected: 1
   canReceiveCommands: 1
   selectionPoint: {fileID: 5915280979479174153}
@@ -81,7 +81,7 @@ MonoBehaviour:
   baseHeightOffset: 0
   navMeshSampleRadius: 2
   navMeshAreaMask: -1
-  drawPathGizmos: 1
+  drawOccupancyGizmo: 1
   gizmoSampleSpacing: 0.5
   gizmoHeightOffset: 0.05
 --- !u!114 &3179570468930336656
@@ -96,13 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77f252b23ad834429a15c679e454713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalSteeringSystem
-  separationPadding: 0.15
-  separationWeight: 1
-  predictionTime: 0.75
-  avoidancePadding: 0.2
-  avoidanceWeight: 1.25
   drawSteeringGizmos: 1
-  gizmoCircleSegments: 32
 --- !u!114 &7858979772875365094
 MonoBehaviour:
   m_ObjectHideFlags: 0

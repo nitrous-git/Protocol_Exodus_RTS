@@ -371,8 +371,7 @@ public class CommandIssuer : MonoBehaviour
 
     public bool TryIssueAttackCommand(ITargetable target)
     {
-        if (!CanIssueCommands() ||
-            target == null)
+        if (!CanIssueCommands() || target == null)
         {
             return false;
         }
@@ -386,13 +385,9 @@ public class CommandIssuer : MonoBehaviour
         // Collect valid attackers.
         // ---------------------------------------------------------
 
-        for (int i = 0;
-             i < commandableUnits.Count;
-             i++)
+        for (int i = 0; i < commandableUnits.Count; i++)
         {
-            CombatUnit combatUnit =
-                commandableUnits[i]
-                    as CombatUnit;
+            CombatUnit combatUnit = commandableUnits[i] as CombatUnit;
 
             if (combatUnit == null)
                 continue;
@@ -400,9 +395,7 @@ public class CommandIssuer : MonoBehaviour
             if (!combatUnit.CanAttack())
                 continue;
 
-            if (!combatUnit
-                    .IsValidAttackTarget(
-                        target))
+            if (!combatUnit.IsValidAttackTarget(target))
             {
                 continue;
             }
@@ -422,14 +415,9 @@ public class CommandIssuer : MonoBehaviour
         // SetState()/OnExit() is called on the old state.
         // ---------------------------------------------------------
 
-        for (int i = 0;
-             i < attackCommandUnits.Count;
-             i++)
+        for (int i = 0; i < attackCommandUnits.Count; i++)
         {
-            gameContext
-                .GridNavigationStateSystem
-                .ReleaseAllDestinations(
-                    attackCommandUnits[i]);
+            gameContext.GridNavigationStateSystem.ReleaseAllDestinations(attackCommandUnits[i]);
         }
 
         // ---------------------------------------------------------
@@ -452,65 +440,39 @@ public class CommandIssuer : MonoBehaviour
 
         if (attackAssignments.Count > 0)
         {
-            movementGroupId =
-                gameContext
-                    .AllocateMovementGroupId();
+            movementGroupId = gameContext.AllocateMovementGroupId();
         }
 
         //
         // Pre-tag ALL movers before the first A* begins.
         //
-        for (int i = 0;
-             i < attackCommandUnits.Count;
-             i++)
+        for (int i = 0; i < attackCommandUnits.Count; i++)
         {
-            CombatUnit unit =
-                attackCommandUnits[i];
+            CombatUnit unit = attackCommandUnits[i];
 
-            bool hasAssignment =
-                attackAssignments
-                    .ContainsKey(unit);
+            bool hasAssignment = attackAssignments.ContainsKey(unit);
 
-            unit.PrepareMovementGroup(
-                hasAssignment
-                    ? movementGroupId
-                    : 0);
+            unit.PrepareMovementGroup(hasAssignment ? movementGroupId : 0);
         }
 
         // ---------------------------------------------------------
         // Issue already-resolved Attack commands.
         // ---------------------------------------------------------
 
-        for (int i = 0;
-             i < attackCommandUnits.Count;
-             i++)
+        for (int i = 0; i < attackCommandUnits.Count; i++)
         {
-            CombatUnit unit =
-                attackCommandUnits[i];
+            CombatUnit unit = attackCommandUnits[i];
 
-            bool hasAssignment =
-                attackAssignments
-                    .TryGetValue(
-                        unit,
-                        out GridCoord attackCell);
+            bool hasAssignment = attackAssignments.TryGetValue(unit, out GridCoord attackCell);
 
             CommandContext context =
                 CommandContext.AttackTarget(
                     target,
-                    attackPositionCell:
-                        hasAssignment
-                            ? attackCell
-                            : (GridCoord?)null,
-                    movementGroupId:
-                        hasAssignment
-                            ? movementGroupId
-                            : 0,
-                    attackDeploymentResolved:
-                        true);
+                    attackPositionCell: hasAssignment ? attackCell : (GridCoord?)null,
+                    movementGroupId: hasAssignment ? movementGroupId : 0,
+                    attackDeploymentResolved: true);
 
-            unit.IssueCommand(
-                CommandType.Attack,
-                context);
+            unit.IssueCommand(CommandType.Attack, context);
         }
 
         return true;
