@@ -157,8 +157,7 @@ public class CombatUnit : UnitBase
 
         attackTarget = currentTarget;
         attackAnimationActive = true;
-
-        view?.PlayAnim("Attack");
+        view?.PlayAnim("Attack", true);
     }
 
     public void OnWeaponFireAnimationEvent()
@@ -177,7 +176,6 @@ public class CombatUnit : UnitBase
         attackAnimationActive = false;
         attackTarget = null;
 
-        view?.PlayAnim("Idle");
     }
 
     public void CancelAttackAnimation()

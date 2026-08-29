@@ -175,7 +175,7 @@ public class UnitView : MonoBehaviour
     // Animations
     // ---------------------------------------------------------------------
 
-    public void PlayAnim(string newAnimState)
+    public void PlayAnim(string newAnimState, bool restart = false)
     {
         if (animator == null)
             return;
@@ -183,10 +183,17 @@ public class UnitView : MonoBehaviour
         baseAnimState = newAnimState;
         playingOneShot = false;
 
-        if (currentAnimState == newAnimState)
+        if (!restart && currentAnimState == newAnimState)
             return;
 
-        animator.Play(newAnimState);
+        if (restart)
+        {
+            animator.Play(newAnimState, 0, 0f);
+        }
+        else
+        {
+            animator.Play(newAnimState);
+        }
 
         currentAnimState = newAnimState;
     }
@@ -223,5 +230,11 @@ public class UnitView : MonoBehaviour
         currentAnimState = null;
 
         PlayAnim(baseAnimState);
+    }
+
+    public void ResetAnimState()
+    {
+        baseAnimState = null;
+        currentAnimState = null;
     }
 }

@@ -15,7 +15,7 @@ public class GameBuilder : MonoBehaviour
 
     [Header("Starting Units")]
     //[SerializeField] private UnitBase combatUnitPrefab;
-    [SerializeField] private int startingCombatCount = 3;
+    [SerializeField] private int startingCombatCount = 1;
     [SerializeField] private float startingUnitSpacing = 1f;
 
     public GameContext GameContext { get; private set; }
@@ -174,9 +174,9 @@ public class GameBuilder : MonoBehaviour
 
         for (int i = 0; i < startingCombatCount; i++)
         {
-            if (i%3 == 0)
+            if (i%5 == 0)
             {
-                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
+                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
             }
             else
             {

@@ -25,7 +25,7 @@ MonoBehaviour:
   moveSpeed: 2.5
   visionRange: 18
   canAttack: 1
-  attackRange: 16
+  attackRange: 19
   attackDamage: 13
   attackCooldown: 2
   selectionRadius: 0.5
