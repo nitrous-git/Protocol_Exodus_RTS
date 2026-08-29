@@ -1382,7 +1382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ab831c87aa7a54c9d9f3fb3a3d4c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitWeapon
-  projectilePrefab: {fileID: 3145979905131816786, guid: 21d017c4e4c8fa14d9f73903e00d09f3, type: 3}
+  projectilePrefab: {fileID: 2302022208658176594, guid: f7852427573bc224daabd8fe1118552a, type: 3}
   firePoint: {fileID: 734086340159701472}
   projectileSpeed: 14
   projectileLifetime: 4

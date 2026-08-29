@@ -4,6 +4,9 @@ public class Projectile : MonoBehaviour
 {
     private const int HitBufferSize = 8;
 
+    [Header("Selection")]
+    [SerializeField] private GameObject hitCollisionFx;
+
     private readonly RaycastHit[] hitBuffer = new RaycastHit[HitBufferSize];
 
     private UnitBase source;
@@ -15,17 +18,19 @@ public class Projectile : MonoBehaviour
     private float collisionRadius;
     private LayerMask collisionMask;
     private bool initialized;
+    private Transform projectileRoot;
 
     public UnitBase Source => source;
 
     public void Initialize(
-    UnitBase source,
-    Vector3 direction,
-    float speed,
-    float damage,
-    float maxLifetime,
-    float collisionRadius,
-    LayerMask collisionMask)
+        UnitBase source,
+        Vector3 direction,
+        float speed,
+        float damage,
+        float maxLifetime,
+        float collisionRadius,
+        LayerMask collisionMask,
+        Transform projectileRoot)
     {
         this.source = source;
         sourceFaction = source != null ? source.OwnerFaction : null;
@@ -36,6 +41,7 @@ public class Projectile : MonoBehaviour
         this.collisionRadius = Mathf.Max(0f, collisionRadius);
         this.collisionMask = collisionMask;
         initialized = true;
+        this.projectileRoot = projectileRoot;
     }
 
     // Returns false when the projectile should be removed by ProjectileManager.
@@ -99,7 +105,14 @@ public class Projectile : MonoBehaviour
         ITargetable targetable = ResolveTargetable(hitCollider);
         if (targetable == null || !targetable.IsAlive) return;
 
+        SpawnHitColisionFx();
         targetable.TakeDamage(new DamageInfo(damage, source));
+    }
+
+    private void SpawnHitColisionFx()
+    {
+        GameObject hitFx = GameObject.Instantiate(hitCollisionFx, this.transform.position, this.transform.rotation, projectileRoot);
+        Object.Destroy(hitFx, 1.3f);
     }
 
     private bool IsOwnCollider(Collider candidate)

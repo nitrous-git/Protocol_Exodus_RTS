@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: fb77fcd776bd9c14fad9a07b9ded31c3
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 130378
+  packageName: AAA Stylized Projectiles Vol.1
+  packageVersion: 5.0.2
+  assetPath: Assets/Hovl Studio/HSFiles/Shaders/HS_Trail.shadergraph
+  uploadId: 952636
