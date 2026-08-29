@@ -80,7 +80,8 @@ public class CombatUnit : UnitBase
                 break;
 
             case CommandType.Attack:
-                SetState(new AttackState(context.Target));
+                GridCoord? attackPosition = context.HasAttackPositionCell ? context.AttackPositionCell : null;
+                SetState(new AttackState(context.Target, context.AttackDeploymentResolved, attackPosition)); 
                 break;
 
             case CommandType.HoldPosition:

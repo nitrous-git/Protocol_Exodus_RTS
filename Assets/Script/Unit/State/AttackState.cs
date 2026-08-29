@@ -2,124 +2,314 @@ using UnityEngine;
 
 public sealed class AttackState : UnitState<CombatUnit>
 {
-    private ITargetable target;
+    private const float ComfortableRangeFraction = 0.95f;
+
+    private readonly ITargetable target;
+    private readonly bool deploymentResolved;
+    private readonly GridCoord? preallocatedAttackCell;
 
     private GridCoord? reservedAttackCell;
     private bool pathRequested;
 
-    public AttackState(ITargetable target)
+    // ---------------------------------------------------------
+    // Automatic / individual combat.
+    // Keeps old behavior.
+    // ---------------------------------------------------------
+
+    public AttackState(
+        ITargetable target)
+        : this(
+            target,
+            false,
+            null)
     {
-        this.target = target;
     }
 
-    protected override void OnEnterTyped(CombatUnit unit)
+    // ---------------------------------------------------------
+    // Explicit player Attack.
+    // Deployment was solved before entering state.
+    // ---------------------------------------------------------
+
+    public AttackState(
+        ITargetable target,
+        bool deploymentResolved,
+        GridCoord? preallocatedAttackCell)
+    {
+        this.target =
+            target;
+
+        this.deploymentResolved =
+            deploymentResolved;
+
+        this.preallocatedAttackCell =
+            preallocatedAttackCell;
+    }
+
+    protected override void OnEnterTyped(
+        CombatUnit unit)
     {
         unit.Motor?.Stop();
 
         unit.SetCurrentTarget(target);
-        unit.View?.PlayAnim("Idle");
 
-        RequestAttackPosition(unit);
+        unit.View?.PlayAnim(
+            "Idle");
+
+        RequestAttackPosition(
+            unit);
     }
 
-    protected override void TickTyped(CombatUnit unit, float deltaTime)
+    protected override void TickTyped(
+        CombatUnit unit,
+        float deltaTime)
     {
-        // ---------------------------------------------------------
-        // Validate target
-        // ---------------------------------------------------------
+        // -----------------------------------------------------
+        // Validate target.
+        // -----------------------------------------------------
 
-        if (!unit.IsValidAttackTarget(target))
+        if (!unit
+                .IsValidAttackTarget(
+                    target))
         {
             unit.FinishCombatEngagement();
             return;
         }
 
-        // ---------------------------------------------------------
-        // Tactical movement
-        // ---------------------------------------------------------
+        // -----------------------------------------------------
+        // Tactical approach.
+        // -----------------------------------------------------
 
         if (pathRequested)
         {
-            if (unit.Motor != null && !unit.Motor.HasArrived)
+            //
+            // Soft combat commitment.
+            //
+            // Once we have comfortable firing access,
+            // the allocated cell has done its job.
+            //
+            if (IsWithinComfortableRange(
+                    unit))
             {
-                // Stage A:
-                // finish tactical positioning before firing.
+                FinishTacticalApproach(
+                    unit);
+            }
+            else if (unit.Motor != null &&
+                     !unit.Motor.HasArrived)
+            {
                 return;
             }
-
-            pathRequested = false;
-
-            unit.View?.PlayAnim("Idle");
+            else
+            {
+                //
+                // Reached assigned destination.
+                //
+                // Deployment is final even if target moved.
+                // NO retry.
+                //
+                FinishTacticalApproach(
+                    unit);
+            }
         }
 
-        // ---------------------------------------------------------
-        // Attack
-        // ---------------------------------------------------------
+        // -----------------------------------------------------
+        // Combat.
+        // -----------------------------------------------------
 
-        if (unit.IsWithinAttackRange(target))
+        if (unit.IsWithinAttackRange(
+                target))
         {
-            unit.UpdateAttack(deltaTime);
+            unit.UpdateAttack(
+                deltaTime);
         }
     }
 
-    protected override void OnExitTyped(CombatUnit unit)
+    protected override void OnExitTyped(
+        CombatUnit unit)
     {
         unit.Motor?.Stop();
 
-        ReleaseAttackPosition(unit);
+        ReleaseAttackPosition(
+            unit);
 
         unit.CancelAttackAnimation();
         unit.ClearCurrentTarget();
     }
 
-    private void RequestAttackPosition(CombatUnit unit)
+    // ---------------------------------------------------------
+    // Deployment
+    // ---------------------------------------------------------
+
+    private void RequestAttackPosition(
+        CombatUnit unit)
     {
         pathRequested = false;
 
-        // Already in a legal firing position.
-        // Tactical placement is not mandatory.
-        if (unit.IsWithinAttackRange(target))
+        // -----------------------------------------------------
+        // Explicit command:
+        // position has ALREADY been decided.
+        // -----------------------------------------------------
+
+        if (deploymentResolved)
         {
-            return;
+            if (preallocatedAttackCell.HasValue)
+            {
+                reservedAttackCell =
+                    preallocatedAttackCell.Value;
+            }
+
+            //
+            // Already useful:
+            // don't reposition.
+            //
+            if (unit.IsWithinAttackRange(
+                    target))
+            {
+                ReleaseAttackPosition(
+                    unit);
+
+                unit.PrepareMovementGroup(0);
+
+                return;
+            }
+
+            //
+            // Deployment was resolved but no position
+            // was available.
+            //
+            // STAGING = stay where you are.
+            //
+            if (!reservedAttackCell.HasValue)
+            {
+                unit.PrepareMovementGroup(0);
+                return;
+            }
+        }
+        else
+        {
+            // -------------------------------------------------
+            // Automatic combat:
+            // retain the old individual allocator.
+            // -------------------------------------------------
+
+            if (unit.IsWithinAttackRange(
+                    target))
+            {
+                return;
+            }
+
+            if (unit.Motor == null ||
+                unit.TerrainGrid == null ||
+                unit.DestinationAllocationSystem ==
+                    null)
+            {
+                return;
+            }
+
+            reservedAttackCell =
+                unit
+                    .DestinationAllocationSystem
+                    .Attack
+                    .TryAllocate(
+                        unit,
+                        target);
+
+            if (!reservedAttackCell.HasValue)
+                return;
         }
 
         if (unit.Motor == null ||
-            unit.TerrainGrid == null ||
-            unit.DestinationAllocationSystem == null)
+            unit.TerrainGrid == null)
         {
+            ReleaseAttackPosition(
+                unit);
+
+            if (deploymentResolved)
+                unit.PrepareMovementGroup(0);
+
             return;
         }
 
-        reservedAttackCell = unit.DestinationAllocationSystem.Attack.TryAllocate(unit, target);
+        Vector3 destination =
+            unit.TerrainGrid.CellToWorld(
+                reservedAttackCell.Value);
 
-        if (!reservedAttackCell.HasValue)
-        {
-            // No tactical position currently available.
-            //
-            // If already in weapon range, Tick() can still
-            // attack from the current position.
-            return;
-        }
-
-        Vector3 destination = unit.TerrainGrid.CellToWorld(reservedAttackCell.Value);
-
-        pathRequested = unit.Motor.MoveTo(destination);
+        pathRequested =
+            unit.Motor.MoveTo(
+                destination);
 
         if (!pathRequested)
         {
-            ReleaseAttackPosition(unit);
+            ReleaseAttackPosition(
+                unit);
+
+            if (deploymentResolved)
+                unit.PrepareMovementGroup(0);
+
             return;
         }
 
-        unit.View?.PlayAnim("Walk");
+        unit.View?.PlayAnim(
+            "Walk");
     }
 
-    private void ReleaseAttackPosition(CombatUnit unit)
+    private void FinishTacticalApproach(
+        CombatUnit unit)
+    {
+        unit.Motor?.Stop();
+
+        pathRequested = false;
+
+        //
+        // We no longer need to own a tactical destination.
+        //
+        ReleaseAttackPosition(
+            unit);
+
+        //
+        // Explicit attack movers now become real
+        // stationary combatants for A* occupancy semantics.
+        //
+        if (deploymentResolved)
+        {
+            unit.PrepareMovementGroup(0);
+        }
+
+        unit.View?.PlayAnim(
+            "Idle");
+    }
+
+    private bool IsWithinComfortableRange(
+        CombatUnit unit)
+    {
+        if (target == null)
+            return false;
+
+        float attackRange =
+            unit.GetAttackRange();
+
+        float comfortableRange =
+            attackRange *
+            ComfortableRangeFraction;
+
+        Vector3 difference =
+            target.Position -
+            unit.Position;
+
+        difference.y = 0f;
+
+        return difference.sqrMagnitude <=
+               comfortableRange *
+               comfortableRange;
+    }
+
+    private void ReleaseAttackPosition(
+        CombatUnit unit)
     {
         if (!reservedAttackCell.HasValue)
             return;
 
-        unit.ReleaseDestination(reservedAttackCell.Value);
+        unit.ReleaseDestination(
+            reservedAttackCell.Value);
 
         reservedAttackCell = null;
     }

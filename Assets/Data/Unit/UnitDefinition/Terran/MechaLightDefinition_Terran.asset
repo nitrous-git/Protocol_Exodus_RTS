@@ -27,6 +27,6 @@ MonoBehaviour:
   canAttack: 1
   attackRange: 16
   attackDamage: 13
-  attackCooldown: 2.5
+  attackCooldown: 2
   selectionRadius: 0.5
   navigationRadius: 1.5

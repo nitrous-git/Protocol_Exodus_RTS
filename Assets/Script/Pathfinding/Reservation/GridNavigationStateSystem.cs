@@ -335,6 +335,7 @@ public sealed class GridNavigationStateSystem
                     if (other.Motor != null && other.Motor.HasPath)
                     {
                         foundMovingUnit = true;
+                        continue;
                     }
 
                     // A truely stationary unit, dynamic obstacle
