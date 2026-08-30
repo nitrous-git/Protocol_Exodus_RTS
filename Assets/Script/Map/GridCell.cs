@@ -18,6 +18,8 @@ public sealed class GridCell
     public int OccupyingBuildingId = -1;
     public int OccupyingResourceNodeId = -1;
 
+    public float StaticClearanceRadius;
+
     public bool IsFreeForMovement()
     {
         return Walkable && !Occupied && !Reserved;

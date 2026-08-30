@@ -4644,6 +4644,12 @@ MonoBehaviour:
   sameMovementGroupPenalty: 0
   otherMovingUnitPenalty: 8
   stationaryUnitPenalty: 25
+  minimumExpansionBudget: 1500
+  maximumExpansionBudget: 6000
+  expansionsPerDirectStep: 48
+  logSlowSearches: 1
+  slowSearchMilliseconds: 2
+  slowSearchExpansionThreshold: 1000
 --- !u!1001 &1625794929
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5103,7 +5109,7 @@ MonoBehaviour:
   matchUI: {fileID: 1808596899}
   FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
   FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
-  startingCombatCount: 15
+  startingCombatCount: 25
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:

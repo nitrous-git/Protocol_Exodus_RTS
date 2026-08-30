@@ -5,16 +5,17 @@ public class TerrainGrid
     public int Width { get; private set; }
     public int Height { get; private set; }
     public float CellSize { get; private set; }
+    public GridCell[,] cells { get; private set; }
 
     private Terrain terrain;
     private TerrainData terrainData;
     private Vector3 terrainOrigin;
     private Vector3 terrainSize;
 
-    private GridCell[,] cells;
-
     private float maxWalkableSlope;
     private float maxBuildableSlope;
+
+    private StaticClearanceField staticClearanceField;
 
     public TerrainGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope)
     {
@@ -39,6 +40,9 @@ public class TerrainGrid
         cells = new GridCell[Width, Height];
 
         BuildCells();
+
+        staticClearanceField = new StaticClearanceField(this);
+        staticClearanceField.RebuildStaticClearanceField();
     }
 
     private void BuildCells()
@@ -140,10 +144,20 @@ public class TerrainGrid
         if (cell == null)
             return;
 
+        bool wasStatic = staticClearanceField.IsStaticNavigationBlocked(cell);
+
         cell.Occupied = occupied;
         cell.OccupyingBuildingId = occupied ? buildingId : -1;
         cell.OccupyingUnitId = occupied ? unitId : -1;
-        cell.OccupyingResourceNodeId = occupied ? resourceNodeId : -1;  
+        cell.OccupyingResourceNodeId = occupied ? resourceNodeId : -1;
+
+        bool isStatic = staticClearanceField.IsStaticNavigationBlocked(cell);
+
+        // Did the change affected static geometry
+        if (wasStatic != isStatic)
+        {
+            staticClearanceField.SetDirty(true);
+        }
     }
 
     public void SetReserved(GridCoord coord, bool reserved)
@@ -213,6 +227,8 @@ public class TerrainGrid
                 cell.OccupyingResourceNodeId = -1;
             }
         }
+
+        staticClearanceField.SetDirty(true);
     }
 
     /// <summary>
@@ -240,6 +256,8 @@ public class TerrainGrid
                 cell.OccupyingResourceNodeId = -1;
             }
         }
+
+        staticClearanceField.SetDirty(true);
     }
 
     /// <summary>
@@ -262,79 +280,84 @@ public class TerrainGrid
     // Grid Clearance 
     // ---------------------------------------------------------------------
 
+    //public bool HasNavigationClearance(GridCoord centerCoord, float radius)
+    //{
+    //    GridCell centerCell = GetCell(centerCoord);
+
+    //    if (centerCell == null)
+    //        return false;
+
+    //    if (!centerCell.Walkable || centerCell.Occupied)
+    //        return false;
+
+    //    radius = Mathf.Max(0f, radius);
+
+    //    if (radius <= 0f)
+    //        return true;
+
+    //    Vector3 center = centerCell.WorldCenter;
+
+    //    float halfCellSize = CellSize * 0.5f;
+
+    //    // ------------------------------------------------------------
+    //    // Grid boundary clearance
+    //    // ------------------------------------------------------------
+
+    //    GridCell firstCell = GetCell(new GridCoord(0, 0));
+    //    GridCell lastCell = GetCell(new GridCoord(Width - 1, Height - 1));
+
+    //    if (firstCell == null || lastCell == null)
+    //        return false;
+
+    //    float minX = firstCell.WorldCenter.x - halfCellSize;
+    //    float maxX = lastCell.WorldCenter.x + halfCellSize;
+    //    float minZ = firstCell.WorldCenter.z - halfCellSize;
+    //    float maxZ = lastCell.WorldCenter.z + halfCellSize;
+
+    //    if (center.x - radius < minX || center.x + radius > maxX ||
+    //        center.z - radius < minZ || center.z + radius > maxZ)
+    //    {
+    //        return false;
+    //    }
+
+    //    // ------------------------------------------------------------
+    //    // Nearby static cells
+    //    // ------------------------------------------------------------
+
+    //    int searchDepth = Mathf.CeilToInt((radius + halfCellSize) / CellSize);
+
+    //    for (int z = -searchDepth; z <= searchDepth; z++)
+    //    {
+    //        for (int x = -searchDepth; x <= searchDepth; x++)
+    //        {
+    //            GridCoord testCoord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
+
+    //            if (!IsInside(testCoord))
+    //                continue;
+
+    //            GridCell cell = GetCell(testCoord);
+
+    //            if (cell == null)
+    //                continue;
+
+    //            // Reserved is deliberately ignored here.
+    //            // It is dynamic navigation state, not static geometry.
+    //            if (cell.Walkable && !cell.Occupied)
+    //                continue;
+
+    //            if (CircleOverlapsCell(center, radius, cell.WorldCenter, halfCellSize))
+    //            {
+    //                return false;
+    //            }
+    //        }
+    //    }
+
+    //    return true;
+    //}
+
     public bool HasNavigationClearance(GridCoord centerCoord, float radius)
     {
-        GridCell centerCell = GetCell(centerCoord);
-
-        if (centerCell == null)
-            return false;
-
-        if (!centerCell.Walkable || centerCell.Occupied)
-            return false;
-
-        radius = Mathf.Max(0f, radius);
-
-        if (radius <= 0f)
-            return true;
-
-        Vector3 center = centerCell.WorldCenter;
-
-        float halfCellSize = CellSize * 0.5f;
-
-        // ------------------------------------------------------------
-        // Grid boundary clearance
-        // ------------------------------------------------------------
-
-        GridCell firstCell = GetCell(new GridCoord(0, 0));
-        GridCell lastCell = GetCell(new GridCoord(Width - 1, Height - 1));
-
-        if (firstCell == null || lastCell == null)
-            return false;
-
-        float minX = firstCell.WorldCenter.x - halfCellSize;
-        float maxX = lastCell.WorldCenter.x + halfCellSize;
-        float minZ = firstCell.WorldCenter.z - halfCellSize;
-        float maxZ = lastCell.WorldCenter.z + halfCellSize;
-
-        if (center.x - radius < minX || center.x + radius > maxX ||
-            center.z - radius < minZ || center.z + radius > maxZ)
-        {
-            return false;
-        }
-
-        // ------------------------------------------------------------
-        // Nearby static cells
-        // ------------------------------------------------------------
-
-        int searchDepth = Mathf.CeilToInt((radius + halfCellSize) / CellSize);
-
-        for (int z = -searchDepth; z <= searchDepth; z++)
-        {
-            for (int x = -searchDepth; x <= searchDepth; x++)
-            {
-                GridCoord testCoord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
-
-                if (!IsInside(testCoord))
-                    continue;
-
-                GridCell cell = GetCell(testCoord);
-
-                if (cell == null)
-                    continue;
-
-                // Reserved is deliberately ignored here.
-                // It is dynamic navigation state, not static geometry.
-                if (cell.Walkable && !cell.Occupied)
-                    continue;
-
-                if (CircleOverlapsCell(center, radius, cell.WorldCenter, halfCellSize))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return staticClearanceField.HasNavigationClearance(centerCoord, radius);
     }
 
     private bool CircleOverlapsCell(Vector3 circleCenter, float radius, Vector3 cellCenter, float halfCellSize)
