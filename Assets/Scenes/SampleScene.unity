@@ -4641,7 +4641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0aae5aebe520f245bbc1e26454471ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridAStarPathfindingService
-  logSlowSearches: 1
+  logSlowSearches: 0
   slowSearchMilliseconds: 10
   slowSearchExpansionThreshold: 1000
   sameMovementGroupPenalty: 0
