@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager.Requests;
-using UnityEditor.Searcher;
 using UnityEngine;
 using static GridNavigationStateSystem;
 
@@ -84,14 +81,10 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
     private int currentSearchId; // caching search 
 
-    [Header("Diagnostic counters")]
-    private int traversalCalls;
-    private int traversalEvaluations;
-    private int traversalCacheHits;
-    private int occupancyCalls;
-    private int occupancyEvaluations;
-    private int occupancyCacheHits;
-    private int diagonalChecks;
+    [Header("Diagnostics")]
+    [SerializeField] private bool logSlowSearches = true;
+    [SerializeField, Min(0.1f)] private float slowSearchMilliseconds = 2f;
+    [SerializeField, Min(1)] private int slowSearchExpansionThreshold = 1000;
 
     [Header("Dynamic Occupancy")]
     [SerializeField, Min(0)] private int sameMovementGroupPenalty = 0;
@@ -102,11 +95,6 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     [SerializeField, Min(128)] private int minimumExpansionBudget = 1500;
     [SerializeField, Min(512)] private int maximumExpansionBudget = 6000;
     [SerializeField, Min(1)] private int expansionsPerDirectStep = 48;
-
-    [Header("Diagnostics")]
-    [SerializeField] private bool logSlowSearches = true;
-    [SerializeField, Min(0.1f)] private float slowSearchMilliseconds = 2f;
-    [SerializeField, Min(1)] private int slowSearchExpansionThreshold = 1000;
 
     public void Initialize(TerrainGrid terrainGrid, GridNavigationStateSystem navigateState)
     {
@@ -126,24 +114,14 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     {
         result.Clear();
 
-        double totalStart = Time.realtimeSinceStartupAsDouble;
-
         if (terrainGrid == null || nodes == null)
             return false;
 
         //
         // Reset previous A* search state
-        double resetStart = Time.realtimeSinceStartupAsDouble;
-
         ResetSearch();
 
-        double resetMs = (Time.realtimeSinceStartupAsDouble - resetStart) * 1000.0;
-
-        currentSearchId++; // caching search Id number 
-
-        ResetDiagnosticCounters();
-
-        navigateState?.BeginOccupancyDiagnostics();
+        AdvanceSearchId();
 
         //
         // Search setup
@@ -158,63 +136,20 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         // Validation coordinates
         if (!terrainGrid.IsInside(startCoord) || !terrainGrid.IsInside(endCoord))
         {
-            //return false;
-            double searchMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
-
-            return FinishSearch(
-                requester,
-                startCoord,
-                endCoord,
-                false,
-                "OutsideGrid",
-                expandedNodes,
-                expansionBudget,
-                totalStart,
-                resetMs,
-                searchMs,
-                0.0);
+            return false;
         }
 
         // Validate destination
         if (!CanTraverse(endCoord, startCoord, requester))
         {
-            //return false;
-            double searchMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
-
-            return FinishSearch(
-                requester,
-                startCoord,
-                endCoord,
-                false,
-                "EndNotTraversable",
-                expandedNodes,
-                expansionBudget,
-                totalStart,
-                resetMs,
-                searchMs,
-                0.0);
+            return false;
         }
 
         // Already at destination
         if (IsSameCoord(startCoord, endCoord))
         {
             result.Add(terrainGrid.CellToWorld(endCoord));
-            //return true;
-
-            double searchMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
-
-            return FinishSearch(
-                requester,
-                startCoord,
-                endCoord,
-                true,
-                "AlreadyAtDestination",
-                expandedNodes,
-                expansionBudget,
-                totalStart,
-                resetMs,
-                searchMs,
-                0.0);
+            return true;
         }
 
         //
@@ -244,28 +179,8 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             // Goal Reached
             if (IsSameCoord(currentNode.Coord, endCoord))
             {
-                //bool success = BuildResultPath(startNode, currentNode, result);
-                //return success;
-
-                double searchMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
-                double rebuildStart = Time.realtimeSinceStartupAsDouble;
-
                 bool success = BuildResultPath(startNode, currentNode, result);
-
-                double rebuildMs = (Time.realtimeSinceStartupAsDouble - rebuildStart) * 1000.0;
-
-                return FinishSearch(
-                    requester,
-                    startCoord,
-                    endCoord,
-                    success,
-                    success ? "Success" : "RebuildFailed",
-                    expandedNodes,
-                    expansionBudget,
-                    totalStart,
-                    resetMs,
-                    searchMs,
-                    rebuildMs);
+                return success;
             }
 
             // Exapnd node tracking
@@ -275,22 +190,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             if (expandedNodes >= expansionBudget)
             {
                 result.Clear();
-                //return false;
-
-                double searchMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
-
-                return FinishSearch(
-                    requester,
-                    startCoord,
-                    endCoord,
-                    false,
-                    "BudgetExceeded",
-                    expandedNodes,
-                    expansionBudget,
-                    totalStart,
-                    resetMs,
-                    searchMs,
-                    0.0);
+                return false;
             }
 
             ExploreNeighbors(currentNode, startCoord, endCoord, requester);
@@ -300,41 +200,34 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         // OpenSet exhausted
         result.Clear();
 
-        double exhaustedSearchMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
+        double elapsedMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
 
-        return FinishSearch(
+        ReportSearchDiagnostics(
             requester,
             startCoord,
             endCoord,
-            false,
-            "OpenSetExhausted",
+            true,
+            "Success",
             expandedNodes,
             expansionBudget,
-            totalStart,
-            resetMs,
-            exhaustedSearchMs,
-            0.0);
+            elapsedMs);
 
-        //return false;
+        return true;
     }
 
-    private void ResetDiagnosticCounters()
+    private void AdvanceSearchId()
     {
-        traversalCalls = 0;
-        traversalEvaluations = 0;
-        traversalCacheHits = 0;
-        occupancyCalls = 0;
-        occupancyEvaluations = 0;
-        occupancyCacheHits = 0;
-        diagonalChecks = 0;
+        currentSearchId++;
 
         // Overflow (int) will probably never happen
         // but this keeps it correct theoritically.
-        if (currentSearchId <= 0)
+        if (currentSearchId > 0)
         {
-            currentSearchId = 1;
-            ClearQueryCaches();
+            return;
         }
+
+        currentSearchId = 1;
+        ClearQueryCaches();
     }
 
     private void BuildNodes()
@@ -412,20 +305,16 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         if (navigateState == null || requester == null)
             return 0;
 
-        occupancyCalls++;
-
         PathNode node = nodes[coord.x, coord.z];
 
         DynamicOccupancyRelation relation;
 
         if (node.OccupancySearchId == currentSearchId)
         {
-            occupancyCacheHits++;
             relation = node.CachedOccupancyRelation;
         }
         else
         {
-            occupancyEvaluations++;
             relation = navigateState.GetDynamicOccupancyRelation(coord, requester);
 
             node.OccupancySearchId =  currentSearchId;
@@ -461,18 +350,10 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
     private bool CanTraverse(GridCoord coord, GridCoord startCoord, UnitBase requester)
     {
-        traversalCalls++;
-
         GridCell cell = terrainGrid.GetCell(coord);
 
         if (cell == null)
             return false;
-
-        //if (!cell.Walkable)
-        //{
-        //    canTraverse = false;
-        //    return false;
-        //}
 
         // unit occupy start cell, thats normal
         if (IsSameCoord(coord, startCoord))
@@ -484,11 +365,8 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
         if (node.TraversalSearchId == currentSearchId)
         {
-            traversalCacheHits++;
             return node.CachedTraversal;
         }
-
-        traversalEvaluations++;
 
         bool canTraverse = true;
 
@@ -515,19 +393,6 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         node.CachedTraversal = canTraverse;
 
         return canTraverse;
-
-
-        //float navigationRadius = requester != null ? requester.NavigationRadius : 0f;
-
-        //if (!terrainGrid.HasNavigationClearance(coord, navigationRadius))
-        //{
-        //    return false;
-        //}
-
-        //if (navigateState != null && navigateState.IsDestinationTraversalBlocked(coord, requester))
-        //    return false;
-
-        //return true;
     }
 
     private int CalculateHeuristic(GridCoord from, GridCoord to)
@@ -645,22 +510,16 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         string reason,
         int expandedNodes,
         int expansionBudget,
-        double resetMs,
-        double searchMs,
-        double rebuildMs,
-        double totalMs,
-        int dynCells,
-        int dynBuckets,
-        int dynTests)
+        double elapsedMs)
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 
         if (!logSlowSearches)
             return;
 
-        bool interesting = !success || 
+        bool interesting = !success ||
             expandedNodes >= slowSearchExpansionThreshold ||
-            totalMs >= slowSearchMilliseconds;
+            elapsedMs >= slowSearchMilliseconds;
 
         if (!interesting)
             return;
@@ -670,76 +529,20 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         int directDistance = Mathf.Max(dx, dz);
 
         int unitId = requester != null ? requester.UnitId : -1;
+        int movementGroupId = requester != null ? requester.MovementGroupId : 0;
 
-        int movementGroup = requester != null ? requester.MovementGroupId : 0;
 
         Debug.Log(
             "[A*] " +
             "Unit=" + unitId +
-            " Group=" + movementGroup +
+            " Group=" + movementGroupId +
             " Success=" + success +
             " Reason=" + reason +
-
             " DirectCells=" + directDistance +
             " Expanded=" + expandedNodes + "/" + expansionBudget +
             " Touched=" + touchedNodes.Count +
-            " Traverse=" + traversalEvaluations + "/" + traversalCalls +
-            " TraverseCache=" + traversalCacheHits +
-
-            " Occupancy=" + occupancyEvaluations + "/" + occupancyCalls +
-            " OccupancyCache=" + occupancyCacheHits +
-            " DynCells=" + dynCells +
-            " DynBuckets=" + dynBuckets +
-            " DynTests=" + dynTests +
-
-            " Diag=" + diagonalChecks +
-
-            " ResetMs=" + resetMs.ToString("F2") +
-            " SearchMs=" + searchMs.ToString("F2") +
-            " RebuildMs=" + rebuildMs.ToString("F2") +
-            " TotalMs=" +  totalMs.ToString("F2"));
-
+            " TimeMs=" + elapsedMs.ToString("F2"));
 #endif
     }
 
-    private bool FinishSearch(
-        UnitBase requester,
-        GridCoord startCoord,
-        GridCoord endCoord,
-        bool success,
-        string reason,
-        int expandedNodes,
-        int expansionBudget,
-        double totalStart,
-        double resetMs,
-        double searchMs,
-        double rebuildMs)
-    {
-        int dynQueries = 0;
-        int dynCells = 0;
-        int dynBuckets = 0;
-        int dynTests = 0;
-
-        navigateState?.EndOccupancyDiagnostics( out dynQueries, out dynCells, out dynBuckets, out dynTests);
-
-        double totalMs = (Time.realtimeSinceStartupAsDouble - totalStart) * 1000.0;
-
-        ReportSearchDiagnostics(
-            requester,
-            startCoord,
-            endCoord,
-            success,
-            reason,
-            expandedNodes,
-            expansionBudget,
-            resetMs,
-            searchMs,
-            rebuildMs,
-            totalMs,
-            dynCells,
-            dynBuckets,
-            dynTests);
-
-        return success;
-    }
 }

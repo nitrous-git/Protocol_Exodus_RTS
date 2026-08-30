@@ -1,3 +1,4 @@
+using System.Drawing;
 using UnityEngine;
 
 public class TerrainGrid
@@ -42,7 +43,7 @@ public class TerrainGrid
         BuildCells();
 
         staticClearanceField = new StaticClearanceField(this);
-        staticClearanceField.RebuildStaticClearanceField();
+        //staticClearanceField.RebuildStaticClearanceField();
     }
 
     private void BuildCells()
@@ -92,6 +93,24 @@ public class TerrainGrid
 
     public Vector3 CellToWorld(GridCoord coord)
     {
+
+        //
+        // Runtime fast path:
+        // grid geometry was already sampled during BuildCells().
+        //
+        if (cells != null && IsInside(coord))
+        {
+            GridCell cell = cells[coord.x, coord.z];
+
+            if (cell != null)
+            {
+                return cell.WorldCenter;
+            }
+        }
+
+        //
+        // Grid construction / fallback.
+        //
         float worldX = terrainOrigin.x + (coord.x + 0.5f) * CellSize;
         float worldZ = terrainOrigin.z + (coord.z + 0.5f) * CellSize;
 
@@ -280,91 +299,22 @@ public class TerrainGrid
     // Grid Clearance 
     // ---------------------------------------------------------------------
 
-    //public bool HasNavigationClearance(GridCoord centerCoord, float radius)
-    //{
-    //    GridCell centerCell = GetCell(centerCoord);
-
-    //    if (centerCell == null)
-    //        return false;
-
-    //    if (!centerCell.Walkable || centerCell.Occupied)
-    //        return false;
-
-    //    radius = Mathf.Max(0f, radius);
-
-    //    if (radius <= 0f)
-    //        return true;
-
-    //    Vector3 center = centerCell.WorldCenter;
-
-    //    float halfCellSize = CellSize * 0.5f;
-
-    //    // ------------------------------------------------------------
-    //    // Grid boundary clearance
-    //    // ------------------------------------------------------------
-
-    //    GridCell firstCell = GetCell(new GridCoord(0, 0));
-    //    GridCell lastCell = GetCell(new GridCoord(Width - 1, Height - 1));
-
-    //    if (firstCell == null || lastCell == null)
-    //        return false;
-
-    //    float minX = firstCell.WorldCenter.x - halfCellSize;
-    //    float maxX = lastCell.WorldCenter.x + halfCellSize;
-    //    float minZ = firstCell.WorldCenter.z - halfCellSize;
-    //    float maxZ = lastCell.WorldCenter.z + halfCellSize;
-
-    //    if (center.x - radius < minX || center.x + radius > maxX ||
-    //        center.z - radius < minZ || center.z + radius > maxZ)
-    //    {
-    //        return false;
-    //    }
-
-    //    // ------------------------------------------------------------
-    //    // Nearby static cells
-    //    // ------------------------------------------------------------
-
-    //    int searchDepth = Mathf.CeilToInt((radius + halfCellSize) / CellSize);
-
-    //    for (int z = -searchDepth; z <= searchDepth; z++)
-    //    {
-    //        for (int x = -searchDepth; x <= searchDepth; x++)
-    //        {
-    //            GridCoord testCoord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
-
-    //            if (!IsInside(testCoord))
-    //                continue;
-
-    //            GridCell cell = GetCell(testCoord);
-
-    //            if (cell == null)
-    //                continue;
-
-    //            // Reserved is deliberately ignored here.
-    //            // It is dynamic navigation state, not static geometry.
-    //            if (cell.Walkable && !cell.Occupied)
-    //                continue;
-
-    //            if (CircleOverlapsCell(center, radius, cell.WorldCenter, halfCellSize))
-    //            {
-    //                return false;
-    //            }
-    //        }
-    //    }
-
-    //    return true;
-    //}
-
     public bool HasNavigationClearance(GridCoord centerCoord, float radius)
     {
         return staticClearanceField.HasNavigationClearance(centerCoord, radius);
     }
 
-    private bool CircleOverlapsCell(Vector3 circleCenter, float radius, Vector3 cellCenter, float halfCellSize)
+    public void RebuildStaticClearanceField()
     {
-        float deltaX = Mathf.Max(Mathf.Abs(circleCenter.x - cellCenter.x) - halfCellSize, 0f);
-        float deltaZ = Mathf.Max(Mathf.Abs(circleCenter.z - cellCenter.z) - halfCellSize, 0f);
-        float distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
-        return distanceSquared < radius * radius;
+        staticClearanceField?.RebuildStaticClearanceField();
     }
+
+    //private bool CircleOverlapsCell(Vector3 circleCenter, float radius, Vector3 cellCenter, float halfCellSize)
+    //{
+    //    float deltaX = Mathf.Max(Mathf.Abs(circleCenter.x - cellCenter.x) - halfCellSize, 0f);
+    //    float deltaZ = Mathf.Max(Mathf.Abs(circleCenter.z - cellCenter.z) - halfCellSize, 0f);
+    //    float distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+
+    //    return distanceSquared < radius * radius;
+    //}
 }

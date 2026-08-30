@@ -61,9 +61,9 @@ public sealed class AttackPositionAllocator
     private readonly List<DeploymentEntry> deploymentBuffer = new List<DeploymentEntry>(64);
     private readonly List<ScoredCandidate> candidateBuffer = new List<ScoredCandidate>(128);
 
-    private int diagnosticCellsInspected;
-    private int diagnosticClearanceChecks;
-    private int diagnosticReservationAttempts;
+    //private int diagnosticCellsInspected;
+    //private int diagnosticClearanceChecks;
+    //private int diagnosticReservationAttempts;
 
     private readonly struct DeploymentEntry
     {
@@ -112,95 +112,6 @@ public sealed class AttackPositionAllocator
     // KEEP the original simple allocator for automatic / opportunistic
     // combat. Group player Attack commands use AllocateGroup() below.
     // =====================================================================
-
-    //public GridCoord? TryAllocate(CombatUnit unit, ITargetable target)
-    //{
-    //    if (unit == null ||
-    //        target == null ||
-    //        terrainGrid == null ||
-    //        navigationState == null)
-    //    {
-    //        return null;
-    //    }
-
-    //    float attackRange = unit.GetAttackRange();
-
-    //    float cellSize = terrainGrid.CellSize;
-
-    //    if (attackRange <= 0f || cellSize <= 0f)
-    //    {
-    //        return null;
-    //    }
-
-    //    ResolveTargetFootprint(target, out GridCoord targetCell, out Vector2Int targetFootprint);
-
-    //    int maxDepth = Mathf.Max(1, Mathf.CeilToInt(attackRange / cellSize));
-
-    //    float desiredDistance = attackRange * 0.80f;
-    //    float maximumAllowedDistance = attackRange * 0.95f;
-
-    //    List<GridCoord> candidates = new List<GridCoord>();
-
-    //    // ID : Dont expand from 1, epxand from close -+1 from attack range 
-    //    for (int depth = 1; depth <= maxDepth; depth++)
-    //    {
-    //        List<GridCoord> ring =
-    //            PlacementUtil
-    //                .GetAllFreePlacementsOnRing(
-    //                    terrainGrid,
-    //                    targetCell,
-    //                    targetFootprint,
-    //                    depth,
-    //                    cell =>
-    //                    {
-    //                        Vector3 worldPosition = terrainGrid.CellToWorld(cell);
-    //                        float distanceToTarget = FlatDistance(worldPosition, target.Position);
-    //                        return distanceToTarget <= maximumAllowedDistance;
-    //                    });
-
-    //        candidates.AddRange(ring);
-    //    }
-
-    //    // Ok but how many candiate ? careful
-    //    while (candidates.Count > 0)
-    //    {
-    //        int bestIndex = -1;
-
-    //        float bestScore = float.MaxValue;
-
-    //        for (int i = 0; i < candidates.Count; i++)
-    //        {
-    //            Vector3 candidatePosition = terrainGrid.CellToWorld(candidates[i]);
-
-    //            float distanceToTarget = FlatDistance(candidatePosition, target.Position);
-    //            float travelDistance = FlatDistance(unit.Position, candidatePosition);
-
-    //            float rangeError = Mathf.Abs(desiredDistance - distanceToTarget);
-
-    //            float score = rangeError * 4f + travelDistance;
-
-    //            if (score >= bestScore)
-    //                continue;
-
-    //            bestScore = score;
-    //            bestIndex = i;
-    //        }
-
-    //        if (bestIndex < 0)
-    //            break;
-
-    //        GridCoord candidate = candidates[bestIndex];
-
-    //        candidates.RemoveAt(bestIndex);
-
-    //        if (navigationState.TryReserveDestination(candidate, unit))
-    //        {
-    //            return candidate;
-    //        }
-    //    }
-
-    //    return null;
-    //}
 
     public GridCoord? TryAllocate(CombatUnit unit, ITargetable target)
     {
@@ -255,10 +166,10 @@ public sealed class AttackPositionAllocator
 
     public void AllocateGroup(IReadOnlyList<CombatUnit> units, ITargetable target, Dictionary<CombatUnit, GridCoord> result)
     {
-        diagnosticCellsInspected = 0;
-        diagnosticClearanceChecks = 0;
-        diagnosticReservationAttempts = 0;
-        double allocationStart = Time.realtimeSinceStartupAsDouble;
+        //diagnosticCellsInspected = 0;
+        //diagnosticClearanceChecks = 0;
+        //diagnosticReservationAttempts = 0;
+        //double allocationStart = Time.realtimeSinceStartupAsDouble;
 
         result.Clear();
         deploymentBuffer.Clear();
@@ -369,7 +280,7 @@ public sealed class AttackPositionAllocator
         // Final UnitId tie break keeps this deterministic.
         // -------------------------------------------------------------
 
-        deploymentBuffer.Sort( // how costly is that sort ?
+        deploymentBuffer.Sort( 
             (first, second) =>
             {
                 int radiusComparison = second.Unit.NavigationRadius.CompareTo(first.Unit.NavigationRadius);
@@ -399,34 +310,31 @@ public sealed class AttackPositionAllocator
             if (!TryAllocateNearTopology(entry, target, out GridCoord cell))
             {
                 //
-                // No usable position.
+                // No valid tactical cell was available.
+                // Deployment is intentionally one-shot;
+                // the unit remains unassigned until another command.
                 //
-                // This unit simply receives no deployment cell and
-                // stays where it is.
-                //
-
-                // this shouldnt happen, unit get left behind ?
                 continue;
             }
 
             result[entry.Unit] = cell;
         }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        double elapsedMs = (Time.realtimeSinceStartupAsDouble - allocationStart) * 1000.0;
+//#if UNITY_EDITOR || DEVELOPMENT_BUILD
+//        double elapsedMs = (Time.realtimeSinceStartupAsDouble - allocationStart) * 1000.0;
 
-        if (units.Count >= 10 || elapsedMs >= 1.0)
-        {
-            Debug.Log(
-                "[AttackDeploy] " +
-                "Units=" + units.Count +
-                " Assigned=" + result.Count +
-                " Cells=" + diagnosticCellsInspected +
-                " Clearance=" + diagnosticClearanceChecks +
-                " ReserveAttempts=" + diagnosticReservationAttempts +
-                " TimeMs=" + elapsedMs.ToString("F2"));
-        }
-#endif
+//        if (units.Count >= 10 || elapsedMs >= 1.0)
+//        {
+//            Debug.Log(
+//                "[AttackDeploy] " +
+//                "Units=" + units.Count +
+//                " Assigned=" + result.Count +
+//                " Cells=" + diagnosticCellsInspected +
+//                " Clearance=" + diagnosticClearanceChecks +
+//                " ReserveAttempts=" + diagnosticReservationAttempts +
+//                " TimeMs=" + elapsedMs.ToString("F2"));
+//        }
+//#endif
     }
 
     // =====================================================================
@@ -490,14 +398,13 @@ public sealed class AttackPositionAllocator
         // Radius 4 means at most 81 cells are inspected.
         // -------------------------------------------------------------
 
-        // Fair enough only 81 
         for (int z = -LocalSearchRadiusCells; z <= LocalSearchRadiusCells; z++)
         {
             for (int x = -LocalSearchRadiusCells; x <= LocalSearchRadiusCells; x++)
             {
                 GridCoord cell = new GridCoord(preferredCell.x + x, preferredCell.z + z);
 
-                diagnosticCellsInspected++;
+                //diagnosticCellsInspected++;
 
                 if (!terrainGrid.IsInside(cell))
                 {
@@ -532,9 +439,9 @@ public sealed class AttackPositionAllocator
                 }
 
                 // Expensive static radius-aware clearance LAST
-                diagnosticClearanceChecks++;
+                //diagnosticClearanceChecks++;
 
-                if (!terrainGrid.HasNavigationClearance(cell, unit.NavigationRadius)) // HasNavigationClearance does another searchDepth, careful
+                if (!terrainGrid.HasNavigationClearance(cell, unit.NavigationRadius)) // now O(1) 
                 {
                     continue;
                 }
@@ -595,7 +502,7 @@ public sealed class AttackPositionAllocator
         {
             GridCoord candidate = candidateBuffer[i].Cell;
 
-            diagnosticReservationAttempts++;
+            //diagnosticReservationAttempts++;
 
             // careful, CanStandAt will do a navigationClearance searchDepth again 
             if (!navigationState.TryReserveDestination(candidate, unit))

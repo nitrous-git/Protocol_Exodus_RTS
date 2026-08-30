@@ -72,7 +72,7 @@ public class StaticClearanceField
             return;
         }
 
-        double startTime = Time.realtimeSinceStartupAsDouble;
+        //double startTime = Time.realtimeSinceStartupAsDouble;
 
         //
         // Half-cell-resolution grid.
@@ -205,17 +205,17 @@ public class StaticClearanceField
 
         staticClearanceDirty = false;
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
+//#if UNITY_EDITOR || DEVELOPMENT_BUILD
 
-        double elapsedMs = (Time.realtimeSinceStartupAsDouble - startTime) * 1000.0;
+//        double elapsedMs = (Time.realtimeSinceStartupAsDouble - startTime) * 1000.0;
 
-        Debug.Log(
-            "[ClearanceField] " +
-            "Grid=" + terrainGrid.Width + "x" + terrainGrid.Height +
-            " HighGrid=" + highWidth + "x" + highHeight +
-            " TimeMs=" + elapsedMs.ToString("F2"));
+//        Debug.Log(
+//            "[ClearanceField] " +
+//            "Grid=" + terrainGrid.Width + "x" + terrainGrid.Height +
+//            " HighGrid=" + highWidth + "x" + highHeight +
+//            " TimeMs=" + elapsedMs.ToString("F2"));
 
-#endif
+//#endif
     }
 
     private static void DistanceTransform1D(

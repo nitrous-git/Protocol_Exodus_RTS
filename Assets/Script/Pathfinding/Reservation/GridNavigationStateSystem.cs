@@ -25,12 +25,12 @@ public sealed class GridNavigationStateSystem
 
     private float maxOccupiedNavigationRadius;
 
-    [Header("Diagnostic counters")]
-    private bool occupancyDiagnosticsEnabled;
-    private int diagnosticOccupancyQueries;
-    private int diagnosticOccupancyCellsVisited;
-    private int diagnosticOccupancyBucketsHit;
-    private int diagnosticOccupantTests;
+    //[Header("Diagnostic counters")]
+    //private bool occupancyDiagnosticsEnabled;
+    //private int diagnosticOccupancyQueries;
+    //private int diagnosticOccupancyCellsVisited;
+    //private int diagnosticOccupancyBucketsHit;
+    //private int diagnosticOccupantTests;
 
     public enum DynamicOccupancyRelation
     {
@@ -328,7 +328,7 @@ public sealed class GridNavigationStateSystem
             return DynamicOccupancyRelation.None;
 
         //Diagnostics
-        if (occupancyDiagnosticsEnabled) { diagnosticOccupancyQueries++; }
+        //if (occupancyDiagnosticsEnabled) { diagnosticOccupancyQueries++; }
 
         GridCoord centerCoord = terrainGrid.WorldToCell(center);
 
@@ -343,7 +343,7 @@ public sealed class GridNavigationStateSystem
             {
 
                 //Diagnostics
-                if (occupancyDiagnosticsEnabled) { diagnosticOccupancyCellsVisited++; }
+                //if (occupancyDiagnosticsEnabled) { diagnosticOccupancyCellsVisited++; }
 
                 GridCoord coord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
 
@@ -356,7 +356,7 @@ public sealed class GridNavigationStateSystem
                 }
 
                 //Diagnostics
-                if (occupancyDiagnosticsEnabled) { diagnosticOccupancyBucketsHit++; }
+                //if (occupancyDiagnosticsEnabled) { diagnosticOccupancyBucketsHit++; }
 
                 foreach (UnitBase other in occupants)
                 {
@@ -366,7 +366,7 @@ public sealed class GridNavigationStateSystem
                     }
 
                     //Diagnostics
-                    if (occupancyDiagnosticsEnabled) { diagnosticOccupantTests++; }
+                    //if (occupancyDiagnosticsEnabled) { diagnosticOccupantTests++; }
 
                     float requiredDistance = radius + other.NavigationRadius;
 
@@ -574,25 +574,25 @@ public sealed class GridNavigationStateSystem
     // Diagnostics
     // ---------------------------------------------------------------------
 
-    public void BeginOccupancyDiagnostics()
-    {
-        occupancyDiagnosticsEnabled = true;
-        diagnosticOccupancyQueries = 0;
-        diagnosticOccupancyCellsVisited = 0;
-        diagnosticOccupancyBucketsHit = 0;
-        diagnosticOccupantTests = 0;
-    }
+    //public void BeginOccupancyDiagnostics()
+    //{
+    //    occupancyDiagnosticsEnabled = true;
+    //    diagnosticOccupancyQueries = 0;
+    //    diagnosticOccupancyCellsVisited = 0;
+    //    diagnosticOccupancyBucketsHit = 0;
+    //    diagnosticOccupantTests = 0;
+    //}
 
-    public void EndOccupancyDiagnostics(
-        out int queries,
-        out int cellsVisited,
-        out int bucketsHit,
-        out int occupantTests)
-    {
-        queries = diagnosticOccupancyQueries;
-        cellsVisited = diagnosticOccupancyCellsVisited;
-        bucketsHit = diagnosticOccupancyBucketsHit;
-        occupantTests = diagnosticOccupantTests;
-        occupancyDiagnosticsEnabled = false;
-    }
+    //public void EndOccupancyDiagnostics(
+    //    out int queries,
+    //    out int cellsVisited,
+    //    out int bucketsHit,
+    //    out int occupantTests)
+    //{
+    //    queries = diagnosticOccupancyQueries;
+    //    cellsVisited = diagnosticOccupancyCellsVisited;
+    //    bucketsHit = diagnosticOccupancyBucketsHit;
+    //    occupantTests = diagnosticOccupantTests;
+    //    occupancyDiagnosticsEnabled = false;
+    //}
 }
