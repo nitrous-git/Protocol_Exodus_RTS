@@ -83,7 +83,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
     [Header("Diagnostics")]
     [SerializeField] private bool logSlowSearches = true;
-    [SerializeField, Min(0.1f)] private float slowSearchMilliseconds = 2f;
+    [SerializeField, Min(0.1f)] private float slowSearchMilliseconds = 10f;
     [SerializeField, Min(1)] private int slowSearchExpansionThreshold = 1000;
 
     [Header("Dynamic Occupancy")]
@@ -131,7 +131,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         int expansionBudget = CalculateExpansionBudget(startCoord, endCoord);
         int expandedNodes = 0;
 
-        double searchStart = Time.realtimeSinceStartupAsDouble;
+        double searchStartTime = Time.realtimeSinceStartupAsDouble;
 
         // Validation coordinates
         if (!terrainGrid.IsInside(startCoord) || !terrainGrid.IsInside(endCoord))
@@ -180,39 +180,55 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             if (IsSameCoord(currentNode.Coord, endCoord))
             {
                 bool success = BuildResultPath(startNode, currentNode, result);
+
+                ReportSearchDiagnostics(
+                    requester,
+                    startCoord,
+                    endCoord,
+                    success,
+                    "Success",
+                    expandedNodes,
+                    expansionBudget,
+                    searchStartTime);
+
                 return success;
             }
 
-            // Exapnd node tracking
+            // Expand node tracking
             expandedNodes++;
 
             // Expansion budget
             if (expandedNodes >= expansionBudget)
             {
                 result.Clear();
+
+                ReportSearchDiagnostics(
+                    requester,
+                    startCoord,
+                    endCoord,
+                    false,
+                    "Success",
+                    expandedNodes,
+                    expansionBudget,
+                    searchStartTime);
+
                 return false;
             }
 
             ExploreNeighbors(currentNode, startCoord, endCoord, requester);
         }
 
-        //
-        // OpenSet exhausted
-        result.Clear();
-
-        double elapsedMs = (Time.realtimeSinceStartupAsDouble - searchStart) * 1000.0;
-
         ReportSearchDiagnostics(
             requester,
             startCoord,
             endCoord,
-            true,
-            "Success",
+            false,
+            "OpenSetExhausted",
             expandedNodes,
             expansionBudget,
-            elapsedMs);
+            searchStartTime);
 
-        return true;
+        return false;
     }
 
     private void AdvanceSearchId()
@@ -510,12 +526,14 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         string reason,
         int expandedNodes,
         int expansionBudget,
-        double elapsedMs)
+        double searchStartTime)
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 
         if (!logSlowSearches)
             return;
+
+        double elapsedMs = (Time.realtimeSinceStartupAsDouble - searchStartTime) * 1000.0;
 
         bool interesting = !success ||
             expandedNodes >= slowSearchExpansionThreshold ||
