@@ -82,7 +82,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
     private int currentSearchId; // caching search 
 
     [Header("Diagnostics")]
-    [SerializeField] private bool logSlowSearches = true;
+    [SerializeField] private bool logSlowSearches = false;
     [SerializeField, Min(0.1f)] private float slowSearchMilliseconds = 10f;
     [SerializeField, Min(1)] private int slowSearchExpansionThreshold = 1000;
 
@@ -194,9 +194,6 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
                 return success;
             }
 
-            // Expand node tracking
-            expandedNodes++;
-
             // Expansion budget
             if (expandedNodes >= expansionBudget)
             {
@@ -207,13 +204,16 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
                     startCoord,
                     endCoord,
                     false,
-                    "Success",
+                    "BudgetExceeded",
                     expandedNodes,
                     expansionBudget,
                     searchStartTime);
 
                 return false;
             }
+
+            // Expand node tracking
+            expandedNodes++;
 
             ExploreNeighbors(currentNode, startCoord, endCoord, requester);
         }
