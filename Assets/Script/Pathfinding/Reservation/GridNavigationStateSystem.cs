@@ -25,6 +25,13 @@ public sealed class GridNavigationStateSystem
 
     private float maxOccupiedNavigationRadius;
 
+    //[Header("Diagnostic counters")]
+    //private bool occupancyDiagnosticsEnabled;
+    //private int diagnosticOccupancyQueries;
+    //private int diagnosticOccupancyCellsVisited;
+    //private int diagnosticOccupancyBucketsHit;
+    //private int diagnosticOccupantTests;
+
     public enum DynamicOccupancyRelation
     {
         None, 
@@ -138,6 +145,37 @@ public sealed class GridNavigationStateSystem
             return false;
 
         return existingOwner != owner;
+    }
+
+    public bool IsDestinationTraversalBlocked(GridCoord coord, UnitBase requester)
+    {
+        if (!destinationsByCell.TryGetValue(coord, out UnitBase owner))
+        {
+            return false;
+        }
+
+        if (owner == null)
+            return false;
+
+        if (owner == requester)
+            return false;
+
+        //
+        // Future destinations belonging to the SAME active
+        // movement group do not block A* traversal.
+        //
+        // The reservation is still exclusive for ownership.
+        //
+        if (requester != null && requester.MovementGroupId > 0 
+            && owner.MovementGroupId == requester.MovementGroupId)
+        {
+            return false;
+        }
+
+        //
+        // Another command/group owns this destination.
+        //
+        return true;
     }
 
     // ---------------------------------------------------------------------
@@ -289,6 +327,9 @@ public sealed class GridNavigationStateSystem
         if (occupantsByCell.Count == 0)
             return DynamicOccupancyRelation.None;
 
+        //Diagnostics
+        //if (occupancyDiagnosticsEnabled) { diagnosticOccupancyQueries++; }
+
         GridCoord centerCoord = terrainGrid.WorldToCell(center);
 
         int searchDepth = Mathf.CeilToInt((radius + maxOccupiedNavigationRadius) / terrainGrid.CellSize) + 1;
@@ -300,6 +341,10 @@ public sealed class GridNavigationStateSystem
         {
             for (int x = -searchDepth; x <= searchDepth; x++)
             {
+
+                //Diagnostics
+                //if (occupancyDiagnosticsEnabled) { diagnosticOccupancyCellsVisited++; }
+
                 GridCoord coord = new GridCoord(centerCoord.x + x, centerCoord.z + z);
 
                 if (!terrainGrid.IsInside(coord))
@@ -310,12 +355,18 @@ public sealed class GridNavigationStateSystem
                     continue;
                 }
 
+                //Diagnostics
+                //if (occupancyDiagnosticsEnabled) { diagnosticOccupancyBucketsHit++; }
+
                 foreach (UnitBase other in occupants)
                 {
                     if (other == null || other == requester)
                     {
                         continue;
                     }
+
+                    //Diagnostics
+                    //if (occupancyDiagnosticsEnabled) { diagnosticOccupantTests++; }
 
                     float requiredDistance = radius + other.NavigationRadius;
 
@@ -518,4 +569,30 @@ public sealed class GridNavigationStateSystem
 
         return occupants.Count;
     }
+
+    // ---------------------------------------------------------------------
+    // Diagnostics
+    // ---------------------------------------------------------------------
+
+    //public void BeginOccupancyDiagnostics()
+    //{
+    //    occupancyDiagnosticsEnabled = true;
+    //    diagnosticOccupancyQueries = 0;
+    //    diagnosticOccupancyCellsVisited = 0;
+    //    diagnosticOccupancyBucketsHit = 0;
+    //    diagnosticOccupantTests = 0;
+    //}
+
+    //public void EndOccupancyDiagnostics(
+    //    out int queries,
+    //    out int cellsVisited,
+    //    out int bucketsHit,
+    //    out int occupantTests)
+    //{
+    //    queries = diagnosticOccupancyQueries;
+    //    cellsVisited = diagnosticOccupancyCellsVisited;
+    //    bucketsHit = diagnosticOccupancyBucketsHit;
+    //    occupantTests = diagnosticOccupantTests;
+    //    occupancyDiagnosticsEnabled = false;
+    //}
 }

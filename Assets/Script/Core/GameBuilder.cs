@@ -99,6 +99,9 @@ public class GameBuilder : MonoBehaviour
         matchWorld.Initialize(GameContext, FactionManager, ResourceNodeRepository, ProjectileManager, PlayerFaction);
         matchUI?.Initialize(PlayerFaction, GameContext, matchWorld);
 
+        // Build clearance field once after all static initialization
+        matchWorld.TerrainGrid?.RebuildStaticClearanceField(); 
+
         // --- controller init ---
         playerFactionController?.InitializePlayerControl(
             matchWorld.PlayerInputBindings,

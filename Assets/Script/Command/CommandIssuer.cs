@@ -525,6 +525,7 @@ public class CommandIssuer : MonoBehaviour
         float formationMaxNavigationRadius = GetCommandGroupMaxNavigationRadius();
 
         int movementGroupId = gameContext.AllocateMovementGroupId();
+        PrepareMovementGroup(movementGroupId);
 
         bool issuedAnyCommand = false;
 
