@@ -357,7 +357,18 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
         while (currentNode != null && currentNode != startNode)
         {
-            result.Add(terrainGrid.CellToWorld(currentNode.Coord));
+            //result.Add(terrainGrid.CellToWorld(currentNode.Coord));
+
+            GridCell cell = terrainGrid.GetCell(currentNode.Coord);
+
+            if (cell == null)
+            {
+                result.Clear();
+                return false;
+            }
+
+            result.Add(cell.WorldCenter);
+
             currentNode = currentNode.Parent;
         }
 
