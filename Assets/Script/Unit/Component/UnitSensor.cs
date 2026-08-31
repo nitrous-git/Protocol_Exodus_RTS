@@ -1,8 +1,18 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
+// PERF:
+// Target acquisition currently scans GameContext.AllTargetables.
+// Sensor scans are phase-staggered to distribute the workload,
+// which is sufficient at current unit counts.
+//
+// At large army sizes, replace the global target scan with a
+// spatial neighborhood query rather than increasing scan throttling.
 public class UnitSensor : MonoBehaviour
 {
+    private static readonly ProfilerMarker SensorScanMarker = new("RTS.SensorScan");
+
     [SerializeField] private float sensorInterval = 0.2f;
 
     private UnitBase owner;
@@ -16,8 +26,9 @@ public class UnitSensor : MonoBehaviour
         this.owner = owner;
         this.gameContext = gameContext;
 
-        // Permit an immediate first scan after initialization.
-        timeUntilNextScan = 0f;
+        // Golden Ratio hash for pseudo-random distribution
+        // avoid synchronising all timer each frame, create a smooth distribution
+        timeUntilNextScan = CalculateInitialScanDelay();
     }
 
     public void Tick(float deltaTime)
@@ -35,38 +46,42 @@ public class UnitSensor : MonoBehaviour
         if (!IsReady)
             return null;
 
-        timeUntilNextScan = sensorInterval;
+        //timeUntilNextScan = sensorInterval;
+        ScheduleNextScan();
 
-        ITargetable closestTarget = null;
-        float maxRangeSqr = maxRange * maxRange;
-        float bestDistanceSqr = float.MaxValue;
-
-        IReadOnlyList<ITargetable> targetables = gameContext.AllTargetables;
-
-        for (int i = 0; i < targetables.Count; i++)
+        using (SensorScanMarker.Auto())
         {
-            ITargetable candidate = targetables[i];
+            ITargetable closestTarget = null;
+            float maxRangeSqr = maxRange * maxRange;
+            float bestDistanceSqr = float.MaxValue;
 
-            if (!IsValidEnemyTarget(candidate))
-                continue;
+            IReadOnlyList<ITargetable> targetables = gameContext.AllTargetables;
 
-            Vector3 difference = candidate.Position - owner.Position;
+            for (int i = 0; i < targetables.Count; i++)
+            {
+                ITargetable candidate = targetables[i];
 
-            difference.y = 0f;
+                if (!IsValidEnemyTarget(candidate))
+                    continue;
 
-            float distanceSqr = difference.sqrMagnitude;
+                Vector3 difference = candidate.Position - owner.Position;
 
-            if (distanceSqr > maxRangeSqr)
-                continue;
+                difference.y = 0f;
 
-            if (distanceSqr >= bestDistanceSqr)
-                continue;
+                float distanceSqr = difference.sqrMagnitude;
 
-            closestTarget = candidate;
-            bestDistanceSqr = distanceSqr;
+                if (distanceSqr > maxRangeSqr)
+                    continue;
+
+                if (distanceSqr >= bestDistanceSqr)
+                    continue;
+
+                closestTarget = candidate;
+                bestDistanceSqr = distanceSqr;
+            }
+
+            return closestTarget;
         }
-
-        return closestTarget;
     }
 
     public bool IsValidEnemyTarget(ITargetable candidate)
@@ -81,5 +96,34 @@ public class UnitSensor : MonoBehaviour
             return false;
 
         return owner.OwnerFaction.IsEnemy(candidate.OwnerFaction);
+    }
+
+    // ---------------------------------------------------
+    // Scan helper methods
+    // ---------------------------------------------------
+
+    private float CalculateInitialScanDelay()
+    {
+        if (owner == null || sensorInterval <= 0f)
+            return 0f;
+
+        uint hash = unchecked((uint)owner.UnitId * 2654435761u);
+        float phase = (hash & 0xFFFFu) / 65535f;
+        return phase * sensorInterval;
+    }
+
+    private void ScheduleNextScan()
+    {
+        if (sensorInterval <= 0f)
+        {
+            timeUntilNextScan = 0f;
+            return;
+        }
+
+        timeUntilNextScan += sensorInterval;
+
+        // Only needed after an unusually large hitch.
+        while (timeUntilNextScan <= 0f)
+            timeUntilNextScan += sensorInterval;
     }
 }

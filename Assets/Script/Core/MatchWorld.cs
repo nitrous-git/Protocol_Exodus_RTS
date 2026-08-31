@@ -1,9 +1,15 @@
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 
 // owner of world-level update, equivalent of GamePanel
 public sealed class MatchWorld : MonoBehaviour
 {
+    private static readonly ProfilerMarker FactionTickMarker = new("RTS.Factions");
+    private static readonly ProfilerMarker DepenetrationMarker = new("RTS.Depenetration");
+    private static readonly ProfilerMarker ResourceTickMarker = new("RTS.Resources");
+    private static readonly ProfilerMarker ProjectileTickMarker = new("RTS.Projectiles");
+
     [Header("Services")]
     [SerializeField] private MonoBehaviour pathfindingServiceComponent;
     [SerializeField] private TerrainGridSystem terrainGridSystem;
@@ -100,12 +106,33 @@ public sealed class MatchWorld : MonoBehaviour
 
     public void TickSimulation(float deltaTime)
     {
-        FactionManager?.Tick(deltaTime);
+        //FactionManager?.Tick(deltaTime);
 
-        unitDepenetrationSystem?.Tick();
+        //unitDepenetrationSystem?.Tick();
 
-        ResourceNodeRepository?.Tick(deltaTime);
-        ProjectileManager?.Tick(deltaTime);
+        //ResourceNodeRepository?.Tick(deltaTime);
+        //ProjectileManager?.Tick(deltaTime);
+
+        using (FactionTickMarker.Auto())
+        {
+            FactionManager?.Tick(deltaTime);
+        }
+
+        using (DepenetrationMarker.Auto())
+        {
+            unitDepenetrationSystem?.Tick();
+        }
+
+        using (ResourceTickMarker.Auto())
+        {
+            ResourceNodeRepository?.Tick(deltaTime);
+        }
+
+        using (ProjectileTickMarker.Auto())
+        {
+            ProjectileManager?.Tick(deltaTime);
+        }
+
 
         // Later:
         // FogOfWarController?.Tick(deltaTime);

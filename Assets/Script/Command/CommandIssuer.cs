@@ -286,6 +286,14 @@ public class CommandIssuer : MonoBehaviour
                 gameContext.TerrainGrid, 
                 gameContext.DestinationAllocationSystem.Formation);
 
+        MovementGroup movementGroup =
+            new MovementGroup(
+                movementGroupId,
+                commandableUnits,
+                destinationCenter,
+                formationMaxNavigationRadius,
+                formationGroup);
+
         bool issuedAnyCommand = false;
 
         for (int i = 0; i < commandableCount; i++)
@@ -309,7 +317,8 @@ public class CommandIssuer : MonoBehaviour
                 commandableCount, 
                 formationMaxNavigationRadius, 
                 movementGroupId,
-                formationGroup);
+                formationGroup,
+                movementGroup);
 
             controllable.IssueCommand(CommandType.Move, context);
 

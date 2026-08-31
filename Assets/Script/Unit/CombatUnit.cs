@@ -1,10 +1,13 @@
 using System;
+using Unity.Profiling;
 using UnityEngine;
 
 [RequireComponent(typeof(UnitSensor))]
 [RequireComponent(typeof(UnitWeapon))]
 public class CombatUnit : UnitBase
 {
+    private static readonly ProfilerMarker CombatAwarenessTickMarker = new("RTS.CombatAwareness");
+
     [Header("Combat")]
     [SerializeField] private UnitWeapon weapon;
 
@@ -55,7 +58,11 @@ public class CombatUnit : UnitBase
     {
         weapon?.Tick(deltaTime);
 
-        UpdateCombatAwareness();
+        using (CombatAwarenessTickMarker.Auto())
+        {
+            UpdateCombatAwareness();
+        }
+        //UpdateCombatAwareness();
 
         base.Tick(deltaTime);
     }
