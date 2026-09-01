@@ -298,6 +298,7 @@ public class CommandIssuer : MonoBehaviour
         // experimental shared navigation path
         movementGroup.Navigator.Build();
         movementGroup.Navigator.DrawDebugRoute(10f);
+        movementGroup.Navigator.DrawDebugInitialSamples(2f, 10f);
 
         bool issuedAnyCommand = false;
 

@@ -90,7 +90,7 @@ public sealed class GroupNavigator
             return false;
         }
 
-        Solution = new SharedAStarNavigationSolution(movementGroup.Destination, pathBuffer);
+        Solution = new SharedAStarNavigationSolution(Representative.Position, movementGroup.Destination, pathBuffer);
 
         Debug.Log(
             $"[GroupNav] " +
@@ -105,35 +105,6 @@ public sealed class GroupNavigator
         pathBuffer.Clear();
 
         return true;
-    }
-
-    /// <summary>
-    /// Draws the current shared route for temporary inspection.
-    /// </summary>
-    public void DrawDebugRoute(float duration = 5f)
-    {
-        if (Solution == null)
-            return;
-
-        IReadOnlyList<Vector3> path = Solution.DebugPath;
-
-        if (path == null ||
-            path.Count < 2)
-        {
-            return;
-        }
-
-        Vector3 verticalOffset = Vector3.up * 0.25f;
-
-        for (int i = 1; i < path.Count; i++)
-        {
-            Debug.DrawLine(
-                path[i - 1] + verticalOffset,
-                path[i] + verticalOffset,
-                Color.orangeRed,
-                duration,
-                false);
-        }
     }
 
     private UnitBase SelectRepresentative()
@@ -206,4 +177,94 @@ public sealed class GroupNavigator
 
         return sum / count;
     }
+
+    // ---------------------------------------------------------------------
+    // Debug 
+    // ---------------------------------------------------------------------
+
+    public void DrawDebugInitialSamples(float directionLength = 2f, float duration = 5f)
+    {
+        if (Solution == null || !Solution.IsValid)
+        {
+            return;
+        }
+
+        IReadOnlyList<UnitBase> members = movementGroup.Members;
+
+        if (members == null)
+            return;
+
+        for (int i = 0;
+             i < members.Count;
+             i++)
+        {
+            UnitBase unit =
+                members[i];
+
+            if (unit == null)
+                continue;
+
+            NavigationSample sample = Solution.SampleDirection(unit.Position);
+
+            if (!sample.IsValid || sample.ReachedDestination)
+            {
+                continue;
+            }
+
+            Vector3 origin =
+                unit.Position +
+                Vector3.up * 0.35f;
+
+            Debug.DrawRay(
+                origin,
+                sample.Direction *
+                directionLength,
+                Color.yellow,
+                duration,
+                false);
+
+            Vector3 routePoint =
+                sample.RoutePoint;
+
+            routePoint.y =
+                origin.y;
+
+            Debug.DrawLine(
+                origin,
+                routePoint,
+                Color.gray,
+                duration,
+                false);
+        }
+    }
+
+    /// <summary>
+    /// Draws the current shared route for temporary inspection.
+    /// </summary>
+    public void DrawDebugRoute(float duration = 5f)
+    {
+        if (Solution == null)
+            return;
+
+        IReadOnlyList<Vector3> path = Solution.DebugPath;
+
+        if (path == null || path.Count < 2)
+        {
+            return;
+        }
+
+        Vector3 verticalOffset = Vector3.up * 0.25f;
+
+        for (int i = 1; i < path.Count; i++)
+        {
+            Debug.DrawLine(
+                path[i - 1] + verticalOffset,
+                path[i] + verticalOffset,
+                Color.red,
+                duration,
+                false);
+        }
+    }
+
+
 }

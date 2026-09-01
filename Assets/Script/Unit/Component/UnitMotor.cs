@@ -758,36 +758,36 @@ public class UnitMotor : MonoBehaviour
 
         Gizmos.color = Color.cyan;
 
-        for (int i = 0; i < path.Count; i++)
-        {
-            Vector3 point = GetGizmoGroundPoint(path[i]);
-            Gizmos.DrawSphere(point, 0.15f);
+        //for (int i = 0; i < path.Count; i++)
+        //{
+        //    Vector3 point = GetGizmoGroundPoint(path[i]);
+        //    Gizmos.DrawSphere(point, 0.15f);
 
-            if (i < path.Count - 1)
-                DrawGroundedGizmoLine(path[i], path[i + 1]);
-        }
+        //    if (i < path.Count - 1)
+        //        DrawGroundedGizmoLine(path[i], path[i + 1]);
+        //}
 
-        if (hasPath)
-        {
-            Vector3 point =
-                GetGizmoGroundPoint(
-                    debugLookAheadTarget);
+        //if (hasPath)
+        //{
+        //    Vector3 point =
+        //        GetGizmoGroundPoint(
+        //            debugLookAheadTarget);
 
-            Gizmos.color =
-                new Color(1f, 0.5f, 0f);
+        //    Gizmos.color =
+        //        new Color(1f, 0.5f, 0f);
 
-            Gizmos.DrawSphere(
-                point,
-                0.12f);
+        //    Gizmos.DrawSphere(
+        //        point,
+        //        0.12f);
 
-            Vector3 unitPosition =
-                GetGizmoGroundPoint(
-                    transform.position);
+        //    Vector3 unitPosition =
+        //        GetGizmoGroundPoint(
+        //            transform.position);
 
-            Gizmos.DrawLine(
-                unitPosition,
-                point);
-        }
+        //    Gizmos.DrawLine(
+        //        unitPosition,
+        //        point);
+        //}
     }
 
     private void DrawGroundedGizmoLine(Vector3 start, Vector3 end)

@@ -14,4 +14,6 @@ public interface INavigationSolution
     Vector3 Destination { get; }
 
     IReadOnlyList<Vector3> DebugPath { get; }
+
+    NavigationSample SampleDirection(Vector3 worldPosition, int previousRouteSegmentIndex = -1);
 }
