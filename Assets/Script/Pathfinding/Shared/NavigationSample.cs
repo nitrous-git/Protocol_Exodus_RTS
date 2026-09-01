@@ -6,7 +6,7 @@ public readonly struct NavigationSample
 
     public bool ReachedDestination { get; }
 
-    public Vector3 Direction { get; }
+    public Vector3 RouteDirection { get; }
 
     public Vector3 RoutePoint { get; }
 
@@ -19,7 +19,7 @@ public readonly struct NavigationSample
     public NavigationSample(
         bool isValid,
         bool reachedDestination,
-        Vector3 direction,
+        Vector3 routeDirection,
         Vector3 routePoint,
         Vector3 lookAheadPoint,
         float distanceFromRoute,
@@ -27,7 +27,7 @@ public readonly struct NavigationSample
     {
         IsValid = isValid;
         ReachedDestination = reachedDestination;
-        Direction = direction;
+        RouteDirection = routeDirection;
         RoutePoint = routePoint;
         LookAheadPoint = lookAheadPoint;
         DistanceFromRoute = distanceFromRoute;

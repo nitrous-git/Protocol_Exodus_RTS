@@ -217,7 +217,7 @@ public sealed class GroupNavigator
 
             Debug.DrawRay(
                 origin,
-                sample.Direction *
+                sample.RouteDirection *
                 directionLength,
                 Color.yellow,
                 duration,

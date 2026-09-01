@@ -12,8 +12,8 @@ public sealed class SharedRouteSampler
     private const float MinSegmentLengthSqr = 0.0001f;
     private const int InitialSearchSegmentCount = 32;
     private const int ForwardSearchSegmentCount = 8;
-    private const float LookAheadSteps = 4f; // 2
-    private const float MaxLookAheadTurnAngle = 55f; //35
+    private const float LookAheadSteps = 2f;
+    private const float MaxLookAheadTurnAngle = 35f; 
     private const float ArrivalStepFraction = 0.15f;
 
     private readonly IReadOnlyList<Vector3> route;
@@ -27,9 +27,7 @@ public sealed class SharedRouteSampler
 
         routeStepDistance = EstimateRouteStepDistance();
 
-        lookAheadDistance =
-            routeStepDistance *
-            LookAheadSteps;
+        lookAheadDistance = routeStepDistance * LookAheadSteps;
 
         arrivalDistance =
             Mathf.Max(
@@ -92,19 +90,21 @@ public sealed class SharedRouteSampler
             return NavigationSample.Invalid;
         }
 
-        Vector3 lookAheadPoint =
-            CalculateLookAheadPoint(
-                projection);
+        Vector3 lookAheadPoint = CalculateLookAheadPoint(projection);
 
-        Vector3 directionToLookAhead = lookAheadPoint - current;
-        directionToLookAhead.y = 0f;
+        //Vector3 directionToLookAhead = lookAheadPoint - current;
+        //directionToLookAhead.y = 0f;
 
-        if (directionToLookAhead.sqrMagnitude <= MinSegmentLengthSqr)
+        Vector3 routeDirection = lookAheadPoint - projection.Point;
+        routeDirection.y = 0f;
+
+
+        if (routeDirection.sqrMagnitude <= MinSegmentLengthSqr)
         {
-            directionToLookAhead = GetSegmentDirection(projection.SegmentIndex);
+            routeDirection = GetSegmentDirection(projection.SegmentIndex);
         }
 
-        if (directionToLookAhead.sqrMagnitude <= MinSegmentLengthSqr)
+        if (routeDirection.sqrMagnitude <= MinSegmentLengthSqr)
         {
             return NavigationSample.Invalid;
         }
@@ -112,7 +112,7 @@ public sealed class SharedRouteSampler
         return new NavigationSample(
             true,
             false,
-            directionToLookAhead.normalized,
+            routeDirection.normalized,
             projection.Point,
             lookAheadPoint,
             Mathf.Sqrt(projection.DistanceSqr),
