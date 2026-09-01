@@ -21,13 +21,15 @@ public sealed class MovementGroup
     public Vector3 Destination { get; }
     public float MaxNavigationRadius { get; }
     public FormationMovementGroup Formation { get; }
+    public GroupNavigator Navigator { get; }
 
     public MovementGroup(
         int id,
         IReadOnlyList<UnitBase> units,
         Vector3 destination,
         float maxNavigationRadius,
-        FormationMovementGroup formation = null)
+        FormationMovementGroup formation,
+        IPathfindingService pathfindingService)
     {
         Id = id;
         Destination = destination;
@@ -50,5 +52,7 @@ public sealed class MovementGroup
 
             members.Add(unit);
         }
+
+        Navigator = new GroupNavigator(this, pathfindingService);
     }
 }

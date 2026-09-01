@@ -63,6 +63,7 @@ public class GameBuilder : MonoBehaviour
         GameContext.SetDestinationAllocationSystem(DestinationAllocationSystem);
 
         matchWorld.PathfindingService?.Initialize(matchWorld.TerrainGrid, GridNavigationStateSystem);
+        GameContext.SetPathfindingService(matchWorld.PathfindingService);
 
         // Nodes reserve their cells after TerrainGrid (after ResolveServices()) 
         ResourceNodeRepository = new ResourceNodeRepository(GameContext, matchWorld.TerrainGrid); 
@@ -95,12 +96,11 @@ public class GameBuilder : MonoBehaviour
         PlayerFaction = playerFaction;
         GameContext.SetPlayerFaction(PlayerFaction);
 
-        // --- panels ---
+        // --- Initialize ---
         matchWorld.Initialize(GameContext, FactionManager, ResourceNodeRepository, ProjectileManager, PlayerFaction);
-        matchUI?.Initialize(PlayerFaction, GameContext, matchWorld);
+        matchWorld.TerrainGrid?.RebuildStaticClearanceField(); // Build clearance field once after all static initialization
 
-        // Build clearance field once after all static initialization
-        matchWorld.TerrainGrid?.RebuildStaticClearanceField(); 
+        matchUI?.Initialize(PlayerFaction, GameContext, matchWorld);
 
         // --- controller init ---
         playerFactionController?.InitializePlayerControl(

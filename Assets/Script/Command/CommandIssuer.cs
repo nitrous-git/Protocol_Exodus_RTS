@@ -292,7 +292,12 @@ public class CommandIssuer : MonoBehaviour
                 commandableUnits,
                 destinationCenter,
                 formationMaxNavigationRadius,
-                formationGroup);
+                formationGroup,
+                gameContext.PathfindingService);
+
+        // experimental shared navigation path
+        movementGroup.Navigator.Build();
+        movementGroup.Navigator.DrawDebugRoute(10f);
 
         bool issuedAnyCommand = false;
 
