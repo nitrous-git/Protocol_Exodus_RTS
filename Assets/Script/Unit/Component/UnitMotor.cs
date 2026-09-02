@@ -17,6 +17,11 @@ public class UnitMotor : MonoBehaviour
     [SerializeField] private float navMeshSampleRadius = 2f;
     [SerializeField] private int navMeshAreaMask = NavMesh.AllAreas;
 
+    [Header("Shared Navigation")]
+    [SerializeField] private float sharedRouteCorridorCells = 3f;
+    [SerializeField] private float sharedRouteRecoveryCells = 3f;
+    [SerializeField] private float sharedRouteMaxRecoveryWeight = 1f;
+
     [Header("Debug")]
     private bool drawPathGizmos = true;
     [SerializeField] private bool drawOccupancyGizmo = true;
@@ -42,8 +47,15 @@ public class UnitMotor : MonoBehaviour
     private float finalArrivalFraction = 0.15f;
     private int pathRelaxLookAheadNodes = 8;
 
-    public bool HasPath { get { return hasPath; } }
-    public bool HasArrived { get { return !hasPath; } }
+    private INavigationSolution navigationSolution;
+    private int navigationRouteSegmentIndex = -1;
+
+    //public bool HasPath { get { return hasPath; } }
+    //public bool HasArrived { get { return !hasPath; } }
+
+    public bool HasPath => hasPath;
+    public bool IsFollowingNavigationSolution => navigationSolution != null;
+    public bool HasArrived => !hasPath && navigationSolution == null;
 
     public Vector3 CurrentVelocity => currentVelocity;
     public Vector3 PreferredVelocity => preferredVelocity;
@@ -73,6 +85,12 @@ public class UnitMotor : MonoBehaviour
 
     public void Tick()
     {
+        if (navigationSolution != null)
+        {
+            NavigationSolutionUpdate();
+            return;
+        }
+
         if (!hasPath)
             return;
 
@@ -86,12 +104,16 @@ public class UnitMotor : MonoBehaviour
 
     public bool MoveTo(Vector3 destination)
     {
+        ClearNavigationSolution();
+
         return TryBuildPath(destination);
     }
 
     public void Stop()
     {
         ClearPath();
+
+        ClearNavigationSolution();
     }
 
     // ---------------------------------------------------------------------
@@ -355,6 +377,154 @@ public class UnitMotor : MonoBehaviour
         hasPath = false;
         currentVelocity = Vector3.zero;
         preferredVelocity = Vector3.zero;   
+    }
+
+    // ---------------------------------------------------------------------
+    // Shared Navigation
+    // ---------------------------------------------------------------------
+
+    public bool FollowNavigationSolution(INavigationSolution solution)
+    {
+        if (solution == null || !solution.IsValid)
+        {
+            return false;
+        }
+
+        ClearPath();
+
+        navigationSolution = solution;
+
+        navigationRouteSegmentIndex = -1;
+
+        NavigationSample initialSample = navigationSolution.SampleDirection(transform.position);
+
+        if (!initialSample.IsValid)
+        {
+            ClearNavigationSolution();
+            return false;
+        }
+
+        navigationRouteSegmentIndex = initialSample.RouteSegmentIndex;
+
+        return true;
+    }
+
+    private void NavigationSolutionUpdate()
+    {
+        if (navigationSolution == null || !navigationSolution.IsValid)
+        {
+            ClearNavigationSolution();
+            return;
+        }
+
+        NavigationSample sample = navigationSolution.SampleDirection(transform.position, navigationRouteSegmentIndex);
+
+        if (!sample.IsValid)
+        {
+            Debug.LogWarning(name + " lost its shared navigation solution.");
+            ClearNavigationSolution();
+            return;
+        }
+
+        navigationRouteSegmentIndex = sample.RouteSegmentIndex;
+
+        if (sample.ReachedDestination)
+        {
+            ClearNavigationSolution();
+            return;
+        }
+
+        Vector3 navigationDirection = CalculateSharedNavigationDirection(sample);
+
+        if (navigationDirection.sqrMagnitude <= 0.0001f)
+        {
+            preferredVelocity = Vector3.zero;
+            currentVelocity = Vector3.zero;
+            return;
+        }
+
+        preferredVelocity = navigationDirection.normalized * moveSpeed;
+
+        Vector3 finalVelocity = preferredVelocity;
+
+        if (localSteeringSystem != null)
+        {
+            finalVelocity = localSteeringSystem.CalculateVelocity(preferredVelocity, moveSpeed);
+        }
+
+        ApplyVelocity(finalVelocity);
+    }
+
+    private Vector3 CalculateSharedNavigationDirection(NavigationSample sample)
+    {
+        Vector3 routeDirection = sample.RouteDirection;
+        routeDirection.y = 0f;
+
+        if (routeDirection.sqrMagnitude <= 0.0001f)
+        {
+            return Vector3.zero;
+        }
+
+        routeDirection.Normalize();
+
+        float corridorDistance = SharedRouteCorridorDistance();
+
+        if (sample.DistanceFromRoute <= corridorDistance)
+        {
+            return routeDirection;
+        }
+
+        Vector3 recoveryDirection = sample.RoutePoint - transform.position;
+        recoveryDirection.y = 0f;
+
+        if (recoveryDirection.sqrMagnitude <= 0.0001f)
+        {
+            return routeDirection;
+        }
+
+        recoveryDirection.Normalize();
+
+        float outsideDistance = sample.DistanceFromRoute - corridorDistance;
+
+        float recoveryDistance = SharedRouteRecoveryDistance();
+        float recoveryFactor = Mathf.Clamp01(outsideDistance / recoveryDistance);
+        float recoveryWeight = recoveryFactor * sharedRouteMaxRecoveryWeight;
+
+        Vector3 combinedDirection = routeDirection + recoveryDirection * recoveryWeight;
+        combinedDirection.y = 0f;
+
+        if (combinedDirection.sqrMagnitude <= 0.0001f)
+        {
+            return routeDirection;
+        }
+
+        return combinedDirection.normalized;
+    }
+
+    private float SharedRouteCorridorDistance()
+    {
+        if (terrainGrid == null)
+            return sharedRouteCorridorCells;
+
+        return terrainGrid.CellSize * sharedRouteCorridorCells;
+    }
+
+    private float SharedRouteRecoveryDistance()
+    {
+        if (terrainGrid == null)
+        {
+            return Mathf.Max(sharedRouteRecoveryCells, 0.01f);
+        }
+
+        return Mathf.Max(terrainGrid.CellSize * sharedRouteRecoveryCells, 0.01f);
+    }
+
+    private void ClearNavigationSolution()
+    {
+        navigationSolution = null;
+        navigationRouteSegmentIndex = -1;
+        currentVelocity = Vector3.zero;
+        preferredVelocity = Vector3.zero;
     }
 
     // ---------------------------------------------------------------------

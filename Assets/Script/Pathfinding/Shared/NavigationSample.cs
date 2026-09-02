@@ -3,17 +3,11 @@ using UnityEngine;
 public readonly struct NavigationSample
 {
     public bool IsValid { get; }
-
     public bool ReachedDestination { get; }
-
     public Vector3 RouteDirection { get; }
-
     public Vector3 RoutePoint { get; }
-
     public Vector3 LookAheadPoint { get; }
-
     public float DistanceFromRoute { get; }
-
     public int RouteSegmentIndex { get; }
 
     public NavigationSample(

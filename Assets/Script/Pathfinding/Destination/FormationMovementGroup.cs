@@ -35,6 +35,7 @@ public sealed class FormationMovementGroup
 
     public int UnitCount => members.Count;
     public float ArrivalTolerance => arrivalTolerance;
+    public float AssemblyRadius => assemblyRadius;
 
     public FormationMovementGroup(
         int movementGroupId,

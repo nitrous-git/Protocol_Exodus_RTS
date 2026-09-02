@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MoveState : UnitState<UnitBase>
@@ -9,33 +10,49 @@ public class MoveState : UnitState<UnitBase>
     private GridCoord? reservedDestinationCell;
     private bool pathRequested;
     private float formationMaxNavigationRadius;
+    private bool sharedTravelActive;
 
     private readonly FormationMovementGroup formationGroup;
+    private readonly MovementGroup movementGroup;
 
     public MoveState(
         Vector3 formationCenter, 
         int formationSlotIndex, 
         int formationUnitCount, 
         float formationMaxNavigationRadius,
-        FormationMovementGroup formationGroup)
+        FormationMovementGroup formationGroup,
+        MovementGroup movementGroup)
     {
         this.formationCenter = formationCenter;
         this.formationSlotIndex = formationSlotIndex;
         this.formationUnitCount = formationUnitCount;
         this.formationMaxNavigationRadius = formationMaxNavigationRadius;
         this.formationGroup = formationGroup;
+        this.movementGroup = movementGroup;
     }
 
     protected override void OnEnterTyped(UnitBase unit)
     {
-        if (unit.Motor == null ||
-            unit.TerrainGrid == null ||
-            unit.DestinationAllocationSystem == null)
+        if (unit.Motor == null)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
             return;
         }
 
+        // Shared navigation
+        if (TryStartSharedTravel(unit))
+        {
+            unit.View?.PlayAnim("Walk");
+            return; 
+        }
+
+        // Legacy move fallback
+        if (unit.TerrainGrid == null || unit.DestinationAllocationSystem == null)
+        {
+            unit.IssueCommand(CommandType.Idle, CommandContext.None());
+            return;
+        }
+        
         if (!AllocateDestinationAndMove(unit))
         {
             Debug.Log("Could not allocate destination and move");
@@ -47,6 +64,18 @@ public class MoveState : UnitState<UnitBase>
     }
 
     protected override void TickTyped(UnitBase unit)
+    {
+        if (sharedTravelActive)
+        {
+            TickSharedTravel(unit);
+
+            return;
+        }
+
+        TickLegacyMovement(unit);
+    }
+
+    private void TickLegacyMovement(UnitBase unit)
     {
         //
         // Ordinary MoveState without formation semantics.
@@ -120,6 +149,37 @@ public class MoveState : UnitState<UnitBase>
         if (formationGroup.FinalAssignmentDone)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
+        }
+    }
+
+    private void TickSharedTravel(UnitBase unit)
+    {
+        if (unit.Motor == null)
+        {
+            EndSharedTravel(unit);
+            return;
+        }
+
+        if (HasReachedAssemblyRegion())
+        {
+            EndSharedTravel(unit);
+            return;
+        }
+
+        //
+        // The motor should remain attached to the
+        // shared navigation solution until the group
+        // reaches its assembly region.
+        //
+        if (!unit.Motor.IsFollowingNavigationSolution)
+        {
+            Debug.LogWarning(
+                $"[SharedMove] " +
+                $"Unit={unit.UnitId} " +
+                $"Group={movementGroup?.Id ?? 0} " +
+                $"lost shared navigation before assembly.");
+
+            EndSharedTravel(unit);
         }
     }
 
@@ -210,6 +270,63 @@ public class MoveState : UnitState<UnitBase>
         unit.ReleaseDestination(reservedDestinationCell.Value);
 
         reservedDestinationCell = null;
+    }
+
+    // ---------------------------------------------------------------------
+    // Shared Navigation
+    // ---------------------------------------------------------------------
+
+    private bool TryStartSharedTravel(UnitBase unit)
+    {
+        if (movementGroup == null)
+        {
+            return false;
+        }
+
+        GroupNavigator navigator = movementGroup.Navigator;
+
+        if (navigator == null || !navigator.HasValidSolution)
+        {
+            return false;
+        }
+
+        INavigationSolution solution = navigator.Solution;
+
+        if (solution == null || !solution.IsValid)
+        {
+            return false;
+        }
+
+        if (!unit.Motor.FollowNavigationSolution(solution))
+        {
+            return false;
+        }
+
+        sharedTravelActive = true;
+
+        return true;
+    }
+
+    private bool HasReachedAssemblyRegion()
+    {
+        if (movementGroup == null)
+            return false;
+
+        Vector3 groupCenter = movementGroup.GetCurrentCenter();
+
+        Vector3 difference = movementGroup.Destination - groupCenter;
+        difference.y = 0f;
+
+        float arrivalRadius = formationGroup != null ? formationGroup.AssemblyRadius : 0.5f;
+
+        return difference.sqrMagnitude <= arrivalRadius * arrivalRadius;
+    }
+
+    private void EndSharedTravel(UnitBase unit)
+    {
+        sharedTravelActive = false;
+        unit.Motor?.Stop();
+        unit.IssueCommand(CommandType.Idle, CommandContext.None());
     }
 
     // ---------------------------------------------------------------------

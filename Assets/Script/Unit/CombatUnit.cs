@@ -83,7 +83,8 @@ public class CombatUnit : UnitBase
                     context.FormationSlotIndex, 
                     context.FormationUnitCount,
                     context.FormationMaxNavigationRadius,
-                    context.FormationGroup));
+                    context.FormationGroup,
+                    context.MovementGroup));
                 break;
 
             case CommandType.Attack:
@@ -232,7 +233,8 @@ public class CombatUnit : UnitBase
             currentContext.FormationSlotIndex, 
             currentContext.FormationUnitCount,
             currentContext.FormationMaxNavigationRadius,
-            currentContext.FormationGroup));
+            currentContext.FormationGroup,
+            currentContext.MovementGroup));
     }
 
     public void ClearCurrentTarget()

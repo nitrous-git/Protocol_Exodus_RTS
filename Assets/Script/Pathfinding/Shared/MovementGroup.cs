@@ -13,6 +13,8 @@ using UnityEngine;
 public sealed class MovementGroup
 {
     private readonly List<UnitBase> members = new List<UnitBase>();
+    private int lastCenterFrame = -1;
+    private Vector3 currentCenter;
 
     public IReadOnlyList<UnitBase> Members => members;
     public int UnitCount => members.Count;
@@ -54,5 +56,42 @@ public sealed class MovementGroup
         }
 
         Navigator = new GroupNavigator(this, pathfindingService);
+    }
+
+    public Vector3 GetCurrentCenter()
+    {
+        if (lastCenterFrame == Time.frameCount)
+        {
+            return currentCenter;
+        }
+
+        lastCenterFrame = Time.frameCount;
+
+        Vector3 sum = Vector3.zero;
+
+        int count = 0;
+
+        for (int i = 0; i < members.Count; i++)
+        {
+            UnitBase unit =
+                members[i];
+
+            if (unit == null || !unit.IsAlive)
+            {
+                continue;
+            }
+
+            if (unit.MovementGroupId != Id)
+            {
+                continue;
+            }
+
+            sum += unit.Position;
+            count++;
+        }
+
+        currentCenter = count > 0 ? sum / count : Destination;
+
+        return currentCenter;
     }
 }
