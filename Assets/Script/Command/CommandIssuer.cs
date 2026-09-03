@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 internal readonly struct DefaultCommandTarget
@@ -24,6 +25,9 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private LayerMask groundMask = ~0;
     [SerializeField] private LayerMask resourceNodeMask = ~0;
     [SerializeField] private LayerMask contextCommandMask = ~0;
+
+    [Header("**Temporary** FlowFieldDebugRenderer")]
+    [SerializeField] private FlowFieldDebugRenderer flowFieldDebugRenderer;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
     private readonly List<CombatUnit> attackCommandUnits = new List<CombatUnit>();
@@ -272,6 +276,9 @@ public class CommandIssuer : MonoBehaviour
         if (commandableCount == 0)
             return false;
 
+        if (commandableCount == 1)
+            return TryIssueSingleUnitMove(commandableUnits[0], destinationCenter);
+
         float formationMaxNavigationRadius = GetCommandGroupMaxNavigationRadius();
 
         int movementGroupId = gameContext.AllocateMovementGroupId();
@@ -297,8 +304,14 @@ public class CommandIssuer : MonoBehaviour
 
         // experimental shared navigation path
         movementGroup.Navigator.Build();
-        movementGroup.Navigator.DrawDebugRoute(10f);
-        movementGroup.Navigator.DrawDebugInitialSamples(2f, 10f);
+        //movementGroup.Navigator.DrawDebugRoute(10f);
+        //movementGroup.Navigator.DrawDebugInitialSamples(2f, 10f);
+
+        FlowField debugFlowField = FlowFieldBuilder.Build(gameContext.TerrainGrid, destinationCenter, formationMaxNavigationRadius);
+        if (debugFlowField != null)
+        {
+            flowFieldDebugRenderer.SetField(debugFlowField);
+        }
 
         bool issuedAnyCommand = false;
 
@@ -332,6 +345,27 @@ public class CommandIssuer : MonoBehaviour
         }
 
         return issuedAnyCommand;
+    }
+
+    private bool TryIssueSingleUnitMove(UnitBase unit, Vector3 destination)
+    {
+        if (unit == null)
+            return false;
+
+        if (unit is not IControllable controllable)
+            return false;
+
+        CommandContext context =
+            CommandContext.MoveTo(
+                destination,
+                formationSlotIndex: 0,
+                formationUnitCount: 1,
+                formationMaxNavigationRadius:
+                    unit.NavigationRadius);
+
+        controllable.IssueCommand(CommandType.Move, context);
+
+        return true;
     }
 
     // ---------------------------------------------------------------------

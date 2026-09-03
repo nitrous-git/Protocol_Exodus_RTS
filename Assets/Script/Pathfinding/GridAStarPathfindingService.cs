@@ -386,24 +386,35 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
         bool canTraverse = true;
 
-        if (!cell.Walkable)
+        float navigationRadius = requester != null ? requester.NavigationRadius : 0f;
+
+        if (!terrainGrid.IsStaticallyTraversable(coord, navigationRadius))
         {
             canTraverse = false;
         }
-        else
+        else if (navigateState != null && navigateState.IsDestinationTraversalBlocked(coord, requester)) 
         {
-            float navigationRadius = requester != null ? requester.NavigationRadius : 0f;
-
-            if (!terrainGrid.HasNavigationClearance(coord, navigationRadius)) // Now in O(1)
-            {
-                canTraverse = false;
-            }
-            else if (navigateState != null 
-                    && navigateState.IsDestinationTraversalBlocked(coord, requester))
-            {
-                canTraverse = false;
-            }
+            canTraverse = false;
         }
+
+        //if (!cell.Walkable)
+        //{
+        //    canTraverse = false;
+        //}
+        //else
+        //{
+        //    float navigationRadius = requester != null ? requester.NavigationRadius : 0f;
+
+        //    if (!terrainGrid.HasNavigationClearance(coord, navigationRadius)) // Now in O(1)
+        //    {
+        //        canTraverse = false;
+        //    }
+        //    else if (navigateState != null 
+        //            && navigateState.IsDestinationTraversalBlocked(coord, requester))
+        //    {
+        //        canTraverse = false;
+        //    }
+        //}
 
         node.TraversalSearchId = currentSearchId;
         node.CachedTraversal = canTraverse;

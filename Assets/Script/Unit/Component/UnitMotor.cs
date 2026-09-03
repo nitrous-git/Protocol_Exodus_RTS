@@ -231,6 +231,14 @@ public class UnitMotor : MonoBehaviour
 
     private void ApplyVelocity(Vector3 velocity)
     {
+        velocity = ResolveStaticSafeVelocity(velocity);
+
+        if (velocity.sqrMagnitude <= 0.0001f)
+        {
+            currentVelocity = Vector3.zero;
+            return;
+        }
+
         Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
 
         Vector3 nextFlat = currentFlat + velocity * Time.deltaTime;
@@ -378,6 +386,96 @@ public class UnitMotor : MonoBehaviour
         currentVelocity = Vector3.zero;
         preferredVelocity = Vector3.zero;   
     }
+
+    // ---------------------------------------------------------------------
+    // Safe Velovity
+    // ---------------------------------------------------------------------
+
+    private Vector3 ResolveStaticSafeVelocity(Vector3 velocity)
+    {
+        if (IsStaticMovementAllowed(velocity))
+        {
+            return velocity;
+        }
+
+        //
+        // Local steering may have pushed an otherwise
+        // valid navigation intent into static terrain.
+        //
+        // In that case, prefer the authoritative
+        // navigation velocity.
+        //
+        if (preferredVelocity.sqrMagnitude > 0.0001f && IsStaticMovementAllowed(preferredVelocity))
+        {
+            return preferredVelocity;
+        }
+
+        //
+        // Neither the steered velocity or the
+        // navigation velocity is statically legal.
+        //
+        // Stop rather than penetrating terrain.
+        //
+        return Vector3.zero;
+    }
+
+    private bool IsStaticMovementAllowed(Vector3 velocity)
+    {
+        if (velocity.sqrMagnitude <= 0.0001f)
+        {
+            return true;
+        }
+
+        Vector3 start = transform.position;
+        Vector3 end = start + velocity * Time.deltaTime;
+
+        Vector3 flatStart = new Vector3(start.x, 0f, start.z);
+        Vector3 flatEnd = new Vector3(end.x, 0f, end.z);
+
+        Vector3 movement = flatEnd - flatStart;
+
+        float distance = movement.magnitude;
+
+        if (distance <= Mathf.Epsilon)
+        {
+            return true;
+        }
+
+        //
+        // Keep each probe comfortably below one
+        // grid cell so transitions remain adjacent
+        // even during a slow frame.
+        //
+        float maxProbeDistance = Mathf.Max(terrainGrid.CellSize * 0.45f,0.01f);
+
+        int probeCount = Mathf.Max(1, Mathf.CeilToInt(distance / maxProbeDistance));
+
+        GridCoord previousCell = terrainGrid.WorldToCell(flatStart);
+
+        for (int i = 1; i <= probeCount; i++)
+        {
+            float t = i / (float)probeCount;
+
+            Vector3 probePosition = Vector3.Lerp(flatStart, flatEnd, t);
+
+            GridCoord nextCell = terrainGrid.WorldToCell(probePosition);
+
+            if (SameCell(previousCell, nextCell))
+            {
+                continue;
+            }
+
+            if (!terrainGrid.IsStaticTransitionTraversable(previousCell, nextCell, owner.NavigationRadius))
+            {
+                return false;
+            }
+
+            previousCell = nextCell;
+        }
+
+        return true;
+    }
+
 
     // ---------------------------------------------------------------------
     // Shared Navigation
@@ -618,6 +716,11 @@ public class UnitMotor : MonoBehaviour
         UpdateUnitOccupancy();
     }
 
+    private static bool SameCell(GridCoord first, GridCoord second)
+    {
+        return first.x == second.x && first.z == second.z;
+    }
+
     // ---------------------------------------------------------------------
     // LocalSteering LookAhead Calculation
     // ---------------------------------------------------------------------
@@ -788,132 +891,7 @@ public class UnitMotor : MonoBehaviour
             pathLookAheadCells;
     }
 
-    // ---------------------------------------------------------------------
-    // Path relaxation 
-    // ---------------------------------------------------------------------
-
-    private void TryRelaxPath()
-    {
-        if (terrainGrid == null ||
-            owner == null ||
-            path.Count == 0 ||
-            pathIndex >= path.Count - 1)
-        {
-            return;
-        }
-
-        int furthestIndex = Mathf.Min(pathIndex + pathRelaxLookAheadNodes, path.Count - 1);
-
-        for (int candidateIndex = furthestIndex; candidateIndex > pathIndex; candidateIndex--)
-        {
-            if (!CanRelaxDirectlyTo(path[candidateIndex]))
-                continue;
-            
-            pathIndex = candidateIndex;
-            return;
-        }
-    }
-
-    private bool CanRelaxDirectlyTo(Vector3 target)
-    {
-        if (terrainGrid == null || owner == null)
-        {
-            return false;
-        }
-
-        GridCoord start = terrainGrid.WorldToCell(transform.position);
-        GridCoord end = terrainGrid.WorldToCell(target);
-        return HasClearGridLine(start, end);
-    }
-
-    // Supercover liner traversal algorithm
-    private bool HasClearGridLine(GridCoord start, GridCoord end)
-    {
-        int x = start.x;
-        int z = start.z;
-
-        int deltaX = end.x - start.x;
-        int deltaZ = end.z - start.z;
-
-        int countX = Mathf.Abs(deltaX);
-        int countZ = Mathf.Abs(deltaZ);
-
-        int stepX = deltaX == 0 ? 0 : deltaX > 0 ? 1 : -1;
-        int stepZ = deltaZ == 0 ? 0 : deltaZ > 0 ? 1 : -1;
-
-        int progressedX = 0;
-        int progressedZ = 0;
-
-        if (!CanUseRelaxationCell(new GridCoord(x, z)))
-        {
-            return false;
-        }
-
-        while (progressedX < countX || progressedZ < countZ)
-        {
-            int decision = (1 + 2 * progressedX) * countZ - (1 + 2 * progressedZ) * countX;
-
-            if (decision == 0)
-            {
-                // The line crosses exactly through a grid corner.
-                //
-                // Check both side cells before allowing
-                // the diagonal transition.
-
-                GridCoord sideX = new GridCoord(x + stepX, z);
-
-                GridCoord sideZ = new GridCoord(x, z + stepZ);
-
-                if (!CanUseRelaxationCell(sideX) || !CanUseRelaxationCell(sideZ))
-                {
-                    return false;
-                }
-
-                x += stepX;
-                z += stepZ;
-
-                progressedX++;
-                progressedZ++;
-            }
-            else if (decision < 0)
-            {
-                x += stepX;
-                progressedX++;
-            }
-            else
-            {
-                z += stepZ;
-                progressedZ++;
-            }
-
-            GridCoord current = new GridCoord(x, z);
-
-            if (!CanUseRelaxationCell(current))
-                return false;
-        }
-
-        return true;
-    }
-
-    private bool CanUseRelaxationCell(GridCoord coord)
-    {
-        if (!terrainGrid.IsInside(coord))
-            return false;
-
-        // Static geometry + requester radius.
-        if (!terrainGrid.HasNavigationClearance(coord, owner.NavigationRadius))
-        {
-            return false;
-        }
-
-        // Current mobile-unit geometry.
-        if (navigationState != null && navigationState.WouldOverlapOccupiedUnit(coord, owner))
-        {
-            return false;
-        }
-
-        return true;
-    }
+   
 
     // ---------------------------------------------------------------------
     // Debug
