@@ -26,9 +26,6 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private LayerMask resourceNodeMask = ~0;
     [SerializeField] private LayerMask contextCommandMask = ~0;
 
-    [Header("**Temporary** FlowFieldDebugRenderer")]
-    [SerializeField] private FlowFieldDebugRenderer flowFieldDebugRenderer;
-
     private List<UnitBase> commandableUnits = new List<UnitBase>();
     private readonly List<CombatUnit> attackCommandUnits = new List<CombatUnit>();
     private readonly Dictionary<CombatUnit, GridCoord> attackAssignments = new Dictionary<CombatUnit, GridCoord>();
@@ -310,7 +307,7 @@ public class CommandIssuer : MonoBehaviour
         FlowField debugFlowField = FlowFieldBuilder.Build(gameContext.TerrainGrid, destinationCenter, formationMaxNavigationRadius);
         if (debugFlowField != null)
         {
-            flowFieldDebugRenderer.SetField(debugFlowField);
+            FlowFieldDebugDrawer.Draw(debugFlowField, stride: 2, duration: 10f);
         }
 
         bool issuedAnyCommand = false;
