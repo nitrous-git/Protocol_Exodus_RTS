@@ -297,18 +297,18 @@ public class CommandIssuer : MonoBehaviour
                 destinationCenter,
                 formationMaxNavigationRadius,
                 formationGroup,
-                gameContext.PathfindingService);
+                gameContext.PathfindingService,
+                gameContext.TerrainGrid);
 
         // experimental shared navigation path
         movementGroup.Navigator.Build();
-        //movementGroup.Navigator.DrawDebugRoute(10f);
-        //movementGroup.Navigator.DrawDebugInitialSamples(2f, 10f);
+        //FlowField flowField = movementGroup.Navigator.GetActiveFlowField();
+        //if (flowField != null)
+        //{
+        //    FlowFieldDebugDrawer.Draw(flowField, stride: 1, duration: 10f);
+        //}
 
-        FlowField debugFlowField = FlowFieldBuilder.Build(gameContext.TerrainGrid, destinationCenter, formationMaxNavigationRadius);
-        if (debugFlowField != null)
-        {
-            FlowFieldDebugDrawer.Draw(debugFlowField, stride: 2, duration: 10f);
-        }
+
 
         bool issuedAnyCommand = false;
 

@@ -39,8 +39,7 @@ public static class FlowFieldBuilder
             return null;
         }
 
-        double startTime =
-            Time.realtimeSinceStartupAsDouble;
+        double startTime = Time.realtimeSinceStartupAsDouble;
 
         FlowField field =
             new FlowField(
@@ -49,6 +48,8 @@ public static class FlowFieldBuilder
                 navigationRadius);
 
         BuildTraversability(field);
+
+        double afterTraversability = Time.realtimeSinceStartupAsDouble;
 
         if (!field.IsInside(
             field.DestinationCell))
@@ -63,18 +64,19 @@ public static class FlowFieldBuilder
             field.DestinationCell))
         {
             Debug.LogWarning(
-                $"[FlowField] Destination cell " +
-                $"({field.DestinationCell.x}, " +
-                $"{field.DestinationCell.z}) " +
-                $"is not traversable for radius " +
-                $"{navigationRadius:F2}.");
+                $"[FlowField] Destination cell ({field.DestinationCell.x}, {field.DestinationCell.z}) " +
+                $"is not traversable for radius {navigationRadius:F2}.");
 
             return null;
         }
 
         int expandedCells = BuildIntegrationField(field); // also build the DirectionField
 
+        double afterIntegration = Time.realtimeSinceStartupAsDouble;
+
         field.CompleteBuild();
+
+        double endTime = Time.realtimeSinceStartupAsDouble;
 
         double elapsedMs =
             (Time.realtimeSinceStartupAsDouble -
@@ -83,12 +85,10 @@ public static class FlowFieldBuilder
 
         Debug.Log(
             $"[FlowField] " +
-            $"Destination=({field.DestinationCell.x}," +
-            $"{field.DestinationCell.z}) " +
-            $"Radius={navigationRadius:F2} " +
             $"Expanded={expandedCells} " +
-            $"Size={field.Width}x{field.Height} " +
-            $"TimeMs={elapsedMs:F2}");
+            $"TraversabilityMs=" + $"{(afterTraversability - startTime) * 1000.0:F2} " +
+            $"IntegrationMs=" + $"{(afterIntegration - afterTraversability) * 1000.0:F2} " +
+            $"TotalMs=" + $"{(endTime - startTime) * 1000.0:F2}");
 
         return field;
     }

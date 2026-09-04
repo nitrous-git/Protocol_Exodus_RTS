@@ -12,9 +12,8 @@ public sealed class GroupNavigator
     private const float RadiusComparisonEpsilon = 0.001f;
 
     private readonly MovementGroup movementGroup;
-
     private readonly IPathfindingService pathfindingService;
-
+    private readonly TerrainGrid terrainGrid;
     private readonly List<Vector3> pathBuffer = new List<Vector3>();
 
     public INavigationSolution Solution { get; private set; }
@@ -22,10 +21,11 @@ public sealed class GroupNavigator
 
     public bool HasValidSolution => Solution != null && Solution.IsValid;
 
-    public GroupNavigator(MovementGroup movementGroup, IPathfindingService pathfindingService)
+    public GroupNavigator(MovementGroup movementGroup, IPathfindingService pathfindingService, TerrainGrid terrainGrid)
     {
         this.movementGroup = movementGroup;
         this.pathfindingService = pathfindingService;
+        this.terrainGrid = terrainGrid; 
     }
 
     /// <summary>
@@ -34,19 +34,19 @@ public sealed class GroupNavigator
     /// The route is currently produced by the existing
     /// IPathfindingService and is not consumed by units yet.
     /// </summary>
-    public bool Build()
+    public bool BuildSharedAstar()
     {
         Solution = null;
-
-        Representative = null;
-
-        pathBuffer.Clear();
 
         if (movementGroup == null)
         {
             Debug.LogWarning("[GroupNav] Cannot build navigation: MovementGroup is missing.");
             return false;
         }
+
+        Representative = null;
+
+        pathBuffer.Clear();
 
         if (pathfindingService == null)
         {
@@ -103,6 +103,54 @@ public sealed class GroupNavigator
             $"TimeMs={timeMs:F2}");
 
         pathBuffer.Clear();
+
+        return true;
+    }
+
+    public bool Build()
+    {
+        Solution = null;
+
+        if (movementGroup == null)
+        {
+            Debug.LogWarning("[GroupNav] Cannot build: MovementGroup missing.");
+
+            return false;
+        }
+
+        double startTime = Time.realtimeSinceStartupAsDouble;
+
+        FlowField field =
+            FlowFieldBuilder.Build(
+                terrainGrid,
+                movementGroup.Destination,
+                movementGroup.MaxNavigationRadius);
+
+        double timeMs = (Time.realtimeSinceStartupAsDouble - startTime) * 1000.0;
+
+        if (field == null || !field.IsBuilt)
+        {
+            Debug.LogWarning(
+                $"[GroupNav] " +
+                $"Group={movementGroup.Id} " +
+                $"Units={movementGroup.UnitCount} " +
+                $"Backend=FlowField " +
+                $"Success=False " +
+                $"TimeMs={timeMs:F2}");
+
+            return false;
+        }
+
+        Solution = new FlowFieldNavigationSolution(field);
+
+        Debug.Log(
+            $"[GroupNav] " +
+            $"Group={movementGroup.Id} " +
+            $"Units={movementGroup.UnitCount} " +
+            $"Backend=FlowField " +
+            $"Radius={movementGroup.MaxNavigationRadius:F2} " +
+            $"Success=True " +
+            $"TimeMs={timeMs:F2}");
 
         return true;
     }
@@ -266,5 +314,13 @@ public sealed class GroupNavigator
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Getter 
+    // ---------------------------------------------------------------------
 
+    public FlowField GetActiveFlowField() 
+    {
+        FlowFieldNavigationSolution flowSolution = Solution as FlowFieldNavigationSolution;
+        return flowSolution?.Field;
+    }
 }

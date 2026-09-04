@@ -31,7 +31,8 @@ public sealed class MovementGroup
         Vector3 destination,
         float maxNavigationRadius,
         FormationMovementGroup formation,
-        IPathfindingService pathfindingService)
+        IPathfindingService pathfindingService,
+        TerrainGrid terrainGrid)
     {
         Id = id;
         Destination = destination;
@@ -55,7 +56,7 @@ public sealed class MovementGroup
             members.Add(unit);
         }
 
-        Navigator = new GroupNavigator(this, pathfindingService);
+        Navigator = new GroupNavigator(this, pathfindingService, terrainGrid);
     }
 
     public Vector3 GetCurrentCenter()
