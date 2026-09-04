@@ -18,6 +18,8 @@ public sealed class FlowField
     private readonly bool[] traversable;
     private readonly int[] integrationCosts;
     private readonly Vector3[] directions;
+    private readonly int[] clearancePenalties;
+    private readonly bool[] goalCells;
 
     public TerrainGrid Grid { get; }
     public int Width { get; }
@@ -25,13 +27,16 @@ public sealed class FlowField
     public Vector3 Destination { get; }
     public GridCoord DestinationCell { get; }
     public float NavigationRadius { get; }
+    public float GoalRadius { get; }
 
     public bool IsBuilt { get; private set; }
+    public int GoalCellCount { get; internal set; }
 
     public FlowField(
         TerrainGrid grid,
         Vector3 destination,
-        float navigationRadius)
+        float navigationRadius, 
+        float goalRadius)
     {
         Grid = grid;
 
@@ -41,6 +46,8 @@ public sealed class FlowField
             Mathf.Max(
                 0f,
                 navigationRadius);
+
+        GoalRadius = Mathf.Max(0f, GoalRadius);
 
         if (grid == null)
         {
@@ -73,6 +80,10 @@ public sealed class FlowField
 
         directions =
             new Vector3[cellCount];
+
+        clearancePenalties = new int[cellCount];
+        goalCells = new bool[cellCount];
+
 
         for (int i = 0; i < cellCount; i++)
         {
@@ -181,8 +192,50 @@ public sealed class FlowField
         IsBuilt = true;
     }
 
+    // -----------------------------------------------------------
+    // Getter & Setter
+    // -----------------------------------------------------------
+
     private int GetIndex(GridCoord coord)
     {
         return coord.z * Width + coord.x;
+    }
+
+    public int GetClearancePenalty(
+    GridCoord coord)
+    {
+        if (!IsInside(coord))
+            return 0;
+
+        return clearancePenalties[
+            GetIndex(coord)];
+    }
+
+    internal void SetClearancePenalty(
+        GridCoord coord,
+        int penalty)
+    {
+        if (!IsInside(coord))
+            return;
+
+        clearancePenalties[
+            GetIndex(coord)] =
+            Mathf.Max(0, penalty);
+    }
+
+    public bool IsGoalCell(GridCoord coord)
+    {
+        if (!IsInside(coord))
+            return false;
+
+        return goalCells[GetIndex(coord)];
+    }
+
+    internal void SetGoalCell(GridCoord coord, bool value)
+    {
+        if (!IsInside(coord))
+            return;
+
+        goalCells[GetIndex(coord)] = value;
     }
 }

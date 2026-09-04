@@ -302,11 +302,12 @@ public class CommandIssuer : MonoBehaviour
 
         // experimental shared navigation path
         movementGroup.Navigator.Build();
-        //FlowField flowField = movementGroup.Navigator.GetActiveFlowField();
-        //if (flowField != null)
-        //{
-        //    FlowFieldDebugDrawer.Draw(flowField, stride: 1, duration: 10f);
-        //}
+        FlowField flowField = movementGroup.Navigator.GetActiveFlowField();
+        if (flowField != null)
+        {
+            FlowFieldDebugDrawer.Draw(flowField, stride: 1, duration: 10f);
+            //FlowFieldDebugDrawer.LogClearanceAround(flowField, new GridCoord(51, 130), radius: 2);
+        }
 
 
 

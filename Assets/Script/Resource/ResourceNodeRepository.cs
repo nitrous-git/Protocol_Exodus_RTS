@@ -128,6 +128,8 @@ public sealed class ResourceNodeRepository
             return false;
         }
 
+        Debug.Log("Node registered at cell : " + occupiedCell.x + ", " + occupiedCell.z);
+
         // Snap the scene-authored resource node to the exact
         // center of its resolved grid cell.
         node.transform.position = gridCell.WorldCenter;

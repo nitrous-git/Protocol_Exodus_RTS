@@ -13,6 +13,9 @@ public static class FlowFieldBuilder
     private const int StraightCost = 10;
     private const int DiagonalCost = 14;
 
+    private const float ComfortMarginCells = 1.0f;
+    private const int MaxClearancePenalty = 20;
+
     private static readonly GridCoord[] NeighborOffsets =
     {
         new GridCoord(-1,  0),
@@ -29,7 +32,8 @@ public static class FlowFieldBuilder
     public static FlowField Build(
         TerrainGrid grid,
         Vector3 destination,
-        float navigationRadius)
+        float navigationRadius,
+        float goalRadius)
     {
         if (grid == null)
         {
@@ -45,14 +49,14 @@ public static class FlowFieldBuilder
             new FlowField(
                 grid,
                 destination,
-                navigationRadius);
+                navigationRadius,
+                goalRadius);
 
         BuildTraversability(field);
 
         double afterTraversability = Time.realtimeSinceStartupAsDouble;
 
-        if (!field.IsInside(
-            field.DestinationCell))
+        if (!field.IsInside(field.DestinationCell))
         {
             Debug.LogWarning(
                 "[FlowField] Destination lies outside the grid.");
@@ -60,8 +64,7 @@ public static class FlowFieldBuilder
             return null;
         }
 
-        if (!field.IsTraversable(
-            field.DestinationCell))
+        if (!field.IsTraversable(field.DestinationCell))
         {
             Debug.LogWarning(
                 $"[FlowField] Destination cell ({field.DestinationCell.x}, {field.DestinationCell.z}) " +
@@ -73,6 +76,8 @@ public static class FlowFieldBuilder
         int expandedCells = BuildIntegrationField(field); // also build the DirectionField
 
         double afterIntegration = Time.realtimeSinceStartupAsDouble;
+
+        BuildDirectionField(field);
 
         field.CompleteBuild();
 
@@ -109,6 +114,22 @@ public static class FlowFieldBuilder
                         field.NavigationRadius);
 
                 field.SetTraversable(coord, traversable);
+
+                if (!traversable)
+                {
+                    field.SetClearancePenalty(coord, 0);
+
+                    continue;
+                }
+
+                GridCell cell = grid.GetCell(coord);
+
+                int clearancePenalty =
+                    CalculateClearancePenalty(
+                        field,
+                        cell);
+
+                field.SetClearancePenalty(coord, clearancePenalty);
             }
         }
     }
@@ -124,11 +145,34 @@ public static class FlowFieldBuilder
 
         openQueue.Enqueue(field.DestinationCell, 0);
 
+        int goalCellCount = SeedGoalRegion(field, openQueue);
+
+        if (goalCellCount == 0)
+        {
+            Debug.LogWarning("[FlowField] No valid goal cells.");
+            return 0;
+        }
+
+        field.GoalCellCount = goalCellCount;
+
         int expandedCells = 0;
+
+        // ---------------------------------------------------
+        // Main Dijkstra Loop
+        // ---------------------------------------------------
 
         while (openQueue.Count > 0)
         {
             GridCoord current = openQueue.Dequeue();
+
+            if (!field.IsInside(current))
+            {
+                Debug.LogError(
+                    $"[FlowField] Queue contained invalid cell " +
+                    $"({current.x},{current.z}).");
+
+                continue;
+            }
 
             int currentIndex = GetIndex(current, field.Width);
 
@@ -163,14 +207,16 @@ public static class FlowFieldBuilder
         {
             GridCoord neighbor = Add(current, NeighborOffsets[i]);
 
-            if (!CanTraverse(field, neighbor, current))
+            if (!CanTraverse(field, current, neighbor))
             {
                 continue;
             }
 
             int movementCost = GetMovementCost(neighbor, current);
 
-            int candidateCost = currentCost + movementCost;
+            int clearancePenalty = field.GetClearancePenalty(neighbor);
+
+            int candidateCost = currentCost + movementCost + clearancePenalty;
 
             int previousCost = field.GetIntegrationCost(neighbor);
 
@@ -180,10 +226,6 @@ public static class FlowFieldBuilder
             }
 
             field.SetIntegrationCost(neighbor, candidateCost);
-
-            Vector3 direction = CalculateDirection(field, neighbor, current);
-
-            field.SetDirection(neighbor, direction);
 
             openQueue.Enqueue(neighbor, candidateCost);
         }
@@ -207,10 +249,10 @@ public static class FlowFieldBuilder
 
     private static bool CanTraverse(FlowField field, GridCoord from, GridCoord to)
     {
-        if (!field.IsInside(to))
+        if (!field.IsInside(from) || !field.IsInside(to))
             return false;
 
-        if (!field.IsTraversable(to))
+        if (!field.IsTraversable(from) || !field.IsTraversable(to))
             return false;
 
         int deltaX = to.x - from.x;
@@ -227,61 +269,252 @@ public static class FlowFieldBuilder
         return field.IsTraversable(horizontal) && field.IsTraversable(vertical);
     }
 
-    //
-    // For now we are not doing a third pass in O(V)
-    // We build the DirectionField directly inside
-    // Dijkstra expansion (during relaxation step)
-    // 
-    // We can do a third pass if we need smoothing of 
-    // the direction field later. 
-    //
-    //private static void BuildDirectionField(
-    //    FlowField field)
-    //{
-    //    for (int z = 0;
-    //         z < field.Height;
-    //         z++)
-    //    {
-    //        for (int x = 0;
-    //             x < field.Width;
-    //             x++)
-    //        {
-    //            GridCoord current =
-    //                new GridCoord(x, z);
+    private static void BuildDirectionField(FlowField field)
+    {
+        for (int z = 0; z < field.Height; z++)
+        {
+            for (int x = 0; x < field.Width; x++)
+            {
+                GridCoord current = new GridCoord(x, z);
 
-    //            if (!field.IsReachable(current))
-    //            {
-    //                field.SetDirection(
-    //                    current,
-    //                    Vector3.zero);
+                if (!field.IsReachable(
+                    current))
+                {
+                    field.SetDirection(
+                        current,
+                        Vector3.zero);
 
-    //                continue;
-    //            }
+                    continue;
+                }
 
-    //            if (SameCell(
-    //                current,
-    //                field.DestinationCell))
-    //            {
-    //                field.SetDirection(
-    //                    current,
-    //                    Vector3.zero);
+                if (field.IsGoalCell(current))
+                {
+                    field.SetDirection(
+                        current,
+                        Vector3.zero);
 
-    //                continue;
-    //            }
+                    continue;
+                }
 
-    //            Vector3 direction =
-    //                CalculateBestDirection(
-    //                    field,
-    //                    current);
+                Vector3 direction = CalculateBestDirection(field, current);
 
-    //            field.SetDirection(
-    //                current,
-    //                direction);
-    //        }
-    //    }
-    //}
+                field.SetDirection(current, direction);
+            }
+        }
+    }
+
+    private static Vector3 CalculateBestDirection(FlowField field, GridCoord current)
+    {
+        int bestTotalCost = int.MaxValue;
+        int bestNeighborCost = int.MaxValue;
+
+        GridCoord bestNeighbor = current;
+
+        for (int i = 0; i < NeighborOffsets.Length; i++)
+        {
+            GridCoord neighbor =
+                Add(
+                    current,
+                    NeighborOffsets[i]);
+
+            if (!CanTraverse(
+                field,
+                current,
+                neighbor))
+            {
+                continue;
+            }
+
+            if (!field.IsReachable(
+                neighbor))
+            {
+                continue;
+            }
+
+            int neighborCost =
+                field.GetIntegrationCost(
+                    neighbor);
+
+            int stepCost =
+                GetMovementCost(
+                    current,
+                    neighbor);
+
+            int totalCost =
+                neighborCost +
+                stepCost;
+
+            if (totalCost >
+                bestTotalCost)
+            {
+                continue;
+            }
+
+            if (totalCost ==
+                    bestTotalCost &&
+                neighborCost >=
+                    bestNeighborCost)
+            {
+                continue;
+            }
+
+            bestTotalCost = totalCost;
+            bestNeighborCost = neighborCost;
+            bestNeighbor = neighbor;
+        }
+
+        if (SameCell(
+            current,
+            bestNeighbor))
+        {
+            return Vector3.zero;
+        }
+
+        return CalculateDirection(
+            field,
+            current,
+            bestNeighbor);
+    }
+
+    // ----------------------------------------------------
+    // Penalty
+    // ----------------------------------------------------
+    private static int CalculateClearancePenalty(
+    FlowField field,
+    GridCell cell)
+    {
+        if (cell == null)
+            return 0;
+
+        float spareClearance =
+            cell.StaticClearanceRadius -
+            field.NavigationRadius;
+
+        float comfortMargin =
+            field.Grid.CellSize *
+            ComfortMarginCells;
+
+        if (comfortMargin <=
+            Mathf.Epsilon)
+        {
+            return 0;
+        }
+
+        float normalizedDiscomfort =
+            1f -
+            Mathf.Clamp01(
+                spareClearance /
+                comfortMargin);
+
+        return Mathf.RoundToInt(
+            normalizedDiscomfort *
+            MaxClearancePenalty);
+    }
+
+    // ----------------------------------------------------
+    // Goal region
+    // ----------------------------------------------------
+
+    private static int SeedGoalRegion(
+    FlowField field,
+    MinPriorityQueue<GridCoord, int>
+        openQueue)
+    {
+        TerrainGrid grid =
+            field.Grid;
+
+        GridCoord centerCell =
+            field.DestinationCell;
+
+        Vector3 centerWorld =
+            grid.CellToWorld(
+                centerCell);
+
+        float goalRadius =
+            Mathf.Max(
+                field.GoalRadius,
+                grid.CellSize * 0.5f);
+
+        float goalRadiusSqr =
+            goalRadius *
+            goalRadius;
+
+        int cellRadius =
+            Mathf.CeilToInt(
+                goalRadius /
+                grid.CellSize);
+
+        int goalCellCount = 0;
+
+        for (int z =
+                 centerCell.z - cellRadius;
+             z <=
+                 centerCell.z + cellRadius;
+             z++)
+        {
+            for (int x =
+                     centerCell.x - cellRadius;
+                 x <=
+                     centerCell.x + cellRadius;
+                 x++)
+            {
+                GridCoord coord =
+                    new GridCoord(
+                        x,
+                        z);
+
+                if (!field.IsInside(coord))
+                    continue;
+
+                if (!field.IsTraversable(
+                    coord))
+                {
+                    continue;
+                }
+
+                Vector3 cellWorld =
+                    grid.CellToWorld(
+                        coord);
+
+                Vector3 difference =
+                    cellWorld -
+                    centerWorld;
+
+                difference.y = 0f;
+
+                if (difference.sqrMagnitude >
+                    goalRadiusSqr)
+                {
+                    continue;
+                }
+
+                field.SetGoalCell(
+                    coord,
+                    true);
+
+                field.SetIntegrationCost(
+                    coord,
+                    0);
+
+                field.SetDirection(
+                    coord,
+                    Vector3.zero);
+
+                openQueue.Enqueue(
+                    coord,
+                    0);
+
+                goalCellCount++;
+            }
+        }
+
+        return goalCellCount;
+    }
 
 
+    // ----------------------------------------------------
+    // Helpers
+    // ----------------------------------------------------
 
     private static int GetMovementCost(
         GridCoord from,

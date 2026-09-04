@@ -68,6 +68,19 @@ public static class FlowFieldDebugDrawer
                     continue;
                 }
 
+                if (field.IsGoalCell(coord))
+                {
+                    Debug.DrawLine(
+                        center,
+                        center +
+                            Vector3.up * 0.4f,
+                        Color.cyan,
+                        duration,
+                        false);
+
+                    continue;
+                }
+
                 //DrawIntegrationCost(
                 //    field,
                 //    coord,
@@ -214,5 +227,46 @@ public static class FlowFieldDebugDrawer
             Color.gray,
             duration,
             false);
+    }
+
+    public static void LogClearanceAround(
+    FlowField field,
+    GridCoord center,
+    int radius = 2)
+    {
+        if (field == null ||
+            field.Grid == null)
+        {
+            return;
+        }
+
+        for (int z = center.z - radius;
+             z <= center.z + radius;
+             z++)
+        {
+            for (int x = center.x - radius;
+                 x <= center.x + radius;
+                 x++)
+            {
+                GridCoord coord =
+                    new GridCoord(x, z);
+
+                if (!field.IsInside(coord))
+                    continue;
+
+                GridCell cell =
+                    field.Grid.GetCell(coord);
+
+                if (cell == null)
+                    continue;
+
+                Debug.Log(
+                    $"[FFClearance] " +
+                    $"Coord=({x},{z}) " +
+                    $"Required={field.NavigationRadius:F2} " +
+                    $"Clearance={cell.StaticClearanceRadius:F2} " +
+                    $"Traversable={field.IsTraversable(coord)}");
+            }
+        }
     }
 }

@@ -25,6 +25,7 @@ public sealed class FormationMovementGroup
     private readonly Vector3 formationCenterWorld;
 
     private readonly float formationMaxNavigationRadius;
+    private readonly float formationRadius;
     private readonly float assemblyRadius;
     private readonly float arrivalTolerance;
 
@@ -36,6 +37,7 @@ public sealed class FormationMovementGroup
     public int UnitCount => members.Count;
     public float ArrivalTolerance => arrivalTolerance;
     public float AssemblyRadius => assemblyRadius;
+    public float FormationRadius => formationRadius;
 
     public FormationMovementGroup(
         int movementGroupId,
@@ -66,7 +68,8 @@ public sealed class FormationMovementGroup
 
         BuildSlotPositions();
 
-        assemblyRadius = CalculateAssemblyRadius();
+        formationRadius = CalculateFormationRadius();
+        assemblyRadius = CalculateAssemblyRadius(formationRadius);
 
         arrivalTolerance = terrainGrid.CellSize * 0.25f;
 
@@ -323,30 +326,33 @@ public sealed class FormationMovementGroup
         }
     }
 
-    private float CalculateAssemblyRadius()
+    private float CalculateFormationRadius()
     {
-        float formationRadius = 0f;
+        float radius = 0f;
 
         for (int i = 0; i < slotPositions.Count; i++)
         {
-            Vector3 difference =slotPositions[i] - formationCenterWorld;
+            Vector3 difference = slotPositions[i] - formationCenterWorld;
 
             difference.y = 0f;
 
-            formationRadius =
+            radius =
                 Mathf.Max(
-                    formationRadius,
+                    radius,
                     difference.magnitude);
         }
 
-        //
-        // We want the final pass before units are deeply packed
-        // into the destination formation.
-        //
+        return radius;
+    }
+
+    private float CalculateAssemblyRadius(float formationRadius)
+    {
         float assemblyBuffer = Mathf.Max(terrainGrid.CellSize * 4f, formationMaxNavigationRadius * 4f);
 
         return formationRadius + assemblyBuffer;
     }
+
+
 
     // ---------------------------------------------------------------------
     // Commitement API 

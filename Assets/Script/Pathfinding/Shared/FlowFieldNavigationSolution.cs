@@ -17,6 +17,7 @@ public sealed class FlowFieldNavigationSolution : INavigationSolution
 
     public bool IsValid => field != null && field.IsBuilt;
     public Vector3 Destination => field != null ? field.Destination : Vector3.zero;
+    public float NavigationRadius => field != null ? field.NavigationRadius : 0f;
     public IReadOnlyList<Vector3> DebugPath => EmptyDebugPath;
     public FlowField Field => field;
 
@@ -39,18 +40,16 @@ public sealed class FlowFieldNavigationSolution : INavigationSolution
             return NavigationSample.Invalid;
         }
 
-        if (SameCell(currentCell, field.DestinationCell))
+        if (field.IsGoalCell(currentCell))
         {
-            Vector3 destinationPoint =
-                field.Grid.CellToWorld(
-                    currentCell);
+            Vector3 goalPoint = field.Grid.CellToWorld(currentCell);
 
             return new NavigationSample(
                 true,
-                true,
+                false,
                 Vector3.zero,       // RoutePoint
-                destinationPoint,
-                destinationPoint,
+                goalPoint,
+                goalPoint,
                 0f,  // DistanceFormula
                 -1); // RouteSegmentIndex
         }

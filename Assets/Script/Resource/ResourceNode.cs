@@ -1,3 +1,4 @@
+using Unity.GraphToolkit.Editor;
 using UnityEngine;
 
 /// <summary>
@@ -46,6 +47,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
 
         if (selectionVisual != null)
             selectionVisual.SetActive(false);
+
     }
 
     /// <summary>
@@ -72,6 +74,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
         IsInitialized = true;
 
         SetSelected(false);
+
     }
 
     /// <summary>

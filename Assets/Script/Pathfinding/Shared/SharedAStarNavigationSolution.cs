@@ -5,12 +5,13 @@ public sealed class SharedAStarNavigationSolution : INavigationSolution
 {
     private const float DuplicatePointDistanceSqr = 0.0001f;
 
-
+    private readonly float navigationRadius;
     private readonly List<Vector3> path = new List<Vector3>();
     private readonly SharedRouteSampler sampler;
 
     public bool IsValid => path.Count > 0 && sampler != null;
     public IReadOnlyList<Vector3> DebugPath => path;
+    public float NavigationRadius => navigationRadius;  
 
     public Vector3 Destination { get; }
 

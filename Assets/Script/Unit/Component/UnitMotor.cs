@@ -388,7 +388,7 @@ public class UnitMotor : MonoBehaviour
     }
 
     // ---------------------------------------------------------------------
-    // Safe Velovity
+    // Safe Velovity & Displacement
     // ---------------------------------------------------------------------
 
     private Vector3 ResolveStaticSafeVelocity(Vector3 velocity)
@@ -419,20 +419,39 @@ public class UnitMotor : MonoBehaviour
         return Vector3.zero;
     }
 
-    private bool IsStaticMovementAllowed(Vector3 velocity)
+    private bool IsStaticMovementAllowed(
+        Vector3 velocity)
     {
-        if (velocity.sqrMagnitude <= 0.0001f)
-        {
-            return true;
-        }
+        Vector3 start =
+            transform.position;
 
-        Vector3 start = transform.position;
-        Vector3 end = start + velocity * Time.deltaTime;
+        Vector3 end =
+            start +
+            velocity *
+            Time.deltaTime;
 
-        Vector3 flatStart = new Vector3(start.x, 0f, start.z);
-        Vector3 flatEnd = new Vector3(end.x, 0f, end.z);
+        return IsStaticMovementAllowed(
+            start,
+            end);
+    }
 
-        Vector3 movement = flatEnd - flatStart;
+    private bool IsStaticMovementAllowed(Vector3 start, Vector3 end)
+    {
+        Vector3 flatStart =
+            new Vector3(
+                start.x,
+                0f,
+                start.z);
+
+        Vector3 flatEnd =
+            new Vector3(
+                end.x,
+                0f,
+                end.z);
+
+        Vector3 movement =
+            flatEnd -
+            flatStart;
 
         float distance = movement.magnitude;
 
@@ -441,31 +460,49 @@ public class UnitMotor : MonoBehaviour
             return true;
         }
 
-        //
-        // Keep each probe comfortably below one
-        // grid cell so transitions remain adjacent
-        // even during a slow frame.
-        //
-        float maxProbeDistance = Mathf.Max(terrainGrid.CellSize * 0.45f,0.01f);
+        float maxProbeDistance =
+            Mathf.Max(
+                terrainGrid.CellSize *
+                0.45f,
+                0.01f);
 
-        int probeCount = Mathf.Max(1, Mathf.CeilToInt(distance / maxProbeDistance));
+        int probeCount =
+            Mathf.Max(
+                1,
+                Mathf.CeilToInt(
+                    distance /
+                    maxProbeDistance));
 
-        GridCoord previousCell = terrainGrid.WorldToCell(flatStart);
+        GridCoord previousCell =
+            terrainGrid.WorldToCell(
+                flatStart);
 
         for (int i = 1; i <= probeCount; i++)
         {
             float t = i / (float)probeCount;
 
-            Vector3 probePosition = Vector3.Lerp(flatStart, flatEnd, t);
+            Vector3 probePosition =
+                Vector3.Lerp(
+                    flatStart,
+                    flatEnd,
+                    t);
 
-            GridCoord nextCell = terrainGrid.WorldToCell(probePosition);
+            GridCoord nextCell =
+                terrainGrid.WorldToCell(
+                    probePosition);
 
-            if (SameCell(previousCell, nextCell))
+            if (SameCell(
+                previousCell,
+                nextCell))
             {
                 continue;
             }
 
-            if (!terrainGrid.IsStaticTransitionTraversable(previousCell, nextCell, owner.NavigationRadius))
+            if (!terrainGrid
+                .IsStaticTransitionTraversable(
+                    previousCell,
+                    nextCell,
+                    GetRequiredNavigationRadius()))
             {
                 return false;
             }
@@ -476,6 +513,24 @@ public class UnitMotor : MonoBehaviour
         return true;
     }
 
+    private Vector3 ResolveStaticSafeDisplacement(Vector3 displacement)
+    {
+        Vector3 candidate = displacement;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Vector3 end = transform.position + candidate;
+
+            if (IsStaticMovementAllowed(transform.position, end))
+            {
+                return candidate;
+            }
+
+            candidate *= 0.5f;
+        }
+
+        return Vector3.zero;
+    }
 
     // ---------------------------------------------------------------------
     // Shared Navigation
@@ -707,10 +762,13 @@ public class UnitMotor : MonoBehaviour
         if (displacement.sqrMagnitude <= Mathf.Epsilon)
             return;
 
+        displacement = ResolveStaticSafeDisplacement(displacement);
+
+        if (displacement.sqrMagnitude <= Mathf.Epsilon)
+            return;
+
         Vector3 nextPosition = transform.position + displacement;
-
         nextPosition = ProjectPositionToGround(nextPosition);
-
         transform.position = nextPosition;
 
         UpdateUnitOccupancy();
@@ -719,6 +777,16 @@ public class UnitMotor : MonoBehaviour
     private static bool SameCell(GridCoord first, GridCoord second)
     {
         return first.x == second.x && first.z == second.z;
+    }
+
+    private float GetRequiredNavigationRadius()
+    {
+        if (navigationSolution != null && navigationSolution.IsValid)
+        {
+            return navigationSolution.NavigationRadius;
+        }
+
+        return owner != null ? owner.NavigationRadius : 0f;
     }
 
     // ---------------------------------------------------------------------
