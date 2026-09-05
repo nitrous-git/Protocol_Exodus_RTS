@@ -82,7 +82,7 @@ public class MoveState : UnitState<UnitBase>
         //
         if (formationGroup == null)
         {
-            Debug.Log(unit.name + " ordinary MovaState  ticking");
+            //Debug.Log(unit.name + " ordinary MovaState  ticking");
             if (!pathRequested || unit.Motor == null || unit.Motor.HasArrived)
             {
                 unit.IssueCommand(CommandType.Idle, CommandContext.None());

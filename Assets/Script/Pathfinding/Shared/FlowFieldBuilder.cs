@@ -58,9 +58,7 @@ public static class FlowFieldBuilder
 
         if (!field.IsInside(field.DestinationCell))
         {
-            Debug.LogWarning(
-                "[FlowField] Destination lies outside the grid.");
-
+            Debug.LogWarning("[FlowField] Destination lies outside the grid.");
             return null;
         }
 
@@ -81,7 +79,7 @@ public static class FlowFieldBuilder
 
         field.CompleteBuild();
 
-        double endTime = Time.realtimeSinceStartupAsDouble;
+        double afterDirectionTime = Time.realtimeSinceStartupAsDouble;
 
         double elapsedMs =
             (Time.realtimeSinceStartupAsDouble -
@@ -93,7 +91,8 @@ public static class FlowFieldBuilder
             $"Expanded={expandedCells} " +
             $"TraversabilityMs=" + $"{(afterTraversability - startTime) * 1000.0:F2} " +
             $"IntegrationMs=" + $"{(afterIntegration - afterTraversability) * 1000.0:F2} " +
-            $"TotalMs=" + $"{(endTime - startTime) * 1000.0:F2}");
+            $"DirectionMs=" + $"{(afterDirectionTime - afterIntegration) * 1000.0:F2}" +
+            $"TotalMs=" + $"{elapsedMs * 1000.0:F2}");
 
         return field;
     }

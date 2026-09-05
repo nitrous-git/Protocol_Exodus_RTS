@@ -66,7 +66,7 @@ public sealed class ResourceNodeRepository
 
         IsInitialized = true;
 
-        Debug.Log($"ResourceNodeRepository initialized with {resourceNodeList.Count} resource nodes.");
+        //Debug.Log($"ResourceNodeRepository initialized with {resourceNodeList.Count} resource nodes.");
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public sealed class ResourceNodeRepository
             return false;
         }
 
-        Debug.Log("Node registered at cell : " + occupiedCell.x + ", " + occupiedCell.z);
+        //Debug.Log("Node registered at cell : " + occupiedCell.x + ", " + occupiedCell.z);
 
         // Snap the scene-authored resource node to the exact
         // center of its resolved grid cell.
