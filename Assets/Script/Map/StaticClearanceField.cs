@@ -1,7 +1,10 @@
+using Unity.Profiling;
 using UnityEngine;
 
 public class StaticClearanceField
 {
+    private static readonly ProfilerMarker RebuildMarker = new ProfilerMarker("StaticClearanceField.Rebuild");
+
     private bool staticClearanceDirty = true;
 
     private byte[] clearanceBlocked;
@@ -24,7 +27,10 @@ public class StaticClearanceField
         if (!staticClearanceDirty)
             return;
 
-        RebuildStaticClearanceField();
+        using (RebuildMarker.Auto())
+        {
+            RebuildStaticClearanceField();
+        }
     }
 
     public bool IsStaticNavigationBlocked(GridCell cell)

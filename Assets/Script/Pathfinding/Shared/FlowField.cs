@@ -71,17 +71,11 @@ public sealed class FlowField
             grid.WorldToCell(
                 destination);
 
-        int cellCount =
-            Width * Height;
+        int cellCount = Width * Height;
 
-        traversable =
-            new bool[cellCount];
-
-        integrationCosts =
-            new int[cellCount];
-
-        directions =
-            new Vector3[cellCount];
+        traversable = new bool[cellCount];
+        integrationCosts = new int[cellCount];
+        directions = new Vector3[cellCount];
 
         clearancePenalties = new int[cellCount];
         goalCells = new bool[cellCount];
@@ -189,6 +183,14 @@ public sealed class FlowField
         directions[GetIndex(coord)] = direction.normalized;
     }
 
+    internal void SetNormalizedDirection(GridCoord coord, Vector3 direction)
+    {
+        if (!IsInside(coord))
+            return;
+
+        directions[GetIndex(coord)] = direction;
+    }
+
     internal void CompleteBuild()
     {
         IsBuilt = true;
@@ -203,8 +205,7 @@ public sealed class FlowField
         return coord.z * Width + coord.x;
     }
 
-    public int GetClearancePenalty(
-    GridCoord coord)
+    public int GetClearancePenalty(GridCoord coord)
     {
         if (!IsInside(coord))
             return 0;
@@ -220,9 +221,7 @@ public sealed class FlowField
         if (!IsInside(coord))
             return;
 
-        clearancePenalties[
-            GetIndex(coord)] =
-            Mathf.Max(0, penalty);
+        clearancePenalties[GetIndex(coord)] = Mathf.Max(0, penalty);
     }
 
     public bool IsGoalCell(GridCoord coord)
@@ -240,4 +239,41 @@ public sealed class FlowField
 
         goalCells[GetIndex(coord)] = value;
     }
+
+    // no bound check methods
+    internal bool IsTraversableAt(int index)
+    {
+        return traversable[index];
+    }
+
+    internal int GetIntegrationCostAt(int index)
+    {
+        return integrationCosts[index];
+    }
+
+    internal void SetIntegrationCostAt(int index, int cost)
+    {
+        integrationCosts[index] = cost;
+    }
+
+    internal int GetClearancePenaltyAt(int index)
+    {
+        return clearancePenalties[index];
+    }
+
+    internal bool IsReachableAt(int index)
+    {
+        return traversable[index] && integrationCosts[index] !=  UnreachableCost;
+    }
+
+    internal bool IsGoalCellAt(int index)
+    {
+        return goalCells[index];
+    }
+
+    internal void SetNormalizedDirectionAt(int index, Vector3 direction)
+    {
+        directions[index] = direction;
+    }
+
 }
