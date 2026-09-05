@@ -27,7 +27,7 @@ public sealed class FlowField
     public Vector3 Destination { get; }
     public GridCoord DestinationCell { get; }
     public float NavigationRadius { get; }
-    public float GoalRadius { get; }
+    public Vector2 GoalHalfExtents { get; }
 
     public bool IsBuilt { get; private set; }
     public int GoalCellCount { get; internal set; }
@@ -36,7 +36,7 @@ public sealed class FlowField
         TerrainGrid grid,
         Vector3 destination,
         float navigationRadius, 
-        float goalRadius)
+        Vector2 goalHalfExtents)
     {
         Grid = grid;
 
@@ -47,7 +47,9 @@ public sealed class FlowField
                 0f,
                 navigationRadius);
 
-        GoalRadius = Mathf.Max(0f, goalRadius);
+        GoalHalfExtents = new Vector2(
+            Mathf.Max(goalHalfExtents.x, grid != null ? grid.CellSize * 0.5f : 0f), 
+            Mathf.Max(goalHalfExtents.y, grid != null ? grid.CellSize * 0.5f: 0f));
 
         if (grid == null)
         {

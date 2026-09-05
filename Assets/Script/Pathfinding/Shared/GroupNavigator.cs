@@ -120,14 +120,14 @@ public sealed class GroupNavigator
 
         double startTime = Time.realtimeSinceStartupAsDouble;
 
-        float goalRadius = movementGroup.Formation != null ? movementGroup.Formation.FormationRadius : 0f;
+        Vector2 goalHalfExtents = movementGroup.Formation != null ? movementGroup.Formation.FormationHalfExtents : Vector2.zero;
 
         FlowField field =
             FlowFieldBuilder.Build(
                 terrainGrid,
                 movementGroup.Destination,
                 movementGroup.MaxNavigationRadius,
-                goalRadius);
+                goalHalfExtents);
 
         double timeMs = (Time.realtimeSinceStartupAsDouble - startTime) * 1000.0;
 

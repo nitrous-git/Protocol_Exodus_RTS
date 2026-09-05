@@ -25,7 +25,6 @@ public sealed class FormationMovementGroup
     private readonly Vector3 formationCenterWorld;
 
     private readonly float formationMaxNavigationRadius;
-    private readonly float formationRadius;
     private readonly float assemblyRadius;
     private readonly float arrivalTolerance;
 
@@ -33,12 +32,11 @@ public sealed class FormationMovementGroup
 
     public int MovementGroupId { get; }
     public bool FinalAssignmentDone { get; private set; }
-    //public int FormationRadius { get; }
+    public Vector2 FormationHalfExtents { get; private set; }
 
     public int UnitCount => members.Count;
     public float ArrivalTolerance => arrivalTolerance;
     public float AssemblyRadius => assemblyRadius;
-    public float FormationRadius => formationRadius;
 
     public FormationMovementGroup(
         int movementGroupId,
@@ -68,9 +66,12 @@ public sealed class FormationMovementGroup
         formationCenterWorld = terrainGrid.CellToWorld(formationCenterCell);
 
         BuildSlotPositions();
+        CalculateFormationExtents();
 
-        formationRadius = CalculateFormationRadius();
-        assemblyRadius = CalculateAssemblyRadius(formationRadius);
+        assemblyRadius = CalculateAssemblyRadius();
+
+        //formationRadius = CalculateFormationRadius();
+        //assemblyRadius = CalculateAssemblyRadius(formationRadius);
 
         arrivalTolerance = terrainGrid.CellSize * 0.25f;
 
@@ -353,6 +354,42 @@ public sealed class FormationMovementGroup
         return formationRadius + assemblyBuffer;
     }
 
+    private float CalculateAssemblyRadius()
+    {
+        float formationRadius = 0f;
+
+        for (int i = 0; i < slotPositions.Count; i++)
+        {
+            Vector3 difference = slotPositions[i] - formationCenterWorld;
+
+            difference.y = 0f;
+
+            formationRadius =
+                Mathf.Max(
+                    formationRadius,
+                    difference.magnitude);
+        }
+
+        float assemblyBuffer = Mathf.Max(terrainGrid.CellSize * 4f, formationMaxNavigationRadius * 4f);
+
+        return formationRadius + assemblyBuffer;
+    }
+
+    private void CalculateFormationExtents()
+    {
+        float extentX = 0f;
+        float extentZ = 0f;
+
+        for (int i = 0; i < slotPositions.Count; i++)
+        {
+            Vector3 offset = slotPositions[i] - formationCenterWorld;
+
+            extentX = Mathf.Max(extentX, Mathf.Abs(offset.x));
+            extentZ = Mathf.Max(extentZ, Mathf.Abs(offset.z));
+        }
+
+        FormationHalfExtents = new Vector2(extentX, extentZ);
+    }
 
 
     // ---------------------------------------------------------------------

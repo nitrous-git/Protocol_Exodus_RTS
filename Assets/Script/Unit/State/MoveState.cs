@@ -152,24 +152,53 @@ public class MoveState : UnitState<UnitBase>
         }
     }
 
-    private void TickSharedTravel(UnitBase unit)
+    private void TickSharedTravel(
+    UnitBase unit)
     {
         if (unit.Motor == null)
         {
-            EndSharedTravel(unit);
+            AbortSharedTravel(unit);
+
             return;
         }
 
-        if (HasReachedAssemblyRegion())
+        if (formationGroup == null)
         {
-            EndSharedTravel(unit);
+            Debug.LogWarning(
+                $"[SharedMove] " +
+                $"Unit={unit.UnitId} " +
+                $"Group={movementGroup?.Id ?? 0} " +
+                $"has no FormationMovementGroup.");
+
+            AbortSharedTravel(unit);
+
             return;
         }
 
         //
-        // The motor should remain attached to the
-        // shared navigation solution until the group
-        // reaches its assembly region.
+        // FormationMovementGroup owns the group-level
+        // assembly decision.
+        //
+        // It evaluates only once per frame even though
+        // every MoveState references the same instance.
+        //
+        formationGroup.Tick();
+
+        //
+        // PerformFinalReassignment() may just have called
+        // ReassignFormationSlot() on this state.
+        //
+        // If so, this unit is now in individual
+        // FinalApproach mode.
+        //
+        if (!sharedTravelActive)
+        {
+            return;
+        }
+
+        //
+        // Shared navigation should remain active until
+        // FormationMovementGroup performs the final handoff.
         //
         if (!unit.Motor.IsFollowingNavigationSolution)
         {
@@ -179,9 +208,10 @@ public class MoveState : UnitState<UnitBase>
                 $"Group={movementGroup?.Id ?? 0} " +
                 $"lost shared navigation before assembly.");
 
-            EndSharedTravel(unit);
+            AbortSharedTravel(unit);
         }
     }
+
 
     protected override void OnExitTyped(UnitBase unit)
     {
@@ -222,7 +252,27 @@ public class MoveState : UnitState<UnitBase>
 
         formationSlotIndex = newSlotIndex;
 
-        return AllocateDestinationAndMove(unit);
+        // Shared travel ends here
+        sharedTravelActive = false;
+        pathRequested = false;
+
+        // Explicitly detach flow field before attempting 
+        // final allocation
+        unit.Motor?.Stop();
+
+        bool startedFinalApproach = AllocateDestinationAndMove(unit);
+
+        if (!startedFinalApproach)
+        {
+            Debug.LogWarning(
+                $"[FormationHandoff] " +
+                $"Unit={unit.UnitId} " +
+                $"Group={movementGroupId} " +
+                $"could not start final approach " +
+                $"for slot={newSlotIndex}.");
+        }
+
+        return startedFinalApproach;
     }
 
     // ---------------------------------------------------------------------
@@ -307,22 +357,22 @@ public class MoveState : UnitState<UnitBase>
         return true;
     }
 
-    private bool HasReachedAssemblyRegion()
-    {
-        if (movementGroup == null)
-            return false;
+    //private bool HasReachedAssemblyRegion()
+    //{
+    //    if (movementGroup == null)
+    //        return false;
 
-        Vector3 groupCenter = movementGroup.GetCurrentCenter();
+    //    Vector3 groupCenter = movementGroup.GetCurrentCenter();
 
-        Vector3 difference = movementGroup.Destination - groupCenter;
-        difference.y = 0f;
+    //    Vector3 difference = movementGroup.Destination - groupCenter;
+    //    difference.y = 0f;
 
-        float arrivalRadius = formationGroup != null ? formationGroup.AssemblyRadius : 0.5f;
+    //    float arrivalRadius = formationGroup != null ? formationGroup.AssemblyRadius : 0.5f;
 
-        return difference.sqrMagnitude <= arrivalRadius * arrivalRadius;
-    }
+    //    return difference.sqrMagnitude <= arrivalRadius * arrivalRadius;
+    //}
 
-    private void EndSharedTravel(UnitBase unit)
+    private void AbortSharedTravel(UnitBase unit)
     {
         sharedTravelActive = false;
         unit.Motor?.Stop();

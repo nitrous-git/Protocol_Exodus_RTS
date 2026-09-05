@@ -157,9 +157,6 @@ public class UnitMotor : MonoBehaviour
 
         bool advancedWaypoint = AdvanceIntermediateWaypoints();
 
-        //if (advancedWaypoint)
-        //    TryRelaxPath();
-
         Vector3 target = path[pathIndex];
 
         MoveTowardsTarget(target);

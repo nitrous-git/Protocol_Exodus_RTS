@@ -33,7 +33,7 @@ public static class FlowFieldBuilder
         TerrainGrid grid,
         Vector3 destination,
         float navigationRadius,
-        float goalRadius)
+        Vector2 goalHalfExtents)
     {
         if (grid == null)
         {
@@ -50,7 +50,7 @@ public static class FlowFieldBuilder
                 grid,
                 destination,
                 navigationRadius,
-                goalRadius);
+                goalHalfExtents);
 
         BuildTraversability(field);
 
@@ -416,9 +416,8 @@ public static class FlowFieldBuilder
     // ----------------------------------------------------
 
     private static int SeedGoalRegion(
-    FlowField field,
-    MinPriorityQueue<GridCoord, int>
-        openQueue)
+        FlowField field,
+        MinPriorityQueue<GridCoord, int> openQueue)
     {
         TerrainGrid grid =
             field.Grid;
@@ -430,51 +429,44 @@ public static class FlowFieldBuilder
             grid.CellToWorld(
                 centerCell);
 
-        float goalRadius =
-            Mathf.Max(
-                field.GoalRadius,
-                grid.CellSize * 0.5f);
+        Vector2 halfExtents =
+            field.GoalHalfExtents;
 
-        float goalRadiusSqr =
-            goalRadius *
-            goalRadius;
-
-        int cellRadius =
+        int cellRadiusX =
             Mathf.CeilToInt(
-                goalRadius /
+                halfExtents.x /
+                grid.CellSize);
+
+        int cellRadiusZ =
+            Mathf.CeilToInt(
+                halfExtents.y /
                 grid.CellSize);
 
         int goalCellCount = 0;
 
         for (int z =
-                 centerCell.z - cellRadius;
+                 centerCell.z - cellRadiusZ;
              z <=
-                 centerCell.z + cellRadius;
+                 centerCell.z + cellRadiusZ;
              z++)
         {
             for (int x =
-                     centerCell.x - cellRadius;
+                     centerCell.x - cellRadiusX;
                  x <=
-                     centerCell.x + cellRadius;
+                     centerCell.x + cellRadiusX;
                  x++)
             {
                 GridCoord coord =
-                    new GridCoord(
-                        x,
-                        z);
+                    new GridCoord(x, z);
 
                 if (!field.IsInside(coord))
                     continue;
 
-                if (!field.IsTraversable(
-                    coord))
-                {
+                if (!field.IsTraversable(coord))
                     continue;
-                }
 
                 Vector3 cellWorld =
-                    grid.CellToWorld(
-                        coord);
+                    grid.CellToWorld(coord);
 
                 Vector3 difference =
                     cellWorld -
@@ -482,8 +474,10 @@ public static class FlowFieldBuilder
 
                 difference.y = 0f;
 
-                if (difference.sqrMagnitude >
-                    goalRadiusSqr)
+                if (Mathf.Abs(difference.x) >
+                        halfExtents.x ||
+                    Mathf.Abs(difference.z) >
+                        halfExtents.y)
                 {
                     continue;
                 }
