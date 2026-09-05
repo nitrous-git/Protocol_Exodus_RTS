@@ -47,7 +47,7 @@ public sealed class FlowField
                 0f,
                 navigationRadius);
 
-        GoalRadius = Mathf.Max(0f, GoalRadius);
+        GoalRadius = Mathf.Max(0f, goalRadius);
 
         if (grid == null)
         {

@@ -140,10 +140,10 @@ public static class FlowFieldBuilder
 
         bool[] settled = new bool[field.Width * field.Height];
 
-        field.SetIntegrationCost(field.DestinationCell, 0);
-        field.SetDirection(field.DestinationCell, Vector3.zero);
+        //field.SetIntegrationCost(field.DestinationCell, 0);
+        //field.SetDirection(field.DestinationCell, Vector3.zero);
 
-        openQueue.Enqueue(field.DestinationCell, 0);
+        //openQueue.Enqueue(field.DestinationCell, 0);
 
         int goalCellCount = SeedGoalRegion(field, openQueue);
 

@@ -33,6 +33,7 @@ public sealed class FormationMovementGroup
 
     public int MovementGroupId { get; }
     public bool FinalAssignmentDone { get; private set; }
+    //public int FormationRadius { get; }
 
     public int UnitCount => members.Count;
     public float ArrivalTolerance => arrivalTolerance;
