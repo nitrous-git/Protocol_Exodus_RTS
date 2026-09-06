@@ -32,9 +32,11 @@ public sealed class FormationMovementGroup
 
     public int MovementGroupId { get; }
     public bool FinalAssignmentDone { get; private set; }
+    public Vector2 FormationHalfExtents { get; private set; }
 
     public int UnitCount => members.Count;
     public float ArrivalTolerance => arrivalTolerance;
+    public float AssemblyRadius => assemblyRadius;
 
     public FormationMovementGroup(
         int movementGroupId,
@@ -64,8 +66,12 @@ public sealed class FormationMovementGroup
         formationCenterWorld = terrainGrid.CellToWorld(formationCenterCell);
 
         BuildSlotPositions();
+        CalculateFormationExtents();
 
         assemblyRadius = CalculateAssemblyRadius();
+
+        //formationRadius = CalculateFormationRadius();
+        //assemblyRadius = CalculateAssemblyRadius(formationRadius);
 
         arrivalTolerance = terrainGrid.CellSize * 0.25f;
 
@@ -322,13 +328,39 @@ public sealed class FormationMovementGroup
         }
     }
 
+    private float CalculateFormationRadius()
+    {
+        float radius = 0f;
+
+        for (int i = 0; i < slotPositions.Count; i++)
+        {
+            Vector3 difference = slotPositions[i] - formationCenterWorld;
+
+            difference.y = 0f;
+
+            radius =
+                Mathf.Max(
+                    radius,
+                    difference.magnitude);
+        }
+
+        return radius;
+    }
+
+    private float CalculateAssemblyRadius(float formationRadius)
+    {
+        float assemblyBuffer = Mathf.Max(terrainGrid.CellSize * 4f, formationMaxNavigationRadius * 4f);
+
+        return formationRadius + assemblyBuffer;
+    }
+
     private float CalculateAssemblyRadius()
     {
         float formationRadius = 0f;
 
         for (int i = 0; i < slotPositions.Count; i++)
         {
-            Vector3 difference =slotPositions[i] - formationCenterWorld;
+            Vector3 difference = slotPositions[i] - formationCenterWorld;
 
             difference.y = 0f;
 
@@ -338,14 +370,27 @@ public sealed class FormationMovementGroup
                     difference.magnitude);
         }
 
-        //
-        // We want the final pass before units are deeply packed
-        // into the destination formation.
-        //
         float assemblyBuffer = Mathf.Max(terrainGrid.CellSize * 4f, formationMaxNavigationRadius * 4f);
 
         return formationRadius + assemblyBuffer;
     }
+
+    private void CalculateFormationExtents()
+    {
+        float extentX = 0f;
+        float extentZ = 0f;
+
+        for (int i = 0; i < slotPositions.Count; i++)
+        {
+            Vector3 offset = slotPositions[i] - formationCenterWorld;
+
+            extentX = Mathf.Max(extentX, Mathf.Abs(offset.x));
+            extentZ = Mathf.Max(extentZ, Mathf.Abs(offset.z));
+        }
+
+        FormationHalfExtents = new Vector2(extentX, extentZ);
+    }
+
 
     // ---------------------------------------------------------------------
     // Commitement API 

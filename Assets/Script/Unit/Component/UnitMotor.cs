@@ -17,6 +17,11 @@ public class UnitMotor : MonoBehaviour
     [SerializeField] private float navMeshSampleRadius = 2f;
     [SerializeField] private int navMeshAreaMask = NavMesh.AllAreas;
 
+    [Header("Shared Navigation")]
+    [SerializeField] private float sharedRouteCorridorCells = 3f;
+    [SerializeField] private float sharedRouteRecoveryCells = 3f;
+    [SerializeField] private float sharedRouteMaxRecoveryWeight = 1f;
+
     [Header("Debug")]
     private bool drawPathGizmos = true;
     [SerializeField] private bool drawOccupancyGizmo = true;
@@ -42,8 +47,15 @@ public class UnitMotor : MonoBehaviour
     private float finalArrivalFraction = 0.15f;
     private int pathRelaxLookAheadNodes = 8;
 
-    public bool HasPath { get { return hasPath; } }
-    public bool HasArrived { get { return !hasPath; } }
+    private INavigationSolution navigationSolution;
+    private int navigationRouteSegmentIndex = -1;
+
+    //public bool HasPath { get { return hasPath; } }
+    //public bool HasArrived { get { return !hasPath; } }
+
+    public bool HasPath => hasPath;
+    public bool IsFollowingNavigationSolution => navigationSolution != null;
+    public bool HasArrived => !hasPath && navigationSolution == null;
 
     public Vector3 CurrentVelocity => currentVelocity;
     public Vector3 PreferredVelocity => preferredVelocity;
@@ -73,6 +85,12 @@ public class UnitMotor : MonoBehaviour
 
     public void Tick()
     {
+        if (navigationSolution != null)
+        {
+            NavigationSolutionUpdate();
+            return;
+        }
+
         if (!hasPath)
             return;
 
@@ -86,12 +104,16 @@ public class UnitMotor : MonoBehaviour
 
     public bool MoveTo(Vector3 destination)
     {
+        ClearNavigationSolution();
+
         return TryBuildPath(destination);
     }
 
     public void Stop()
     {
         ClearPath();
+
+        ClearNavigationSolution();
     }
 
     // ---------------------------------------------------------------------
@@ -134,9 +156,6 @@ public class UnitMotor : MonoBehaviour
         }
 
         bool advancedWaypoint = AdvanceIntermediateWaypoints();
-
-        //if (advancedWaypoint)
-        //    TryRelaxPath();
 
         Vector3 target = path[pathIndex];
 
@@ -209,6 +228,14 @@ public class UnitMotor : MonoBehaviour
 
     private void ApplyVelocity(Vector3 velocity)
     {
+        velocity = ResolveStaticSafeVelocity(velocity);
+
+        if (velocity.sqrMagnitude <= 0.0001f)
+        {
+            currentVelocity = Vector3.zero;
+            return;
+        }
+
         Vector3 currentFlat = new Vector3(transform.position.x, 0f, transform.position.z);
 
         Vector3 nextFlat = currentFlat + velocity * Time.deltaTime;
@@ -358,6 +385,299 @@ public class UnitMotor : MonoBehaviour
     }
 
     // ---------------------------------------------------------------------
+    // Safe Velovity & Displacement
+    // ---------------------------------------------------------------------
+
+    private Vector3 ResolveStaticSafeVelocity(Vector3 velocity)
+    {
+        if (IsStaticMovementAllowed(velocity))
+        {
+            return velocity;
+        }
+
+        //
+        // Local steering may have pushed an otherwise
+        // valid navigation intent into static terrain.
+        //
+        // In that case, prefer the authoritative
+        // navigation velocity.
+        //
+        if (preferredVelocity.sqrMagnitude > 0.0001f && IsStaticMovementAllowed(preferredVelocity))
+        {
+            return preferredVelocity;
+        }
+
+        //
+        // Neither the steered velocity or the
+        // navigation velocity is statically legal.
+        //
+        // Stop rather than penetrating terrain.
+        //
+        return Vector3.zero;
+    }
+
+    private bool IsStaticMovementAllowed(
+        Vector3 velocity)
+    {
+        Vector3 start =
+            transform.position;
+
+        Vector3 end =
+            start +
+            velocity *
+            Time.deltaTime;
+
+        return IsStaticMovementAllowed(
+            start,
+            end);
+    }
+
+    private bool IsStaticMovementAllowed(Vector3 start, Vector3 end)
+    {
+        Vector3 flatStart =
+            new Vector3(
+                start.x,
+                0f,
+                start.z);
+
+        Vector3 flatEnd =
+            new Vector3(
+                end.x,
+                0f,
+                end.z);
+
+        Vector3 movement =
+            flatEnd -
+            flatStart;
+
+        float distance = movement.magnitude;
+
+        if (distance <= Mathf.Epsilon)
+        {
+            return true;
+        }
+
+        float maxProbeDistance =
+            Mathf.Max(
+                terrainGrid.CellSize *
+                0.45f,
+                0.01f);
+
+        int probeCount =
+            Mathf.Max(
+                1,
+                Mathf.CeilToInt(
+                    distance /
+                    maxProbeDistance));
+
+        GridCoord previousCell =
+            terrainGrid.WorldToCell(
+                flatStart);
+
+        for (int i = 1; i <= probeCount; i++)
+        {
+            float t = i / (float)probeCount;
+
+            Vector3 probePosition =
+                Vector3.Lerp(
+                    flatStart,
+                    flatEnd,
+                    t);
+
+            GridCoord nextCell =
+                terrainGrid.WorldToCell(
+                    probePosition);
+
+            if (SameCell(
+                previousCell,
+                nextCell))
+            {
+                continue;
+            }
+
+            if (!terrainGrid
+                .IsStaticTransitionTraversable(
+                    previousCell,
+                    nextCell,
+                    GetRequiredNavigationRadius()))
+            {
+                return false;
+            }
+
+            previousCell = nextCell;
+        }
+
+        return true;
+    }
+
+    private Vector3 ResolveStaticSafeDisplacement(Vector3 displacement)
+    {
+        Vector3 candidate = displacement;
+
+        for (int i = 0; i < 5; i++)
+        {
+            Vector3 end = transform.position + candidate;
+
+            if (IsStaticMovementAllowed(transform.position, end))
+            {
+                return candidate;
+            }
+
+            candidate *= 0.5f;
+        }
+
+        return Vector3.zero;
+    }
+
+    // ---------------------------------------------------------------------
+    // Shared Navigation
+    // ---------------------------------------------------------------------
+
+    public bool FollowNavigationSolution(INavigationSolution solution)
+    {
+        if (solution == null || !solution.IsValid)
+        {
+            return false;
+        }
+
+        ClearPath();
+
+        navigationSolution = solution;
+
+        navigationRouteSegmentIndex = -1;
+
+        NavigationSample initialSample = navigationSolution.SampleDirection(transform.position);
+
+        if (!initialSample.IsValid)
+        {
+            ClearNavigationSolution();
+            return false;
+        }
+
+        navigationRouteSegmentIndex = initialSample.RouteSegmentIndex;
+
+        return true;
+    }
+
+    private void NavigationSolutionUpdate()
+    {
+        if (navigationSolution == null || !navigationSolution.IsValid)
+        {
+            ClearNavigationSolution();
+            return;
+        }
+
+        NavigationSample sample = navigationSolution.SampleDirection(transform.position, navigationRouteSegmentIndex);
+
+        if (!sample.IsValid)
+        {
+            Debug.LogWarning(name + " lost its shared navigation solution.");
+            ClearNavigationSolution();
+            return;
+        }
+
+        navigationRouteSegmentIndex = sample.RouteSegmentIndex;
+
+        if (sample.ReachedDestination)
+        {
+            ClearNavigationSolution();
+            return;
+        }
+
+        Vector3 navigationDirection = CalculateSharedNavigationDirection(sample);
+
+        if (navigationDirection.sqrMagnitude <= 0.0001f)
+        {
+            preferredVelocity = Vector3.zero;
+            currentVelocity = Vector3.zero;
+            return;
+        }
+
+        preferredVelocity = navigationDirection.normalized * moveSpeed;
+
+        Vector3 finalVelocity = preferredVelocity;
+
+        if (localSteeringSystem != null)
+        {
+            finalVelocity = localSteeringSystem.CalculateVelocity(preferredVelocity, moveSpeed);
+        }
+
+        ApplyVelocity(finalVelocity);
+    }
+
+    private Vector3 CalculateSharedNavigationDirection(NavigationSample sample)
+    {
+        Vector3 routeDirection = sample.RouteDirection;
+        routeDirection.y = 0f;
+
+        if (routeDirection.sqrMagnitude <= 0.0001f)
+        {
+            return Vector3.zero;
+        }
+
+        routeDirection.Normalize();
+
+        float corridorDistance = SharedRouteCorridorDistance();
+
+        if (sample.DistanceFromRoute <= corridorDistance)
+        {
+            return routeDirection;
+        }
+
+        Vector3 recoveryDirection = sample.RoutePoint - transform.position;
+        recoveryDirection.y = 0f;
+
+        if (recoveryDirection.sqrMagnitude <= 0.0001f)
+        {
+            return routeDirection;
+        }
+
+        recoveryDirection.Normalize();
+
+        float outsideDistance = sample.DistanceFromRoute - corridorDistance;
+
+        float recoveryDistance = SharedRouteRecoveryDistance();
+        float recoveryFactor = Mathf.Clamp01(outsideDistance / recoveryDistance);
+        float recoveryWeight = recoveryFactor * sharedRouteMaxRecoveryWeight;
+
+        Vector3 combinedDirection = routeDirection + recoveryDirection * recoveryWeight;
+        combinedDirection.y = 0f;
+
+        if (combinedDirection.sqrMagnitude <= 0.0001f)
+        {
+            return routeDirection;
+        }
+
+        return combinedDirection.normalized;
+    }
+
+    private float SharedRouteCorridorDistance()
+    {
+        if (terrainGrid == null)
+            return sharedRouteCorridorCells;
+
+        return terrainGrid.CellSize * sharedRouteCorridorCells;
+    }
+
+    private float SharedRouteRecoveryDistance()
+    {
+        if (terrainGrid == null)
+        {
+            return Mathf.Max(sharedRouteRecoveryCells, 0.01f);
+        }
+
+        return Mathf.Max(terrainGrid.CellSize * sharedRouteRecoveryCells, 0.01f);
+    }
+
+    private void ClearNavigationSolution()
+    {
+        navigationSolution = null;
+        navigationRouteSegmentIndex = -1;
+        currentVelocity = Vector3.zero;
+        preferredVelocity = Vector3.zero;
+    }
+
+    // ---------------------------------------------------------------------
     // Ground Projection
     // ---------------------------------------------------------------------
 
@@ -439,13 +759,31 @@ public class UnitMotor : MonoBehaviour
         if (displacement.sqrMagnitude <= Mathf.Epsilon)
             return;
 
+        displacement = ResolveStaticSafeDisplacement(displacement);
+
+        if (displacement.sqrMagnitude <= Mathf.Epsilon)
+            return;
+
         Vector3 nextPosition = transform.position + displacement;
-
         nextPosition = ProjectPositionToGround(nextPosition);
-
         transform.position = nextPosition;
 
         UpdateUnitOccupancy();
+    }
+
+    private static bool SameCell(GridCoord first, GridCoord second)
+    {
+        return first.x == second.x && first.z == second.z;
+    }
+
+    private float GetRequiredNavigationRadius()
+    {
+        if (navigationSolution != null && navigationSolution.IsValid)
+        {
+            return navigationSolution.NavigationRadius;
+        }
+
+        return owner != null ? owner.NavigationRadius : 0f;
     }
 
     // ---------------------------------------------------------------------
@@ -618,132 +956,7 @@ public class UnitMotor : MonoBehaviour
             pathLookAheadCells;
     }
 
-    // ---------------------------------------------------------------------
-    // Path relaxation 
-    // ---------------------------------------------------------------------
-
-    private void TryRelaxPath()
-    {
-        if (terrainGrid == null ||
-            owner == null ||
-            path.Count == 0 ||
-            pathIndex >= path.Count - 1)
-        {
-            return;
-        }
-
-        int furthestIndex = Mathf.Min(pathIndex + pathRelaxLookAheadNodes, path.Count - 1);
-
-        for (int candidateIndex = furthestIndex; candidateIndex > pathIndex; candidateIndex--)
-        {
-            if (!CanRelaxDirectlyTo(path[candidateIndex]))
-                continue;
-            
-            pathIndex = candidateIndex;
-            return;
-        }
-    }
-
-    private bool CanRelaxDirectlyTo(Vector3 target)
-    {
-        if (terrainGrid == null || owner == null)
-        {
-            return false;
-        }
-
-        GridCoord start = terrainGrid.WorldToCell(transform.position);
-        GridCoord end = terrainGrid.WorldToCell(target);
-        return HasClearGridLine(start, end);
-    }
-
-    // Supercover liner traversal algorithm
-    private bool HasClearGridLine(GridCoord start, GridCoord end)
-    {
-        int x = start.x;
-        int z = start.z;
-
-        int deltaX = end.x - start.x;
-        int deltaZ = end.z - start.z;
-
-        int countX = Mathf.Abs(deltaX);
-        int countZ = Mathf.Abs(deltaZ);
-
-        int stepX = deltaX == 0 ? 0 : deltaX > 0 ? 1 : -1;
-        int stepZ = deltaZ == 0 ? 0 : deltaZ > 0 ? 1 : -1;
-
-        int progressedX = 0;
-        int progressedZ = 0;
-
-        if (!CanUseRelaxationCell(new GridCoord(x, z)))
-        {
-            return false;
-        }
-
-        while (progressedX < countX || progressedZ < countZ)
-        {
-            int decision = (1 + 2 * progressedX) * countZ - (1 + 2 * progressedZ) * countX;
-
-            if (decision == 0)
-            {
-                // The line crosses exactly through a grid corner.
-                //
-                // Check both side cells before allowing
-                // the diagonal transition.
-
-                GridCoord sideX = new GridCoord(x + stepX, z);
-
-                GridCoord sideZ = new GridCoord(x, z + stepZ);
-
-                if (!CanUseRelaxationCell(sideX) || !CanUseRelaxationCell(sideZ))
-                {
-                    return false;
-                }
-
-                x += stepX;
-                z += stepZ;
-
-                progressedX++;
-                progressedZ++;
-            }
-            else if (decision < 0)
-            {
-                x += stepX;
-                progressedX++;
-            }
-            else
-            {
-                z += stepZ;
-                progressedZ++;
-            }
-
-            GridCoord current = new GridCoord(x, z);
-
-            if (!CanUseRelaxationCell(current))
-                return false;
-        }
-
-        return true;
-    }
-
-    private bool CanUseRelaxationCell(GridCoord coord)
-    {
-        if (!terrainGrid.IsInside(coord))
-            return false;
-
-        // Static geometry + requester radius.
-        if (!terrainGrid.HasNavigationClearance(coord, owner.NavigationRadius))
-        {
-            return false;
-        }
-
-        // Current mobile-unit geometry.
-        if (navigationState != null && navigationState.WouldOverlapOccupiedUnit(coord, owner))
-        {
-            return false;
-        }
-
-        return true;
-    }
+   
 
     // ---------------------------------------------------------------------
     // Debug
@@ -758,36 +971,36 @@ public class UnitMotor : MonoBehaviour
 
         Gizmos.color = Color.cyan;
 
-        for (int i = 0; i < path.Count; i++)
-        {
-            Vector3 point = GetGizmoGroundPoint(path[i]);
-            Gizmos.DrawSphere(point, 0.15f);
+        //for (int i = 0; i < path.Count; i++)
+        //{
+        //    Vector3 point = GetGizmoGroundPoint(path[i]);
+        //    Gizmos.DrawSphere(point, 0.15f);
 
-            if (i < path.Count - 1)
-                DrawGroundedGizmoLine(path[i], path[i + 1]);
-        }
+        //    if (i < path.Count - 1)
+        //        DrawGroundedGizmoLine(path[i], path[i + 1]);
+        //}
 
-        if (hasPath)
-        {
-            Vector3 point =
-                GetGizmoGroundPoint(
-                    debugLookAheadTarget);
+        //if (hasPath)
+        //{
+        //    Vector3 point =
+        //        GetGizmoGroundPoint(
+        //            debugLookAheadTarget);
 
-            Gizmos.color =
-                new Color(1f, 0.5f, 0f);
+        //    Gizmos.color =
+        //        new Color(1f, 0.5f, 0f);
 
-            Gizmos.DrawSphere(
-                point,
-                0.12f);
+        //    Gizmos.DrawSphere(
+        //        point,
+        //        0.12f);
 
-            Vector3 unitPosition =
-                GetGizmoGroundPoint(
-                    transform.position);
+        //    Vector3 unitPosition =
+        //        GetGizmoGroundPoint(
+        //            transform.position);
 
-            Gizmos.DrawLine(
-                unitPosition,
-                point);
-        }
+        //    Gizmos.DrawLine(
+        //        unitPosition,
+        //        point);
+        //}
     }
 
     private void DrawGroundedGizmoLine(Vector3 start, Vector3 end)

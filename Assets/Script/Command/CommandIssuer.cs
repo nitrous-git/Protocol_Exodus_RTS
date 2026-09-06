@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 internal readonly struct DefaultCommandTarget
@@ -24,6 +25,8 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private LayerMask groundMask = ~0;
     [SerializeField] private LayerMask resourceNodeMask = ~0;
     [SerializeField] private LayerMask contextCommandMask = ~0;
+
+    private int sharedNavigationMinGroupSize = 36;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
     private readonly List<CombatUnit> attackCommandUnits = new List<CombatUnit>();
@@ -272,19 +275,160 @@ public class CommandIssuer : MonoBehaviour
         if (commandableCount == 0)
             return false;
 
+        if (commandableCount == 1)
+        {
+            return TryIssueSingleUnitMove(commandableUnits[0], destinationCenter);
+        }
+
+        if (commandableCount < sharedNavigationMinGroupSize)
+        {
+            return TryIssueIndividualMoveGroup(destinationCenter);
+        }
+
+        return TryIssueSharedMoveGroup(destinationCenter);
+    }
+
+    private bool TryIssueSingleUnitMove(UnitBase unit, Vector3 destination)
+    {
+        if (unit == null)
+            return false;
+
+        if (unit is not IControllable controllable)
+            return false;
+
+        CommandContext context =
+            CommandContext.MoveTo(
+                destination,
+                formationSlotIndex: 0,
+                formationUnitCount: 1,
+                formationMaxNavigationRadius:
+                    unit.NavigationRadius);
+
+        controllable.IssueCommand(CommandType.Move, context);
+
+        return true;
+    }
+
+    private bool TryIssueIndividualMoveGroup(Vector3 destinationCenter)
+    {
+        int commandableCount = commandableUnits.Count;
+
+        double startTime = Time.realtimeSinceStartupAsDouble;
+
+        try
+        {
+            if (commandableCount == 0)
+                return false;
+
+            float formationMaxNavigationRadius = GetCommandGroupMaxNavigationRadius();
+
+            int movementGroupId = gameContext.AllocateMovementGroupId();
+
+            //
+            // Still one logical movement group.
+            //
+            // This preserves same-group occupancy semantics,
+            // formation topology and destination assignment.
+            //
+            PrepareMovementGroup(movementGroupId);
+
+            FormationMovementGroup formationGroup =
+                new FormationMovementGroup(
+                    movementGroupId,
+                    commandableUnits,
+                    destinationCenter,
+                    formationMaxNavigationRadius,
+                    gameContext.TerrainGrid,
+                    gameContext
+                        .DestinationAllocationSystem
+                        .Formation);
+
+            bool issuedAnyCommand =
+                false;
+
+            for (int i = 0;
+                 i < commandableCount;
+                 i++)
+            {
+                UnitBase unit =
+                    commandableUnits[i];
+
+                if (unit is not IControllable controllable)
+                    continue;
+
+                int slotIndex =
+                    formationGroup
+                        .GetAssignedSlotIndex(unit);
+
+                if (slotIndex < 0)
+                    continue;
+
+                CommandContext context =
+                    CommandContext.MoveTo(
+                        destinationCenter,
+                        slotIndex,
+                        commandableCount,
+                        formationMaxNavigationRadius,
+                        movementGroupId,
+                        formationGroup,
+
+                        //
+                        // CRITICAL:
+                        // no shared MovementGroup.
+                        movementGroup: null);
+
+                controllable.IssueCommand(CommandType.Move, context);
+
+                issuedAnyCommand = true;
+            }
+
+            return issuedAnyCommand;
+        }
+        finally
+        {
+            double elapsedMs = (Time.realtimeSinceStartupAsDouble - startTime) * 1000.0;
+
+            Debug.Log(
+                $"[IndividualNav] " +
+                $"Units={commandableCount} " +
+                $"TimeMs={elapsedMs:F2}");
+        }
+    }
+
+    private bool TryIssueSharedMoveGroup(Vector3 destinationCenter)
+    {
+        int commandableCount = commandableUnits.Count;
+
         float formationMaxNavigationRadius = GetCommandGroupMaxNavigationRadius();
 
         int movementGroupId = gameContext.AllocateMovementGroupId();
-        PrepareMovementGroup(movementGroupId); // mark all units before Astar starts
+
+        PrepareMovementGroup(movementGroupId);
 
         FormationMovementGroup formationGroup =
             new FormationMovementGroup(
-                movementGroupId, 
-                commandableUnits, 
-                destinationCenter, 
-                formationMaxNavigationRadius, 
-                gameContext.TerrainGrid, 
-                gameContext.DestinationAllocationSystem.Formation);
+                movementGroupId,
+                commandableUnits,
+                destinationCenter,
+                formationMaxNavigationRadius,
+                gameContext.TerrainGrid,
+                gameContext
+                    .DestinationAllocationSystem
+                    .Formation);
+
+        MovementGroup movementGroup =
+            new MovementGroup(
+                movementGroupId,
+                commandableUnits,
+                destinationCenter,
+                formationMaxNavigationRadius,
+                formationGroup,
+                gameContext.PathfindingService,
+                gameContext.TerrainGrid);
+
+        movementGroup.Navigator.Build();
+        //FlowField flowField = movementGroup.Navigator.GetActiveFlowField();
+        //FlowFieldDebugDrawer.Draw(flowField, stride:1, duration:10);
 
         bool issuedAnyCommand = false;
 
@@ -292,24 +436,23 @@ public class CommandIssuer : MonoBehaviour
         {
             UnitBase unit = commandableUnits[i];
 
-            IControllable controllable = unit as IControllable;
-            if (controllable == null)
+            if (unit is not IControllable controllable)
                 continue;
 
             int slotIndex = formationGroup.GetAssignedSlotIndex(unit);
 
             if (slotIndex < 0)
-            {
                 continue;
-            }
 
-            CommandContext context = CommandContext.MoveTo(
-                destinationCenter, 
-                slotIndex, 
-                commandableCount, 
-                formationMaxNavigationRadius, 
-                movementGroupId,
-                formationGroup);
+            CommandContext context =
+                CommandContext.MoveTo(
+                    destinationCenter,
+                    slotIndex,
+                    commandableCount,
+                    formationMaxNavigationRadius,
+                    movementGroupId,
+                    formationGroup,
+                    movementGroup);
 
             controllable.IssueCommand(CommandType.Move, context);
 
@@ -400,8 +543,7 @@ public class CommandIssuer : MonoBehaviour
                 continue;
             }
 
-            attackCommandUnits.Add(
-                combatUnit);
+            attackCommandUnits.Add(combatUnit);
         }
 
         if (attackCommandUnits.Count == 0)

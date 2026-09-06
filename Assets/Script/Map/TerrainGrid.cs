@@ -309,12 +309,50 @@ public class TerrainGrid
         staticClearanceField?.RebuildStaticClearanceField();
     }
 
-    //private bool CircleOverlapsCell(Vector3 circleCenter, float radius, Vector3 cellCenter, float halfCellSize)
-    //{
-    //    float deltaX = Mathf.Max(Mathf.Abs(circleCenter.x - cellCenter.x) - halfCellSize, 0f);
-    //    float deltaZ = Mathf.Max(Mathf.Abs(circleCenter.z - cellCenter.z) - halfCellSize, 0f);
-    //    float distanceSquared = deltaX * deltaX + deltaZ * deltaZ;
+    public bool IsStaticallyTraversable(GridCoord coord, float navigationRadius)
+    {
+        if (!IsInside(coord))
+            return false;
 
-    //    return distanceSquared < radius * radius;
-    //}
+        GridCell cell = GetCell(coord);
+
+        if (cell == null || !cell.Walkable)
+        {
+            return false;
+        }
+
+        return HasNavigationClearance(coord, navigationRadius);
+    }
+
+    public bool IsStaticTransitionTraversable(GridCoord from, GridCoord to, float navigationRadius)
+    {
+        int deltaX = to.x - from.x;
+        int deltaZ = to.z - from.z;
+
+        if (deltaX == 0 && deltaZ == 0)
+        {
+            return true;
+        }
+
+        if (Mathf.Abs(deltaX) > 1 || Mathf.Abs(deltaZ) > 1)
+        {
+            return false;
+        }
+
+        if (!IsStaticallyTraversable(to, navigationRadius))
+        {
+            return false;
+        }
+
+        bool diagonal = deltaX != 0 && deltaZ != 0;
+
+        if (!diagonal)
+            return true;
+
+        GridCoord horizontal = new GridCoord(from.x + deltaX, from.z);
+        GridCoord vertical = new GridCoord(from.x, from.z + deltaZ);
+
+        return IsStaticallyTraversable(horizontal, navigationRadius) 
+            && IsStaticallyTraversable(vertical, navigationRadius);
+    }
 }

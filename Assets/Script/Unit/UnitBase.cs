@@ -153,7 +153,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
                     context.FormationSlotIndex, 
                     context.FormationUnitCount,
                     context.FormationMaxNavigationRadius,
-                    context.FormationGroup));
+                    context.FormationGroup,
+                    context.MovementGroup));
                 break;
 
             case CommandType.HoldPosition:

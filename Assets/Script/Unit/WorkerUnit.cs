@@ -31,7 +31,8 @@ public sealed class WorkerUnit : UnitBase
                     context.FormationSlotIndex, 
                     context.FormationUnitCount, 
                     context.FormationMaxNavigationRadius,
-                    context.FormationGroup));
+                    context.FormationGroup,
+                    context.MovementGroup));
                 break;
 
             case CommandType.Gather:

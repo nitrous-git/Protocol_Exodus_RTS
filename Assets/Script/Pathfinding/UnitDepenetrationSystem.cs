@@ -11,7 +11,15 @@ public sealed class UnitDepenetrationSystem
     // this into a complicated physics solver.
     private const int SolverIterations = 2;
 
+    private const int InitialBucketCapacity = 8;
+
     private readonly IReadOnlyList<UnitBase> units;
+    private readonly List<UnitBase> activeUnits = new();
+    private readonly Dictionary<Vector2Int, List<UnitBase>> spatialBuckets = new();
+    private readonly Stack<List<UnitBase>> bucketPool = new();
+
+    public int LastCandidatePairCount { get; private set; }
+    public int LastBucketCount { get; private set; }
 
     public UnitDepenetrationSystem(IReadOnlyList<UnitBase> units)
     {
@@ -20,29 +28,140 @@ public sealed class UnitDepenetrationSystem
 
     public void Tick()
     {
-        if (units == null)
+        LastCandidatePairCount = 0;
+        LastBucketCount = 0;
+
+        if (units == null || units.Count < 2)
             return;
+
+        float maximumRadius = BuildActiveUnitList();
+
+        if (activeUnits.Count < 2)
+            return;
+
+        float bucketSize = Mathf.Max(maximumRadius * 2f, 0.01f);
 
         for (int iteration = 0; iteration < SolverIterations; iteration++)
         {
-            for (int i = 0; i < units.Count; i++)
+            RebuildSpatialBuckets(bucketSize); // Rebuild in O(n)
+            ResolveNearbyPairs(bucketSize);
+        }
+    }
+
+    private float BuildActiveUnitList()
+    {
+        activeUnits.Clear();
+
+        float maximumRadius = 0f;
+
+        for (int i = 0; i < units.Count; i++)
+        {
+            UnitBase unit = units[i];
+
+            if (!CanResolve(unit))
+                continue;
+
+            activeUnits.Add(unit);
+
+            maximumRadius = Mathf.Max(maximumRadius, unit.Definition.NavigationRadius);
+        }
+
+        return maximumRadius;
+    }
+
+    private void RebuildSpatialBuckets(float bucketSize)
+    {
+        RecycleBuckets();
+
+        for (int i = 0; i < activeUnits.Count; i++)
+        {
+            UnitBase unit = activeUnits[i];
+
+            // which bucket this unit belong to
+            Vector2Int cell = WorldToBucket(unit.Position, bucketSize);
+
+            // cell has no bucket
+            if (!spatialBuckets.TryGetValue(cell, out List<UnitBase> bucket))
             {
-                UnitBase a = units[i];
+                // get one from pool
+                bucket = GetBucket();
+                spatialBuckets.Add(cell, bucket);
+            }
 
-                if (!CanResolve(a))
-                    continue;
+            // add unit to bucket
+            bucket.Add(unit);
+        }
 
-                for (int j = i + 1; j < units.Count; j++)
+        LastBucketCount = spatialBuckets.Count;
+    }
+
+    private void ResolveNearbyPairs(float bucketSize)
+    {
+        for (int i = 0; i < activeUnits.Count; i++)
+        {
+            UnitBase a = activeUnits[i];
+
+            Vector2Int centerCell = WorldToBucket(a.Position, bucketSize);
+
+            // check 3x3 aroud A
+            for (int z = -1; z <= 1; z++)
+            {
+                for (int x = -1; x <= 1; x++)
                 {
-                    UnitBase b = units[j];
+                    Vector2Int neighborCell = new Vector2Int(centerCell.x + x, centerCell.y + z);
 
-                    if (!CanResolve(b))
+                    // check if neighbor has units
+                    if (!spatialBuckets.TryGetValue(neighborCell, out List<UnitBase> bucket))
+                    {
                         continue;
+                    }
 
-                    ResolvePair(a, b);
+                    // check other units
+                    for (int j = 0; j < bucket.Count; j++)
+                    {
+                        UnitBase b = bucket[j];
+
+                        if (ReferenceEquals(a, b))
+                            continue;
+
+                        // Every pair is solved only once.
+                        // avoid double-checking
+                        if (b.UnitId <= a.UnitId)
+                            continue;
+
+                        LastCandidatePairCount++;
+
+                        ResolvePair(a, b);
+                    }
                 }
             }
         }
+    }
+
+    private Vector2Int WorldToBucket(Vector3 position, float bucketSize)
+    {
+        return new Vector2Int(Mathf.FloorToInt(position.x / bucketSize), Mathf.FloorToInt(position.z / bucketSize));
+    }
+
+    private List<UnitBase> GetBucket()
+    {
+        if (bucketPool.Count > 0)
+            return bucketPool.Pop(); // Reuse old list
+
+        return new List<UnitBase>(InitialBucketCapacity); // Only create if needed
+    }
+
+    private void RecycleBuckets()
+    {
+        foreach (List<UnitBase> bucket in spatialBuckets.Values)
+        {
+            bucket.Clear(); // clear the list
+
+            // save all empty list in a stack pool
+            bucketPool.Push(bucket); 
+        }
+
+        spatialBuckets.Clear();
     }
 
     private bool CanResolve(UnitBase unit)
@@ -87,16 +206,6 @@ public sealed class UnitDepenetrationSystem
         }
 
         float penetration = minimumDistance - distance;
-
-        //float correctionAmount = Mathf.Min(penetration * 0.5f, MaxCorrectionPerUnit);
-
-        //if (correctionAmount <= 0f)
-        //    return;
-
-        //Vector3 correction = normal * correctionAmount;
-
-        //a.Motor.ApplyDepenetration(-correction);
-        //b.Motor.ApplyDepenetration(correction);
 
         bool aMoving = a.Motor.CurrentVelocity.sqrMagnitude > MovingThreshold * MovingThreshold;
         bool bMoving = b.Motor.CurrentVelocity.sqrMagnitude > MovingThreshold * MovingThreshold;

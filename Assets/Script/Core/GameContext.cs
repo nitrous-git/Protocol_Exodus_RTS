@@ -31,6 +31,7 @@ public sealed class GameContext
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public GridNavigationStateSystem GridNavigationStateSystem { get; private set; }
     public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
+    public IPathfindingService PathfindingService { get; private set; }
 
     // ---------------------------------------------------------------------
     // Setter
@@ -69,6 +70,11 @@ public sealed class GameContext
     public void SetDestinationAllocationSystem(DestinationAllocationSystem destinationAllocationSystem)
     {
         DestinationAllocationSystem = destinationAllocationSystem;
+    }
+
+    public void SetPathfindingService(IPathfindingService pathfindingService)
+    {
+        PathfindingService = pathfindingService;
     }
 
     // ---------------------------------------------------------------------
@@ -324,6 +330,7 @@ public sealed class GameContext
         ResourceNodeRepository = null;
         GridNavigationStateSystem = null;
         DestinationAllocationSystem = null;
+        PathfindingService = null;
 
         nextUnitId = 1;
         nextMovementGroupId = 1;

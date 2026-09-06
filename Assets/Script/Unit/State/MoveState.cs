@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MoveState : UnitState<UnitBase>
@@ -9,33 +10,49 @@ public class MoveState : UnitState<UnitBase>
     private GridCoord? reservedDestinationCell;
     private bool pathRequested;
     private float formationMaxNavigationRadius;
+    private bool sharedTravelActive;
 
     private readonly FormationMovementGroup formationGroup;
+    private readonly MovementGroup movementGroup;
 
     public MoveState(
         Vector3 formationCenter, 
         int formationSlotIndex, 
         int formationUnitCount, 
         float formationMaxNavigationRadius,
-        FormationMovementGroup formationGroup)
+        FormationMovementGroup formationGroup,
+        MovementGroup movementGroup)
     {
         this.formationCenter = formationCenter;
         this.formationSlotIndex = formationSlotIndex;
         this.formationUnitCount = formationUnitCount;
         this.formationMaxNavigationRadius = formationMaxNavigationRadius;
         this.formationGroup = formationGroup;
+        this.movementGroup = movementGroup;
     }
 
     protected override void OnEnterTyped(UnitBase unit)
     {
-        if (unit.Motor == null ||
-            unit.TerrainGrid == null ||
-            unit.DestinationAllocationSystem == null)
+        if (unit.Motor == null)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
             return;
         }
 
+        // Shared navigation
+        if (TryStartSharedTravel(unit))
+        {
+            unit.View?.PlayAnim("Walk");
+            return; 
+        }
+
+        // Legacy move fallback
+        if (unit.TerrainGrid == null || unit.DestinationAllocationSystem == null)
+        {
+            unit.IssueCommand(CommandType.Idle, CommandContext.None());
+            return;
+        }
+        
         if (!AllocateDestinationAndMove(unit))
         {
             Debug.Log("Could not allocate destination and move");
@@ -48,12 +65,24 @@ public class MoveState : UnitState<UnitBase>
 
     protected override void TickTyped(UnitBase unit)
     {
+        if (sharedTravelActive)
+        {
+            TickSharedTravel(unit);
+
+            return;
+        }
+
+        TickLegacyMovement(unit);
+    }
+
+    private void TickLegacyMovement(UnitBase unit)
+    {
         //
         // Ordinary MoveState without formation semantics.
         //
         if (formationGroup == null)
         {
-            Debug.Log(unit.name + " ordinary MovaState  ticking");
+            //Debug.Log(unit.name + " ordinary MovaState  ticking");
             if (!pathRequested || unit.Motor == null || unit.Motor.HasArrived)
             {
                 unit.IssueCommand(CommandType.Idle, CommandContext.None());
@@ -123,6 +152,67 @@ public class MoveState : UnitState<UnitBase>
         }
     }
 
+    private void TickSharedTravel(
+    UnitBase unit)
+    {
+        if (unit.Motor == null)
+        {
+            AbortSharedTravel(unit);
+
+            return;
+        }
+
+        if (formationGroup == null)
+        {
+            Debug.LogWarning(
+                $"[SharedMove] " +
+                $"Unit={unit.UnitId} " +
+                $"Group={movementGroup?.Id ?? 0} " +
+                $"has no FormationMovementGroup.");
+
+            AbortSharedTravel(unit);
+
+            return;
+        }
+
+        //
+        // FormationMovementGroup owns the group-level
+        // assembly decision.
+        //
+        // It evaluates only once per frame even though
+        // every MoveState references the same instance.
+        //
+        formationGroup.Tick();
+
+        //
+        // PerformFinalReassignment() may just have called
+        // ReassignFormationSlot() on this state.
+        //
+        // If so, this unit is now in individual
+        // FinalApproach mode.
+        //
+        if (!sharedTravelActive)
+        {
+            return;
+        }
+
+        //
+        // Shared navigation should remain active until
+        // FormationMovementGroup performs the final handoff.
+        //
+        if (!unit.Motor.IsFollowingNavigationSolution)
+        {
+            Debug.LogWarning(
+                $"[SharedMove] " +
+                $"Unit={unit.UnitId} " +
+                $"Group={movementGroup?.Id ?? 0} " +
+                $"lost shared navigation before assembly.");
+
+            AbortSharedTravel(unit);
+        }
+    }
+
+
     protected override void OnExitTyped(UnitBase unit)
     {
         ReleaseReservedDestination(unit);
@@ -162,7 +252,27 @@ public class MoveState : UnitState<UnitBase>
 
         formationSlotIndex = newSlotIndex;
 
-        return AllocateDestinationAndMove(unit);
+        // Shared travel ends here
+        sharedTravelActive = false;
+        pathRequested = false;
+
+        // Explicitly detach flow field before attempting 
+        // final allocation
+        unit.Motor?.Stop();
+
+        bool startedFinalApproach = AllocateDestinationAndMove(unit);
+
+        if (!startedFinalApproach)
+        {
+            Debug.LogWarning(
+                $"[FormationHandoff] " +
+                $"Unit={unit.UnitId} " +
+                $"Group={movementGroupId} " +
+                $"could not start final approach " +
+                $"for slot={newSlotIndex}.");
+        }
+
+        return startedFinalApproach;
     }
 
     // ---------------------------------------------------------------------
@@ -210,6 +320,63 @@ public class MoveState : UnitState<UnitBase>
         unit.ReleaseDestination(reservedDestinationCell.Value);
 
         reservedDestinationCell = null;
+    }
+
+    // ---------------------------------------------------------------------
+    // Shared Navigation
+    // ---------------------------------------------------------------------
+
+    private bool TryStartSharedTravel(UnitBase unit)
+    {
+        if (movementGroup == null)
+        {
+            return false;
+        }
+
+        GroupNavigator navigator = movementGroup.Navigator;
+
+        if (navigator == null || !navigator.HasValidSolution)
+        {
+            return false;
+        }
+
+        INavigationSolution solution = navigator.Solution;
+
+        if (solution == null || !solution.IsValid)
+        {
+            return false;
+        }
+
+        if (!unit.Motor.FollowNavigationSolution(solution))
+        {
+            return false;
+        }
+
+        sharedTravelActive = true;
+
+        return true;
+    }
+
+    //private bool HasReachedAssemblyRegion()
+    //{
+    //    if (movementGroup == null)
+    //        return false;
+
+    //    Vector3 groupCenter = movementGroup.GetCurrentCenter();
+
+    //    Vector3 difference = movementGroup.Destination - groupCenter;
+    //    difference.y = 0f;
+
+    //    float arrivalRadius = formationGroup != null ? formationGroup.AssemblyRadius : 0.5f;
+
+    //    return difference.sqrMagnitude <= arrivalRadius * arrivalRadius;
+    //}
+
+    private void AbortSharedTravel(UnitBase unit)
+    {
+        sharedTravelActive = false;
+        unit.Motor?.Stop();
+        unit.IssueCommand(CommandType.Idle, CommandContext.None());
     }
 
     // ---------------------------------------------------------------------
