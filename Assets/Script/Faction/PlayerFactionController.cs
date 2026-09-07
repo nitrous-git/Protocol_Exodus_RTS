@@ -27,10 +27,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private bool isPlayerControlInitialized;
     private bool selectionPointerCaptured;
 
-    private List<TargetMarker> targetMarkers;
-    private Transform interactionMarkersRoot;
-    private GameObject activeTargetMarker;
-    private const float markerHeightOffset = 0.05f;
+    private InteractionMarkerPresenter interactionMarkerPresenter;
 
     private BuildingPlacementController buildingPlacementController;
     private BuildingDefinition pendingBuildingDefinition;
@@ -59,7 +56,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         CommandIssuer commandIssuer,
         CameraController cameraController,
         TerrainGrid terrainGrid,
-        List<TargetMarker> targetMarkers,
+        IReadOnlyList<InteractionMarkerDefinition> interactiveMarkers,
         BuildingPlacementPreview buildingPlacementPreviewPrefab,
         Transform interactionMarkersRoot)
     {
@@ -68,8 +65,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         this.commandIssuer = commandIssuer;
         this.cameraController = cameraController;
 
-        this.targetMarkers = targetMarkers;
-        this.interactionMarkersRoot = interactionMarkersRoot;
+        interactionMarkerPresenter = new InteractionMarkerPresenter(interactiveMarkers, interactionMarkersRoot);
 
         keyInputHandler = new KeyInputHandler(inputBindings);
         mouseInputHandler = new MouseInputHandler(inputBindings);
@@ -321,7 +317,17 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         if (IsWorldPointerBlocked())
             return;
 
-        commandIssuer?.TryIssueDefaultCommandFromScreen(mouseInputHandler.PointerPosition);
+        CommandType? issuedCommand = commandIssuer?.TryIssueDefaultCommandFromScreen(mouseInputHandler.PointerPosition);
+
+        if (issuedCommand != CommandType.Move)
+        {
+            return;
+        }
+
+        interactionMarkerPresenter?.PlayTemporary(
+            InteractionMarkerType.DefaultMoveIssued, 
+            commandIssuer.CurrentGroundPosition, 
+            commandIssuer.CurrentGroundNormal);
     }
 
     private void HandleDefaultInteraction()
@@ -336,7 +342,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private void HandleMoveTargetingInteraction()
     {
-        bool hasGroundPosition = UpdateTargetMarker();
+        bool hasGroundPosition = UpdateTargetingMarker();
 
         if (mouseInputHandler.SecondaryPressed)
         {
@@ -355,71 +361,30 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         if (commandIssued)
         {
-            SpawnTemporaryTargetMarker("MoveMarkerEnd");
+            interactionMarkerPresenter?.PlayTemporary(
+                InteractionMarkerType.MoveIssued, 
+                commandIssuer.CurrentGroundPosition, 
+                commandIssuer.CurrentGroundNormal);
+
             SetInteractionMode(PlayerInteractionMode.Default);
         }
     }
 
-    private bool UpdateTargetMarker()
-    { 
-        if (activeTargetMarker == null || commandIssuer == null)
+    private bool UpdateTargetingMarker()
+    {
+        if (commandIssuer == null)
             return false;
 
-        bool hasGroundPosition = 
-            !IsWorldPointerBlocked() 
-            && commandIssuer != null 
+        bool hasGroundPosition =
+            !IsWorldPointerBlocked()
             && commandIssuer.TryResolveGroundPositionFromScreen(mouseInputHandler.PointerPosition);
 
-        activeTargetMarker.SetActive(hasGroundPosition);
+        interactionMarkerPresenter?.UpdateActive(commandIssuer.CurrentGroundPosition, commandIssuer.CurrentGroundNormal, hasGroundPosition);
 
-        if (!hasGroundPosition)
-            return false;
-
-        Vector3 groundPosition = commandIssuer.CurrentGroundPosition;
-        Vector3 groundNormal = commandIssuer.CurrentGroundNormal;
-
-        Vector3 markerPosition = groundPosition + groundNormal * markerHeightOffset;
-        Quaternion markerRotation = Quaternion.FromToRotation(Vector3.up, groundNormal);
-
-        activeTargetMarker.transform.SetPositionAndRotation(markerPosition, markerRotation);
-
-        return true;
+        return hasGroundPosition;
     }
 
-    public void SpawnTargetMarker(string targetMarkerName)
-    {
-        if (activeTargetMarker != null)
-            return;
 
-        activeTargetMarker = Object.Instantiate(GetTargetMarkerPrefab(targetMarkerName), interactionMarkersRoot);
-        activeTargetMarker.SetActive(false);
-    }
-
-    public void SpawnTemporaryTargetMarker(string targetMarkerName)
-    {
-        GameObject tempMarker;
-
-        Vector3 groundPosition = commandIssuer.CurrentGroundPosition;
-        Vector3 groundNormal = commandIssuer.CurrentGroundNormal;
-
-        Vector3 markerPosition = groundPosition + groundNormal * markerHeightOffset;
-        Quaternion markerRotation = Quaternion.FromToRotation(Vector3.up, groundNormal);
-
-        tempMarker = Object.Instantiate(GetTargetMarkerPrefab(targetMarkerName), interactionMarkersRoot);
-
-        tempMarker.transform.SetPositionAndRotation(markerPosition, markerRotation);
-
-        Object.Destroy(tempMarker, 1.2f);
-    }
-
-    private void DestroyTargetMarker(string targetMarkerName)
-    {
-        if (activeTargetMarker == null)
-            return;
-
-        Object.Destroy(activeTargetMarker);
-        activeTargetMarker = null;
-    }
 
     // ---------------------------------------------------------------------
     // Building Placement interaction
@@ -465,7 +430,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     // Actual Blizzard Attack targeting behavior. 
     private void HandleAttackTargetingInteraction()
     {
-        bool hasGroundPosition = UpdateTargetMarker();
+        bool hasGroundPosition = UpdateTargetingMarker();
 
         if (mouseInputHandler.SecondaryPressed)
         {
@@ -498,12 +463,19 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         {
             // Attack command + clicked terrain
             // = Attack-Move.
-            commandIssued = commandIssuer.TryIssueAttackMoveCommandFromScreen(pointerPosition);
+            commandIssued = commandIssuer.TryIssueAttackMoveCommand(commandIssuer.CurrentGroundPosition);
+
+            if (commandIssued)
+            {
+                interactionMarkerPresenter?.PlayTemporary(
+                    InteractionMarkerType.AttackMoveIssued, 
+                    commandIssuer.CurrentGroundPosition, 
+                    commandIssuer.CurrentGroundNormal);
+            }
         }
 
         if (commandIssued)
         {
-            SpawnTemporaryTargetMarker("AttackMarkerEnd");
             SetInteractionMode(PlayerInteractionMode.Default);
         }
     }
@@ -588,12 +560,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private void EnterMoveTargeting()
     {
         CancelSelectionGesture();
-        SpawnTargetMarker("MoveMarkerActive");
+        interactionMarkerPresenter?.ShowActive(InteractionMarkerType.MoveTargeting);
     }
 
     private void ExitMoveTargeting()
     {
-        DestroyTargetMarker("MoveMarkerActive");
+        interactionMarkerPresenter?.HideActive();
     }
 
     // Building placement
@@ -616,12 +588,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private void EnterAttackTargeting()
     {
         CancelSelectionGesture();
-        SpawnTargetMarker("AttackMarkerActive");
+        interactionMarkerPresenter?.ShowActive(InteractionMarkerType.AttackTargeting);
     }
 
     private void ExitAttackTargeting()
     {
-        DestroyTargetMarker("AttackMarkerEnd");
+        interactionMarkerPresenter.HideActive();
     }
 
     // ---------------------------------------------------------------------
@@ -650,19 +622,6 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     {
         selectionManager?.CancelSelection();
         selectionPointerCaptured = false;
-    }
-
-    private GameObject GetTargetMarkerPrefab(string markerName)
-    {
-        GameObject targetMarker = null; 
-        foreach (var marker in targetMarkers)
-        {
-            if (marker.name == markerName)
-            {
-                targetMarker = marker.markerPrefab;
-            }
-        }
-        return targetMarker;
     }
 
 }

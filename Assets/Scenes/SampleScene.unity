@@ -190,7 +190,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1397,7 +1397,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1590,7 +1590,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1835,7 +1835,7 @@ Transform:
   m_GameObject: {fileID: 480938120}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 39.68, y: 0, z: 137.38}
+  m_LocalPosition: {x: 49.4, y: 0, z: 137.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2202,7 +2202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2469,7 +2469,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2949,7 +2949,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3090,7 +3090,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3827,7 +3827,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4104,7 +4104,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 614867045348295131, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4238485549901530509, guid: 68b3c1279824f914580267a9e176b089, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5301,7 +5301,7 @@ MonoBehaviour:
   matchUI: {fileID: 1808596899}
   FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
   FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
-  startingCombatCount: 50
+  startingCombatCount: 5
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:
@@ -6761,7 +6761,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4760183179115976, guid: b428671cf42d5c24d8385875d44a53cd, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 37.55
+      value: 37.57
       objectReference: {fileID: 0}
     - target: {fileID: 4760183179115976, guid: b428671cf42d5c24d8385875d44a53cd, type: 3}
       propertyPath: m_LocalPosition.y
@@ -6769,7 +6769,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4760183179115976, guid: b428671cf42d5c24d8385875d44a53cd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 133.56
+      value: 133.52
       objectReference: {fileID: 0}
     - target: {fileID: 4760183179115976, guid: b428671cf42d5c24d8385875d44a53cd, type: 3}
       propertyPath: m_LocalRotation.w

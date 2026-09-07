@@ -56,39 +56,41 @@ public class CommandIssuer : MonoBehaviour
     // ---------------------------------------------------------------------
     // Default contextual command
     // ---------------------------------------------------------------------
-
-    public bool TryIssueDefaultCommandFromScreen(Vector2 screenPosition)
+    public CommandType? TryIssueDefaultCommandFromScreen(Vector2 screenPosition)
     {
         if (!CanIssueCommands() || worldCamera == null)
-            return false;
+        {
+            return null;
+        }
 
         DefaultCommandTarget target = ResolveDefaultCommandTarget(screenPosition);
 
-        // Worker Gather
         if (target.ResourceNode != null && TryIssueGatherCommand(target.ResourceNode))
         {
-            return true;
+            return CommandType.Gather;
         }
 
-        // Worker Deliver
         if (target.Building != null && TryIssueDeliverCommand(target.Building))
         {
-            return true;
+            return CommandType.Deliver;
         }
 
-        // if (target.Building != null &&
-        //     TryIssueRepairCommand(target.Building))
-        // {
-        //     return true;
-        // }
+        //if (target.Building != null && TryIssueRepairCommand(target.Building))
+        //{
+        //    return CommandType.Repair;
+        //}
 
         if (TryIssueAttackCommand(target))
         {
-            return true;
+            return CommandType.Attack;
         }
 
-        // Nothing contextual applied.
-        return TryIssueMoveCommandFromScreen(screenPosition);
+        if (TryIssueMoveCommandFromScreen(screenPosition))
+        {
+            return CommandType.Move;
+        }
+
+        return null;
     }
 
     private DefaultCommandTarget ResolveDefaultCommandTarget(Vector2 screenPosition)
@@ -481,36 +483,6 @@ public class CommandIssuer : MonoBehaviour
 
         return null;
     }
-
-    //public bool TryIssueAttackCommand(ITargetable target)
-    //{
-    //    if (!CanIssueCommands() || target == null)
-    //        return false;
-
-    //    CollectCommandableSelectedUnits();
-
-    //    bool issuedAnyCommand = false;
-
-    //    for (int i = 0; i < commandableUnits.Count; i++)
-    //    {
-    //        CombatUnit combatUnit = commandableUnits[i] as CombatUnit;
-
-    //        if (combatUnit == null)
-    //            continue;
-
-    //        if (!combatUnit.CanAttack())
-    //            continue;
-
-    //        if (!combatUnit.IsValidAttackTarget(target))
-    //            continue;
-
-    //        combatUnit.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
-
-    //        issuedAnyCommand = true;
-    //    }
-
-    //    return issuedAnyCommand;
-    //}
 
     public bool TryIssueAttackCommand(ITargetable target)
     {
