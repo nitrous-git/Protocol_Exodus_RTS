@@ -319,15 +319,22 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         CommandType? issuedCommand = commandIssuer?.TryIssueDefaultCommandFromScreen(mouseInputHandler.PointerPosition);
 
-        if (issuedCommand != CommandType.Move)
+        if (issuedCommand == CommandType.Move)
         {
+            interactionMarkerPresenter?.PlayTemporary(
+                InteractionMarkerType.DefaultMoveIssued,
+                commandIssuer.CurrentGroundPosition,
+                commandIssuer.CurrentGroundNormal);
+
             return;
         }
 
-        interactionMarkerPresenter?.PlayTemporary(
-            InteractionMarkerType.DefaultMoveIssued, 
-            commandIssuer.CurrentGroundPosition, 
-            commandIssuer.CurrentGroundNormal);
+        if (issuedCommand == CommandType.Attack)
+        {
+            ITargetable target = commandIssuer.FindAttackTargetFromScreen(mouseInputHandler.PointerPosition);
+            PlayAttackTargetMarker(target);
+            return;
+        }
     }
 
     private void HandleDefaultInteraction()
@@ -458,6 +465,11 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             // Attack command + clicked target
             // = explicit focused Attack.
             commandIssued = commandIssuer.TryIssueAttackCommand(attackTarget);
+
+            if (commandIssued)
+            {
+                PlayAttackTargetMarker(attackTarget);
+            }
         }
         else
         {
@@ -624,4 +636,15 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         selectionPointerCaptured = false;
     }
 
+    private static void PlayAttackTargetMarker(ITargetable target)
+    {
+        if (target is UnitBase unit)
+        {
+            unit.PlayAttackTargetMarker();
+        }
+        //else if (target is BuildingBase building)
+        //{
+        //    building.PlayAttackTargetMarker();
+        //}
+    }
 }

@@ -4612,17 +4612,22 @@ MonoBehaviour:
   - {fileID: 480938121}
   - {fileID: 1989332474}
   - {fileID: 476404814}
-  targetMarkers:
-  - name: MoveMarkerActive
-    markerPrefab: {fileID: 2195958247022785637, guid: 5b39a2f8c17a7a94f9313a395950aa09, type: 3}
-  - name: MoveMarkerEnd
-    markerPrefab: {fileID: 7927402492933134603, guid: 14379998f133e3041a6b6b35e2fd0c35, type: 3}
-  - name: AttackMarkerActive
-    markerPrefab: {fileID: 9081488078497229318, guid: a0aca4ccb69c3cd40a27208edb43f439, type: 3}
-  - name: AttackMarkerEnd
-    markerPrefab: {fileID: 4145295586593246788, guid: e70628adf24f9784a94b0b52f9f9dc4b, type: 3}
-  - name: MousePressedMarker
-    markerPrefab: {fileID: 0}
+  interactionMarkers:
+  - type: 0
+    prefab: {fileID: 2195958247022785637, guid: 5b39a2f8c17a7a94f9313a395950aa09, type: 3}
+    duration: 1.2
+  - type: 1
+    prefab: {fileID: 7927402492933134603, guid: 14379998f133e3041a6b6b35e2fd0c35, type: 3}
+    duration: 1.2
+  - type: 2
+    prefab: {fileID: 9081488078497229318, guid: a0aca4ccb69c3cd40a27208edb43f439, type: 3}
+    duration: 1.2
+  - type: 3
+    prefab: {fileID: 4145295586593246788, guid: e70628adf24f9784a94b0b52f9f9dc4b, type: 3}
+    duration: 1.2
+  - type: 4
+    prefab: {fileID: 5750977514355394158, guid: 434c5ccdee0dbba47b8951ec48fc4bee, type: 3}
+    duration: 1.3
   interactionMarkersRoot: {fileID: 496525871}
   buildingPlacementPreviewPrefab: {fileID: 3704768083345454987, guid: b2397fd794a89af44917b2679b37e8ba, type: 3}
 --- !u!1 &1560293169
@@ -5301,7 +5306,7 @@ MonoBehaviour:
   matchUI: {fileID: 1808596899}
   FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
   FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
-  startingCombatCount: 5
+  startingCombatCount: 1
   startingUnitSpacing: 3
 --- !u!1 &1788038490
 GameObject:
@@ -6276,7 +6281,7 @@ Transform:
   m_GameObject: {fileID: 1989332473}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 55.4, y: 0, z: 55.98}
+  m_LocalPosition: {x: 55.4, y: 0, z: 116.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

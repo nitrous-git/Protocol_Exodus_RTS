@@ -152,6 +152,7 @@ Transform:
   - {fileID: 1681983663944528648}
   - {fileID: 3987569437444261760}
   - {fileID: 4943491527989660464}
+  - {fileID: 789208001239965846}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8452645722603036603
@@ -194,6 +195,9 @@ MonoBehaviour:
   baseHeightOffset: 0
   navMeshSampleRadius: 2
   navMeshAreaMask: -1
+  sharedRouteCorridorCells: 3
+  sharedRouteRecoveryCells: 3
+  sharedRouteMaxRecoveryWeight: 1
   drawOccupancyGizmo: 1
   gizmoSampleSpacing: 0.5
   gizmoHeightOffset: 0.05
@@ -241,6 +245,9 @@ MonoBehaviour:
     baseMap: {fileID: 2800000, guid: 78a8b9ad124062f4d998e9715c383ef9, type: 3}
   - colorType: 2
     baseMap: {fileID: 2800000, guid: 31b5da663ef81ee49a1ff7a50e0b1396, type: 3}
+  attackTargetMarkerAnchor: {fileID: 789208001239965846}
+  attackTargetMarkerPrefab: {fileID: 3692971438369747359, guid: 4e2053f3e91cd6f4ca2f380ae86f572f, type: 3}
+  attackTargetMarkerDuration: 1.8
 --- !u!114 &618417090758443337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1386,6 +1393,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1985747632906791765}
   m_LocalEulerAnglesHint: {x: -0.074, y: 17.866, z: -1.593}
+--- !u!1 &7512523172038897970
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 789208001239965846}
+  m_Layer: 7
+  m_Name: AttackTargetMarker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &789208001239965846
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7512523172038897970}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.2, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 704164561172346719}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8399579904888824702
 GameObject:
   m_ObjectHideFlags: 0

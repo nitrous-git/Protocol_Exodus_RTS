@@ -268,4 +268,14 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
         return moveState.ReassignFormationSlot(this, movementGroupId, slotIndex);
     }
+
+    // ---------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------
+
+    public void PlayAttackTargetMarker()
+    {
+        view?.PlayAttackTargetMarker();
+    }
+
 }

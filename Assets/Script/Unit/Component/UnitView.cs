@@ -19,6 +19,13 @@ public class UnitView : MonoBehaviour
     [SerializeField] private Renderer[] factionRenderers;
     [SerializeField] private UnitFactionTextureVariant[] factionTextureVariants;
 
+    [Header("Marker")]
+    [SerializeField] private Transform attackTargetMarkerAnchor;
+    [SerializeField] private GameObject attackTargetMarkerPrefab;
+    [SerializeField, Min(0f)] private float attackTargetMarkerDuration = 1.8f;
+
+    private GameObject activeAttackTargetMarker;
+
     private string currentAnimState;
     private string baseAnimState;
     private string oneShotAnimState;
@@ -237,4 +244,28 @@ public class UnitView : MonoBehaviour
         baseAnimState = null;
         currentAnimState = null;
     }
+
+    // ---------------------------------------------------------------------
+    // Target Marker
+    // ---------------------------------------------------------------------
+
+    public void PlayAttackTargetMarker()
+    {
+        if (attackTargetMarkerPrefab == null || attackTargetMarkerAnchor == null)
+        {
+            return;
+        }
+
+        if (activeAttackTargetMarker != null)
+        {
+            Object.Destroy(activeAttackTargetMarker);
+        }
+
+        activeAttackTargetMarker = Object.Instantiate(attackTargetMarkerPrefab, attackTargetMarkerAnchor);
+        activeAttackTargetMarker.transform.localPosition = Vector3.zero;
+        activeAttackTargetMarker.transform.localRotation = Quaternion.identity;
+        activeAttackTargetMarker.GetComponent<ParticleSystem>().Play();
+        Object.Destroy(activeAttackTargetMarker, attackTargetMarkerDuration);
+    }
+
 }
