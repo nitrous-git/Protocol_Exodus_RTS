@@ -12,9 +12,8 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
 {
     [Header("Resource")]
     [SerializeField] private ResourceType resourceType = ResourceType.Minerals;
-
-    [SerializeField, Min(1)]
-    private int initialAmount = 1500;
+    [SerializeField, Min(1)] private int initialAmount = 1500;
+    [SerializeField, Min(1)] private Vector2Int footprint = new Vector2Int(1,1);
 
     [Header("Selection")]
     [SerializeField] private bool canBeSelected = true;
@@ -23,23 +22,19 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
 
     private ResourceNodeRepository repository;
 
-    public ResourceType ResourceType => resourceType;
-
-    public int InitialAmount => initialAmount;
+    public GridCoord OriginCell { get; private set; }
+    public bool IsInitialized { get; private set; }
+    public bool IsSelected { get; private set; }
     public int RemainingAmount { get; private set; }
 
-    public int ResourceNodeId => 0;
-
-    public GridCoord OccupiedCell { get; private set; }
-
-    public bool IsInitialized { get; private set; }
+    public ResourceType ResourceType => resourceType;
+    public int InitialAmount => initialAmount;
     public bool IsDepleted => RemainingAmount <= 0;
-
-    public bool IsSelected { get; private set; }
-
+    public int ResourceNodeId => 0; // eventually find a unique Id
     public bool CanBeSelected => canBeSelected && IsInitialized && !IsDepleted;
     public Vector3 Position => transform.position;
     public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
+    public Vector2Int Footprint => footprint;
 
     private void Awake()
     {
@@ -55,7 +50,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     ///
     /// Called by ResourceNodeRepository during match construction.
     /// </summary>
-    internal void Initialize(ResourceNodeRepository repository, GridCoord occupiedCell)
+    internal void Initialize(ResourceNodeRepository repository, GridCoord originCell)
     {
         if (IsInitialized)
             return;
@@ -68,7 +63,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
 
         this.repository = repository;
 
-        OccupiedCell = occupiedCell;
+        OriginCell = originCell;
         RemainingAmount = Mathf.Max(1, initialAmount);
 
         IsInitialized = true;

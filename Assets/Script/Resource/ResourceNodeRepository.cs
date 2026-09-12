@@ -111,8 +111,8 @@ public sealed class ResourceNodeRepository
         if (terrainGrid == null)
             return false;
 
-        GridCoord occupiedCell = terrainGrid.WorldToCell(node.Position);
-        GridCell gridCell = terrainGrid.GetCell(occupiedCell);
+        GridCoord originCell = terrainGrid.WorldToCell(node.Position);
+        GridCell gridCell = terrainGrid.GetCell(originCell);
 
         if (gridCell == null)
         {
@@ -123,7 +123,7 @@ public sealed class ResourceNodeRepository
 
         if (gridCell.Occupied || gridCell.Reserved)
         {
-            Debug.LogError($"{node.name} cannot occupy grid cell ({occupiedCell.x}, {occupiedCell.z}) because it is unavailable.");
+            Debug.LogError($"{node.name} cannot occupy footprint ({originCell.x}, {originCell.z}) because it is unavailable.");
 
             return false;
         }
@@ -134,13 +134,16 @@ public sealed class ResourceNodeRepository
         // center of its resolved grid cell.
         node.transform.position = gridCell.WorldCenter;
 
-        node.Initialize(this, occupiedCell);
+        node.Initialize(this, originCell);
 
         if (!node.IsInitialized)
             return false;
 
         resourceNodeList.Add(node);
-        terrainGrid.SetOccupied(occupiedCell, true, resourceNodeId: node.ResourceNodeId);
+
+        //terrainGrid.SetOccupied(originCell, true, resourceNodeId: node.ResourceNodeId);
+        terrainGrid.SetFootprintOccupied(originCell, node.Footprint, node.ResourceNodeId);
+
         gameContext?.RegisterResourceNode(node);
 
         return true;
@@ -165,7 +168,7 @@ public sealed class ResourceNodeRepository
 
         if (terrainGrid != null && node.IsInitialized)
         {
-            terrainGrid.SetOccupied(node.OccupiedCell, false, node.ResourceNodeId);
+            terrainGrid.SetOccupied(node.OriginCell, false, node.ResourceNodeId);
         }
     }
 

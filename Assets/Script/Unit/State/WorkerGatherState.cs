@@ -48,7 +48,7 @@ public class WorkerGatherState : UnitState<WorkerUnit>
         }
 
         //reservedInteractionCell = unit.ReserveInteractionCell(targetNode);
-        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, targetNode.OccupiedCell, Vector2Int.one);
+        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, targetNode.OriginCell, targetNode.Footprint);
 
         if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
         {

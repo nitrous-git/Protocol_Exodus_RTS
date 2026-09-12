@@ -243,7 +243,7 @@ public class TerrainGrid
                 cell.Occupied = true;
                 cell.OccupyingBuildingId = buildingId;
                 cell.OccupyingUnitId = -1;
-                cell.OccupyingResourceNodeId = -1;
+                cell.OccupyingResourceNodeId = buildingId; //temporary use this Id
             }
         }
 
