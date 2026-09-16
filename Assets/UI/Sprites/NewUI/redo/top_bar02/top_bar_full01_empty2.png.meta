@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c95aa9b9869418d44b8e3474aa9274c0
+guid: a5511d228d664bb459250f29a709adf7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2329833554003098604
-    second: CombatUnitIconV2_0
+      213: -6873772002455330280
+    second: top_bar_full01_empty2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -52,8 +52,8 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 3, y: 3, z: 3, w: 3}
-  spriteGenerateFallbackPhysicsShape: 1
+  spriteBorder: {x: 17, y: 14, z: 26, w: 9}
+  spriteGenerateFallbackPhysicsShape: 0
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationMethod: 0
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CombatUnitIconV2_0
+      name: top_bar_full01_empty2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 52
-        height: 55
+        width: 1672
+        height: 61
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cebf32cf54b355020800000000000000
-      internalID: 2329833554003098604
+      spriteID: 812ef9658c47b90a0800000000000000
+      internalID: -6873772002455330280
       vertices: []
       indices: 
       edges: []
