@@ -6,7 +6,7 @@ using UnityEngine;
 /// Specialized behavior is supplied by optional components such as
 /// UnitProductionComponent, SupplyProviderComponent, and HeadquartersComponent.
 /// </summary>
-[RequireComponent(typeof(Health))]
+[RequireComponent(typeof(Health))] 
 public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
 {
     [Header("Selection")]

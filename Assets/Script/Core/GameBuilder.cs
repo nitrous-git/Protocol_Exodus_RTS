@@ -86,12 +86,12 @@ public class GameBuilder : MonoBehaviour
         Faction aiFaction01 = BuildFaction(FactionTerran_Definition, FactionColorType.Green, new AIFactionController());
         SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
 
-        Faction aiFaction02 = BuildFaction(FactionTerran_Definition, FactionColorType.Red, new AIFactionController());
-        SpawnStartingUnits(aiFaction02, matchWorld.FactionSpawnPoints[2]);
+        //Faction aiFaction02 = BuildFaction(FactionTerran_Definition, FactionColorType.Red, new AIFactionController());
+        //SpawnStartingUnits(aiFaction02, matchWorld.FactionSpawnPoints[2]);
 
         FactionManager.AddFaction(playerFaction);
         FactionManager.AddFaction(aiFaction01);
-        FactionManager.AddFaction(aiFaction02);
+        //FactionManager.AddFaction(aiFaction02);
 
         PlayerFaction = playerFaction;
         GameContext.SetPlayerFaction(PlayerFaction);
