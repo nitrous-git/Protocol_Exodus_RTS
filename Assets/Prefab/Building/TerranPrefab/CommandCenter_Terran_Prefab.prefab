@@ -233,18 +233,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b459ecc49bc564ab03c2954a508a14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitProductionComponent
-  producibleUnitTypes: 00000000
+  producibleUnitTypes: 00000000i
   spawnPoint: {fileID: 4612522233545990119}
   defaultRallyPoint: {fileID: 563233987794545794}
-  initialSpawnDepth: 1
-  maximumExtraSpawnDepth: 4
-  spawnOpennessRadius: 2
-  spawnOpennessWeight: 1
-  spawnDistanceWeight: 2
+  gatheringPadding: 0.2
+  exitClearancePadding: 1.5
+  maxGatherSearchRadius: 12
   spawnBlockingMask:
     serializedVersion: 2
     m_Bits: 384
-  spawnClearanceRadius: 0.4
   spawnHeightOffset: 0
 --- !u!114 &1920856704544015253
 MonoBehaviour:

@@ -341,7 +341,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
         GetExitFrame(terrainGrid, footprint.Radius, out Vector3 entrance, out Vector3 forward);
         if (!TryFindSpawnPosition(terrainGrid, navigation, entrance, forward, footprint, out Vector3 spawnPosition) ||
             !TryFindExitWaypoint(terrainGrid, navigation, spawnPosition, entrance, forward, footprint, out Vector3 exitWaypoint) ||
-            !TryFindGatheringDestination(unitManager, terrainGrid, entrance, exitWaypoint, definition, footprint, out GridCoord destination))
+            !TryFindGatheringDestination(unitManager, terrainGrid, entrance, forward, exitWaypoint, definition, footprint, out GridCoord destination))
             return false;
 
         UnitBase spawnedUnit = unitManager.SpawnUnit(definition.Prefab, spawnPosition, building.transform.rotation,
@@ -506,7 +506,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     }
 
     private bool TryFindGatheringDestination(UnitManager unitManager, TerrainGrid grid, Vector3 entrance,
-        Vector3 exitWaypoint, UnitDefinition definition, SpawnFootprint footprint, out GridCoord destination)
+        Vector3 forward, Vector3 exitWaypoint, UnitDefinition definition, SpawnFootprint footprint, out GridCoord destination)
     {
         Vector3 rally = EffectiveRallyPoint ?? exitWaypoint;
         if (!float.IsFinite(rally.x) || !float.IsFinite(rally.z))
@@ -521,11 +521,29 @@ public sealed class UnitProductionComponent : MonoBehaviour
         }
 
         Vector2 entranceXZ = new(entrance.x, entrance.z);
-        Vector2 exitSegment = new Vector2(exitWaypoint.x, exitWaypoint.z) - entranceXZ;
-        float exitLengthSquared = exitSegment.sqrMagnitude;
-        // Expand the protected segment by the candidate's radius so its footprint stays outside it.
-        float protectedRadius = largestProductionRadius + exitClearancePadding + footprint.Radius;
+        Vector2 exitDirection = new(forward.x, forward.z);
+        float exitHalfWidth = largestProductionRadius + exitClearancePadding;
+        float exitDepth = exitHalfWidth;
+        if (defaultRallyPoint != null)
+        {
+            Vector3 marker = defaultRallyPoint.position;
+            float markerDepth = Vector2.Dot(new Vector2(marker.x, marker.z) - entranceXZ, exitDirection);
+            if (float.IsFinite(markerDepth))
+                exitDepth = Mathf.Max(exitDepth, markerDepth);
+        }
+
+        // The capsule's front cap extends beyond the default marker by the exit half-width.
+        float protectedRadius = exitHalfWidth + footprint.Radius;
         float protectedRadiusSquared = protectedRadius * protectedRadius;
+
+        // PlacedFootprintSize already accounts for the building's placement rotation.
+        Vector2Int buildingSize = building.PlacedFootprintSize;
+        Vector3 buildingCenter = grid.GetFootprintWorldCenter(building.FootprintOrigin, buildingSize);
+        float perimeterClearance = Mathf.Max(grid.CellSize, exitHalfWidth);
+        float perimeterHalfWidth = buildingSize.x * grid.CellSize * 0.5f + perimeterClearance;
+        float perimeterHalfDepth = buildingSize.y * grid.CellSize * 0.5f + perimeterClearance;
+        float footprintRadiusSquared = footprint.Radius * footprint.Radius;
+
         float gatheringRadius = Mathf.Max(footprint.Radius, definition.NavigationRadius + gatheringPadding);
         GridNavigationStateSystem navigation = unitManager.NavigationState;
         IPathfindingService pathfinding = unitManager.PathfindingService;
@@ -537,9 +555,14 @@ public sealed class UnitProductionComponent : MonoBehaviour
                 continue;
 
             Vector3 point = grid.CellToWorld(cell);
+            float outsideX = Mathf.Max(0f, Mathf.Abs(point.x - buildingCenter.x) - perimeterHalfWidth);
+            float outsideZ = Mathf.Max(0f, Mathf.Abs(point.z - buildingCenter.z) - perimeterHalfDepth);
+            if (outsideX * outsideX + outsideZ * outsideZ < footprintRadiusSquared)
+                continue;
+
             Vector2 offset = new Vector2(point.x, point.z) - entranceXZ;
-            float progress = exitLengthSquared > 0f ? Mathf.Clamp01(Vector2.Dot(offset, exitSegment) / exitLengthSquared) : 0f;
-            if ((offset - exitSegment * progress).sqrMagnitude < protectedRadiusSquared ||
+            float depth = Mathf.Clamp(Vector2.Dot(offset, exitDirection), 0f, exitDepth);
+            if ((offset - exitDirection * depth).sqrMagnitude < protectedRadiusSquared ||
                 navigation.IsDestinationReserved(cell) || !navigation.IsUnitSpaceClear(point, gatheringRadius) ||
                 !IsPhysicsClear(point, footprint))
                 continue;
