@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data;
 using System.Reflection.Metadata;
 using Unity.IO.LowLevel.Unsafe;
@@ -169,6 +170,18 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
                 SetState(new IdleState()); 
                 break;  
         }
+    }
+
+    internal bool TryStartProductionMove(GridCoord destination, Vector3 exitWaypoint, List<Vector3> route)
+    {
+        if (!CanReceiveCommands || motor == null || GridNavigationStateSystem == null ||
+            !GridNavigationStateSystem.TryReserveDestination(destination, this))
+            return false;
+
+        ApplyCommandContext(CommandType.Move, CommandContext.MoveTo(TerrainGrid.CellToWorld(destination)));
+        SetState(new MoveState(destination));
+        motor.FollowProductionPath(exitWaypoint, route);
+        return true;
     }
 
     //protected virtual IUnitState CreateStateForCommand(CommandType commandType, CommandContext context)

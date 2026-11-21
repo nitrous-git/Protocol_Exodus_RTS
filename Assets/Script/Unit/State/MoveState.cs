@@ -15,6 +15,11 @@ public class MoveState : UnitState<UnitBase>
     private readonly FormationMovementGroup formationGroup;
     private readonly MovementGroup movementGroup;
 
+    internal MoveState(GridCoord reservedDestination)
+    {
+        reservedDestinationCell = reservedDestination;
+    }
+
     public MoveState(
         Vector3 formationCenter, 
         int formationSlotIndex, 
@@ -36,6 +41,14 @@ public class MoveState : UnitState<UnitBase>
         if (unit.Motor == null)
         {
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
+            return;
+        }
+
+        // Production already validated the path and reserved this exact cell.
+        if (reservedDestinationCell.HasValue)
+        {
+            pathRequested = true;
+            unit.View?.PlayAnim("Walk");
             return;
         }
 

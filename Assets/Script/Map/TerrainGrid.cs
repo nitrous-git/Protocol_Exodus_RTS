@@ -306,6 +306,37 @@ public class TerrainGrid
         return staticClearanceField.HasNavigationClearance(centerCoord, radius);
     }
 
+    internal bool HasNavigationClearanceAt(Vector3 position, float radius, int ignoreBuildingId = -1)
+    {
+        GridCoord min = WorldToCell(position - new Vector3(radius, 0f, radius));
+        GridCoord max = WorldToCell(position + new Vector3(radius, 0f, radius));
+        if (!IsInside(min) || !IsInside(max))
+            return false;
+
+        float radiusSquared = radius * radius;
+        float halfCell = CellSize * 0.5f;
+        for (int z = min.z; z <= max.z; z++)
+        {
+            for (int x = min.x; x <= max.x; x++)
+            {
+                GridCell cell = cells[x, z];
+                if (!staticClearanceField.IsStaticNavigationBlocked(cell))
+                    continue;
+
+                if (ignoreBuildingId >= 0 && cell.Walkable &&
+                    cell.OccupyingBuildingId == ignoreBuildingId && cell.OccupyingResourceNodeId < 0)
+                    continue;
+
+                float dx = Mathf.Max(0f, Mathf.Abs(position.x - cell.WorldCenter.x) - halfCell);
+                float dz = Mathf.Max(0f, Mathf.Abs(position.z - cell.WorldCenter.z) - halfCell);
+                if (dx * dx + dz * dz < radiusSquared)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
     public void RebuildStaticClearanceField()
     {
         staticClearanceField?.RebuildStaticClearanceField();

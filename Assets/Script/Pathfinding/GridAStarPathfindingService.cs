@@ -112,6 +112,16 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
     public bool TryFindPath(UnitBase requester, Vector3 start, Vector3 end, List<Vector3> result)
     {
+        return TryFindPath(requester, start, end, result, null);
+    }
+
+    internal bool TryFindProductionPath(float radius, Vector3 start, Vector3 end, List<Vector3> result)
+    {
+        return TryFindPath(null, start, end, result, radius);
+    }
+
+    private bool TryFindPath(UnitBase requester, Vector3 start, Vector3 end, List<Vector3> result, float? productionRadius)
+    {
         result.Clear();
 
         if (terrainGrid == null || nodes == null)
@@ -140,7 +150,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         }
 
         // Validate destination
-        if (!CanTraverse(endCoord, startCoord, requester))
+        if (!CanTraverse(endCoord, startCoord, requester, productionRadius))
         {
             return false;
         }
@@ -215,7 +225,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
             // Expand node tracking
             expandedNodes++;
 
-            ExploreNeighbors(currentNode, startCoord, endCoord, requester);
+            ExploreNeighbors(currentNode, startCoord, endCoord, requester, productionRadius);
         }
 
         ReportSearchDiagnostics(
@@ -259,7 +269,7 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         }
     }
 
-    private void ExploreNeighbors(PathNode currentNode, GridCoord startCoord, GridCoord endCoord, UnitBase requester)
+    private void ExploreNeighbors(PathNode currentNode, GridCoord startCoord, GridCoord endCoord, UnitBase requester, float? productionRadius)
     {
         for (int zOffset = -1; zOffset <= 1; zOffset++)
         {
@@ -279,12 +289,12 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
                 bool diagonal = xOffset != 0 && zOffset != 0;
 
-                if (diagonal && !CanMoveDiagonally(currentNode.Coord, xOffset, zOffset, startCoord, requester))
+                if (diagonal && !CanMoveDiagonally(currentNode.Coord, xOffset, zOffset, startCoord, requester, productionRadius))
                 {
                     continue;
                 }
 
-                if (!CanTraverse(neighborCoord, startCoord, requester))
+                if (!CanTraverse(neighborCoord, startCoord, requester, productionRadius))
                 {
                     continue;
                 }
@@ -356,15 +366,16 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
         }
     }
 
-    private bool CanMoveDiagonally(GridCoord from, int xOffset, int zOffset, GridCoord startCoord, UnitBase requester)
+    private bool CanMoveDiagonally(GridCoord from, int xOffset, int zOffset, GridCoord startCoord, UnitBase requester, float? productionRadius)
     {
         GridCoord horizontal = new GridCoord(from.x + xOffset, from.z);
         GridCoord vertical = new GridCoord(from.x, from.z + zOffset);
 
-        return CanTraverse(horizontal, startCoord, requester) && CanTraverse(vertical, startCoord, requester);
+        return CanTraverse(horizontal, startCoord, requester, productionRadius) &&
+               CanTraverse(vertical, startCoord, requester, productionRadius);
     }
 
-    private bool CanTraverse(GridCoord coord, GridCoord startCoord, UnitBase requester)
+    private bool CanTraverse(GridCoord coord, GridCoord startCoord, UnitBase requester, float? productionRadius)
     {
         GridCell cell = terrainGrid.GetCell(coord);
 
@@ -386,13 +397,18 @@ public sealed class GridAStarPathfindingService : MonoBehaviour, IPathfindingSer
 
         bool canTraverse = true;
 
-        float navigationRadius = requester != null ? requester.NavigationRadius : 0f;
+        float navigationRadius = productionRadius ?? (requester != null ? requester.NavigationRadius : 0f);
 
         if (!terrainGrid.IsStaticallyTraversable(coord, navigationRadius))
         {
             canTraverse = false;
         }
         else if (navigateState != null && navigateState.IsDestinationTraversalBlocked(coord, requester)) 
+        {
+            canTraverse = false;
+        }
+        else if (productionRadius.HasValue && navigateState != null &&
+                 navigateState.GetDynamicOccupancyRelation(coord, navigationRadius, null) == DynamicOccupancyRelation.StationaryUnit)
         {
             canTraverse = false;
         }

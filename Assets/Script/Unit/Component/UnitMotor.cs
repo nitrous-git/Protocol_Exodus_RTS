@@ -41,6 +41,7 @@ public class UnitMotor : MonoBehaviour
     private readonly List<Vector3> path = new List<Vector3>();
     private int pathIndex;
     private bool hasPath;
+    private bool mustReachFirstWaypoint;
     private float pathLookAheadCells = 2;// 1
     private float maxLookAheadTurnAngle = 35f; //35
     private Vector3 debugLookAheadTarget;
@@ -111,6 +112,16 @@ public class UnitMotor : MonoBehaviour
         ClearNavigationSolution();
 
         return TryBuildPath(destination);
+    }
+
+    internal void FollowProductionPath(Vector3 exitWaypoint, List<Vector3> route)
+    {
+        Stop();
+        path.Add(exitWaypoint);
+        path.AddRange(route);
+        SnapPathToGround(path);
+        mustReachFirstWaypoint = true;
+        hasPath = true;
     }
 
     public void Stop()
@@ -279,6 +290,17 @@ public class UnitMotor : MonoBehaviour
 
         while (pathIndex < path.Count - 1)
         {
+            if (mustReachFirstWaypoint)
+            {
+                if (!HasReachedTarget(path[pathIndex]))
+                    break;
+
+                mustReachFirstWaypoint = false;
+                pathIndex++;
+                advanced = true;
+                continue;
+            }
+
             bool reached = IsWithinWaypointReach(path[pathIndex]);
 
             bool passed = HasPassedIntermediateWaypoint(pathIndex);
@@ -384,6 +406,7 @@ public class UnitMotor : MonoBehaviour
         path.Clear();
         pathIndex = 0;
         hasPath = false;
+        mustReachFirstWaypoint = false;
         currentVelocity = Vector3.zero;
         preferredVelocity = Vector3.zero;   
     }

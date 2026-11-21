@@ -35,14 +35,25 @@ public sealed class FormationDestinationAllocator
 
         GridCoord preferredCell = GetPreferredSlot(formationCenter, slotIndex, unitCount, spacing);
 
-        if (navigationState.TryReserveDestination(preferredCell, unit))
+        return FindDestination(preferredCell, spacing, maxFallbackDepth, unit, null);
+    }
+
+    internal GridCoord? FindRallyDestination(GridCoord center, System.Func<GridCoord, bool> isAvailable)
+    {
+        return FindDestination(center, CalculateSpacing(1f), 3, null, isAvailable);
+    }
+
+    private GridCoord? FindDestination(GridCoord preferredCell, int spacing, int maxFallbackDepth,
+        UnitBase unit, System.Func<GridCoord, bool> isAvailable)
+    {
+        if (TryClaim(preferredCell, unit, isAvailable))
         {
             return preferredCell;
         }
 
         for (int depth = 1; depth <= maxFallbackDepth; depth++)
         {
-            GridCoord? fallback = TryAllocateAround(unit, preferredCell, depth, spacing);
+            GridCoord? fallback = TryAllocateAround(unit, preferredCell, depth, spacing, isAvailable);
 
             if (fallback.HasValue)
                 return fallback;
@@ -86,8 +97,9 @@ public sealed class FormationDestinationAllocator
     private GridCoord? TryAllocateAround(
         UnitBase unit,
         GridCoord center,
-        int depth, 
-        int spacing)
+        int depth,
+        int spacing,
+        System.Func<GridCoord, bool> isAvailable)
     {
         for (int z = -depth; z <= depth; z++)
         {
@@ -100,7 +112,7 @@ public sealed class FormationDestinationAllocator
 
                 GridCoord candidate = new GridCoord(center.x + x * spacing, center.z + z * spacing);
 
-                if (navigationState.TryReserveDestination(candidate, unit))
+                if (TryClaim(candidate, unit, isAvailable))
                 {
                     return candidate;
                 }
@@ -108,6 +120,11 @@ public sealed class FormationDestinationAllocator
         }
 
         return null;
+    }
+
+    private bool TryClaim(GridCoord cell, UnitBase unit, System.Func<GridCoord, bool> isAvailable)
+    {
+        return isAvailable == null ? navigationState.TryReserveDestination(cell, unit) : isAvailable(cell);
     }
 
     // ---------------------------------------------------------------------

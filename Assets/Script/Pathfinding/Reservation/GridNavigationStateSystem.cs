@@ -279,6 +279,12 @@ public sealed class GridNavigationStateSystem
         return true;
     }
 
+    internal bool IsUnitSpaceClear(Vector3 position, float radius)
+    {
+        return !OverlapsOccupiedUnit(position, radius, null) &&
+               !OverlapsReservedDestination(position, radius, null);
+    }
+
     //private bool OverlapsOccupiedUnit(Vector3 center, float radius, UnitBase requester)
     //{
     //    if (occupantsByCell.Count == 0)
@@ -376,7 +382,7 @@ public sealed class GridNavigationStateSystem
                     }
 
                     // same active command group
-                    if (requester.MovementGroupId > 0 && requester.MovementGroupId == other.MovementGroupId)
+                    if (requester != null && requester.MovementGroupId > 0 && requester.MovementGroupId == other.MovementGroupId)
                     {
                         foundSameMovementGroup = true;
                         continue;
@@ -435,12 +441,17 @@ public sealed class GridNavigationStateSystem
             return DynamicOccupancyRelation.None;
         }
 
+        return GetDynamicOccupancyRelation(coord, requester.NavigationRadius, requester);
+    }
+
+    internal DynamicOccupancyRelation GetDynamicOccupancyRelation(GridCoord coord, float radius, UnitBase requester)
+    {
         GridCell candidateCell = terrainGrid.GetCell(coord);
 
         if (candidateCell == null)
             return DynamicOccupancyRelation.None;
 
-        return GetDynamicOccupancyRelation(candidateCell.WorldCenter, requester.NavigationRadius, requester);
+        return GetDynamicOccupancyRelation(candidateCell.WorldCenter, radius, requester);
     }
 
     private bool OverlapsReservedDestination(Vector3 center, float radius, UnitBase requester)

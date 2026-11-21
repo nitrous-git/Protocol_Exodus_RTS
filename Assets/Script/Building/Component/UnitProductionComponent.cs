@@ -13,6 +13,8 @@ using UnityEngine.Serialization;
 public sealed class UnitProductionComponent : MonoBehaviour
 {
     public const int MaximumQueueSize = 5;
+    private const float SpawnRetryInterval = 0.25f;
+    private const int MaxRouteSearchesPerAttempt = 3;
 
     [Header("Production Options")]
     [SerializeField] private List<UnitType> producibleUnitTypes = new();
@@ -22,25 +24,32 @@ public sealed class UnitProductionComponent : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private Transform defaultRallyPoint;
 
-    [Header("Spawn Search")]
-    [SerializeField, Min(1)] private int initialSpawnDepth = 1;
-    [SerializeField, Min(0)] private int maximumExtraSpawnDepth = 4;
-    [SerializeField, Min(0)] private int spawnOpennessRadius = 2;
-    [SerializeField, Min(0)] private int spawnOpennessWeight = 1;
-    [SerializeField, Min(0)] private int spawnDistanceWeight = 2;
+    [Header("Default Deployment")]
+    [SerializeField, Min(0f)] private float exitCorridorPadding = 0.35f;
+    [SerializeField, Min(0f)] private float deploymentSpacing = 0.35f;
+    [SerializeField, Min(0f)] private float deploymentForwardBuffer = 0.5f;
+    [SerializeField, Min(1)] private int maxDeploymentRows = 8;
+    [SerializeField, Min(1)] private int maxDeploymentColumnsPerSide = 3;
 
     [Header("Physical Clearance")]
     [SerializeField] private LayerMask spawnBlockingMask;
-    [SerializeField, Min(0.01f)] private float spawnClearanceRadius = 0.4f;
     [SerializeField] private float spawnHeightOffset = 0f;
 
     private readonly List<UnitDefinition> productionQueue = new();
 
     private BuildingBase building;
     private float productionElapsed;
+    private float spawnRetryRemaining;
     private bool removalHandled;
+    private bool warnedAboutExitTransforms;
+    private float largestProductionRadius;
 
     private readonly List<UnitDefinition> producibleUnits = new();
+    private readonly Dictionary<UnitDefinition, SpawnFootprint> spawnFootprints = new();
+    private readonly BuildingProductionFormationAllocator deployment = new();
+    private readonly List<Vector3> deploymentRoute = new();
+    private readonly HashSet<GridCoord> unreachableDestinations = new();
+    private readonly Collider[] spawnBlockers = new Collider[8];
 
     // ---------------------------------------------------------------------
     // Public state
@@ -55,12 +64,14 @@ public sealed class UnitProductionComponent : MonoBehaviour
     {
         RallyPoint = position;
         RallyPointNormal = normal;
+        ResetSpawnRetry();
     }
 
     internal void ClearRallyPoint()
     {
         RallyPoint = null;
         RallyPointNormal = Vector3.up;
+        ResetSpawnRetry();
     }
 
     public IReadOnlyList<UnitDefinition> ProducibleUnits => producibleUnits;
@@ -143,9 +154,9 @@ public sealed class UnitProductionComponent : MonoBehaviour
         if (productionElapsed < duration)
             return;
 
-        // When spawning fails, the completed order remains at the front.
-        // The component retries on the next building tick.
-        TrySpawnActiveOrder();
+        spawnRetryRemaining -= Mathf.Max(0f, deltaTime);
+        if (spawnRetryRemaining <= 0f && !TrySpawnActiveOrder())
+            spawnRetryRemaining = SpawnRetryInterval;
     }
 
     public void NotifyBuildingRemoved()
@@ -273,7 +284,10 @@ public sealed class UnitProductionComponent : MonoBehaviour
         RefundResources(definition);
 
         if (queueIndex == 0)
+        {
             productionElapsed = 0f;
+            ResetSpawnRetry();
+        }
 
         return true;
     }
@@ -292,6 +306,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         productionQueue.Clear();
         productionElapsed = 0f;
+        ResetSpawnRetry();
     }
 
     public UnitDefinition GetQueuedDefinition(int queueIndex)
@@ -309,28 +324,37 @@ public sealed class UnitProductionComponent : MonoBehaviour
     private bool TrySpawnActiveOrder()
     {
         UnitDefinition definition = ActiveDefinition;
-
-        if (definition == null)
+        if (definition == null || definition.Prefab == null || !definition.Prefab.CanReceiveCommands ||
+            definition.moveSpeed <= 0f || !definition.Prefab.TryGetComponent<UnitMotor>(out _) ||
+            !spawnFootprints.TryGetValue(definition, out SpawnFootprint footprint))
             return false;
 
         UnitManager unitManager = building.OwnerFaction?.UnitManager;
-
-        if (unitManager == null)
-            return false;
-
+        GridNavigationStateSystem navigation = unitManager?.NavigationState;
         TerrainGrid terrainGrid = GetTerrainGrid();
-
-        if (terrainGrid == null)
+        if (terrainGrid == null || navigation == null || unitManager.PathfindingService == null)
             return false;
 
-        if (!TryFindSpawnPosition(terrainGrid, unitManager.NavigationState, out Vector3 spawnPosition))
+        GetExitFrame(terrainGrid, footprint.Radius, out Vector3 entrance, out Vector3 forward, out float rallyDepth);
+        if (!TryFindSpawnPosition(terrainGrid, navigation, entrance, forward, footprint, out Vector3 spawnPosition) ||
+            !TryFindExitWaypoint(terrainGrid, navigation, spawnPosition, entrance, forward, rallyDepth, footprint, out Vector3 exitWaypoint) ||
+            !TryFindDeploymentDestination(unitManager, terrainGrid, entrance, forward, exitWaypoint, definition, footprint, out GridCoord destination))
             return false;
 
         UnitBase spawnedUnit = unitManager.SpawnUnit(definition.Prefab, spawnPosition, building.transform.rotation,
-            preserveSpawnPosition: spawnPoint != null);
+            preserveSpawnPosition: true);
 
         if (spawnedUnit == null)
             return false;
+
+        if (!spawnedUnit.TryStartProductionMove(destination, exitWaypoint, deploymentRoute))
+        {
+            // Keep the completed order and its supply reservation if the handoff fails.
+            unitManager.UnregisterUnit(spawnedUnit);
+            spawnedUnit.gameObject.SetActive(false);
+            Destroy(spawnedUnit.gameObject);
+            return false;
+        }
 
         // UnitBase.Initialize registers the new unit and increases
         // CurrentPopulation. The queued reservation can now be released.
@@ -338,9 +362,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         productionQueue.RemoveAt(0);
         productionElapsed = 0f;
-
-        if (EffectiveRallyPoint is Vector3 destination)
-            spawnedUnit.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+        ResetSpawnRetry();
 
         return true;
     }
@@ -356,72 +378,278 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         productionQueue.RemoveAt(0);
         productionElapsed = 0f;
+        ResetSpawnRetry();
+    }
+
+    private void ResetSpawnRetry()
+    {
+        spawnRetryRemaining = 0f;
+        unreachableDestinations.Clear();
     }
 
     // ---------------------------------------------------------------------
     // Spawn placement
     // ---------------------------------------------------------------------
 
-    private bool TryFindSpawnPosition(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState, out Vector3 position)
+    private void GetExitFrame(TerrainGrid grid, float radius, out Vector3 entrance,
+        out Vector3 forward, out float rallyDepth)
     {
-        position = default;
-        if (building.Definition == null)
-            return false;
-
-        bool IsCellClear(GridCoord coord) => navigationState?.HasUnitOccupancy(coord) != true &&
-            IsSpawnPositionClear(terrainGrid.CellToWorld(coord) + Vector3.up * spawnHeightOffset);
-
-        GridCoord? fallbackCell;
-        if (spawnPoint != null)
+        entrance = spawnPoint != null ? spawnPoint.position : building.Position;
+        bool hasSpawnMarker = spawnPoint != null && float.IsFinite(entrance.x) &&
+            float.IsFinite(entrance.y) && float.IsFinite(entrance.z);
+        Vector3 offset = Vector3.ProjectOnPlane(entrance - building.Position, Vector3.up);
+        forward = defaultRallyPoint != null ? defaultRallyPoint.position - entrance : Vector3.zero;
+        forward.y = 0f;
+        rallyDepth = forward.magnitude;
+        if (hasSpawnMarker && float.IsFinite(rallyDepth) && rallyDepth > 0.001f && Vector3.Dot(forward, offset) >= 0f)
         {
-            Vector3 doorway = spawnPoint.position;
-            GridCoord doorwayCell = terrainGrid.WorldToCell(doorway);
-            if (terrainGrid.IsWalkable(doorwayCell) && navigationState?.HasUnitOccupancy(doorwayCell) != true)
-            {
-                doorway.y = Mathf.Max(doorway.y, terrainGrid.SampleHeight(doorway)) + spawnHeightOffset;
-                if (IsSpawnPositionClear(doorway))
-                {
-                    position = doorway;
-                    return true;
-                }
-            }
+            forward /= rallyDepth;
+            return;
+        }
 
-            fallbackCell = PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
-                terrainGrid, doorwayCell, Vector2Int.one, initialDepth: 0,
-                maxExtraDepth: initialSpawnDepth + maximumExtraSpawnDepth,
-                preferredCell: doorwayCell, policy: PlacementUtil.PlacementPolicy.Closest,
-                openRadius: 0, openWeight: 0, distanceWeight: 1, additionalValidator: IsCellClear);
+        if (!warnedAboutExitTransforms)
+        {
+            Debug.LogWarning($"{name}: production exit transforms are missing, coincident, or point inward. Using the building's outward direction.", this);
+            warnedAboutExitTransforms = true;
+        }
+
+        forward = Vector3.ProjectOnPlane(building.transform.forward, Vector3.up).normalized;
+        if (forward.sqrMagnitude < 0.001f)
+            forward = Vector3.forward;
+        rallyDepth = 0f;
+
+        if (hasSpawnMarker)
+        {
+            float alignment = Vector3.Dot(offset, forward);
+            if (Mathf.Abs(alignment) < 0.001f && offset.sqrMagnitude > 0.001f)
+                forward = offset.normalized;
+            else if (alignment < 0f)
+                forward = -forward;
         }
         else
         {
-            fallbackCell = PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
-                terrainGrid,
-                building.FootprintOrigin,
-                building.PlacedFootprintSize,
-                initialDepth: initialSpawnDepth,
-                maxExtraDepth: maximumExtraSpawnDepth,
-                preferredCell: null,
-                policy: PlacementUtil.PlacementPolicy.OpenThenClose,
-                openRadius: spawnOpennessRadius,
-                openWeight: spawnOpennessWeight,
-                distanceWeight: spawnDistanceWeight,
-                additionalValidator: IsCellClear);
+            // Place the fallback just outside the front face of the producer's grid footprint.
+            Vector2Int size = building.PlacedFootprintSize;
+            float xDepth = forward.x == 0f ? float.PositiveInfinity : size.x * 0.5f / Mathf.Abs(forward.x);
+            float zDepth = forward.z == 0f ? float.PositiveInfinity : size.y * 0.5f / Mathf.Abs(forward.z);
+            Vector3 center = grid.GetFootprintWorldCenter(building.FootprintOrigin, size);
+            entrance = center + forward * (Mathf.Min(xDepth, zDepth) * grid.CellSize + radius + 0.01f);
+        }
+    }
+
+    private bool TryFindSpawnPosition(TerrainGrid grid, GridNavigationStateSystem navigation,
+        Vector3 entrance, Vector3 forward, SpawnFootprint footprint, out Vector3 position)
+    {
+        float step = grid.CellSize * 0.25f;
+        int maxSteps = Mathf.CeilToInt((footprint.Radius + grid.CellSize) / step);
+        for (int i = 0; i <= maxSteps; i++)
+        {
+            position = entrance + forward * (i * step);
+            float groundHeight = grid.SampleHeight(position);
+            position.y = (i == 0 && spawnPoint != null ? Mathf.Max(entrance.y, groundHeight) : groundHeight) + spawnHeightOffset;
+
+            if (!navigation.IsUnitSpaceClear(position, footprint.Radius))
+                break;
+
+            if (grid.HasNavigationClearanceAt(position, footprint.Radius) && IsPhysicsClear(position, footprint))
+                return true;
+
+            // Only correct for the producer's own footprint or collider. A blocked doorway waits.
+            if (!grid.HasNavigationClearanceAt(position, footprint.Radius, building.BuildingId) ||
+                !IsPhysicsClear(position, footprint, ignoreProducer: true))
+                break;
         }
 
-        if (fallbackCell is not GridCoord cell)
-            return false;
+        position = default;
+        return false;
+    }
 
-        position = terrainGrid.CellToWorld(cell) + Vector3.up * spawnHeightOffset;
+    private bool TryFindExitWaypoint(TerrainGrid grid, GridNavigationStateSystem navigation,
+        Vector3 spawn, Vector3 entrance, Vector3 forward, float rallyDepth, SpawnFootprint footprint,
+        out Vector3 waypoint)
+    {
+        float spawnDepth = Vector3.Dot(spawn - entrance, forward);
+        float minimumExitDepth = Mathf.Max(rallyDepth + deploymentForwardBuffer, 2f * largestProductionRadius + deploymentSpacing);
+        float depth = RallyPoint.HasValue
+            ? spawnDepth + Mathf.Max(grid.CellSize, 2f * footprint.Radius + deploymentSpacing)
+            : Mathf.Max(minimumExitDepth, spawnDepth + grid.CellSize);
+        Vector3 target = entrance + forward * (depth + grid.CellSize * 0.707107f);
+        GridCoord waypointCell = grid.WorldToCell(target);
+        if (!grid.IsInside(waypointCell))
+        {
+            waypoint = default;
+            return false;
+        }
+
+        waypoint = grid.CellToWorld(waypointCell);
+
+        // Keep the first leg straight and check the same grid transitions the motor will use.
+        Vector3 direction = Vector3.ProjectOnPlane(waypoint - spawn, Vector3.up);
+        int steps = Mathf.Max(1, Mathf.CeilToInt(direction.magnitude / (grid.CellSize * 0.4f)));
+        GridCoord previous = grid.WorldToCell(spawn);
+        for (int i = 1; i <= steps; i++)
+        {
+            Vector3 probe = spawn + direction * (i / (float)steps);
+            GridCoord cell = grid.WorldToCell(probe);
+            if (!grid.IsStaticTransitionTraversable(previous, cell, footprint.Radius) ||
+                !grid.HasNavigationClearanceAt(probe, footprint.Radius) ||
+                !navigation.IsUnitSpaceClear(probe, footprint.Radius))
+                return false;
+
+            probe.y = grid.SampleHeight(probe) + spawnHeightOffset;
+            if (!IsPhysicsClear(probe, footprint))
+                return false;
+
+            previous = cell;
+        }
+
         return true;
     }
 
-    private bool IsSpawnPositionClear(Vector3 position)
+    private bool TryFindDeploymentDestination(UnitManager unitManager, TerrainGrid grid, Vector3 entrance,
+        Vector3 forward, Vector3 exitWaypoint, UnitDefinition definition, SpawnFootprint footprint, out GridCoord destination)
     {
-        return !Physics.CheckSphere(
-            position + Vector3.up * spawnClearanceRadius,
-            spawnClearanceRadius,
-            spawnBlockingMask,
-            QueryTriggerInteraction.Ignore);
+        int routeSearches = 0;
+        bool IsAvailable(GridCoord cell)
+        {
+            if (routeSearches >= MaxRouteSearchesPerAttempt || unreachableDestinations.Contains(cell) ||
+                !grid.IsStaticallyTraversable(cell, footprint.Radius))
+                return false;
+
+            Vector3 point = grid.CellToWorld(cell);
+            float spacing = RallyPoint.HasValue ? 0f : deploymentSpacing;
+            if (!unitManager.NavigationState.IsUnitSpaceClear(point, footprint.Radius + spacing) ||
+                !IsPhysicsClear(point, footprint))
+                return false;
+
+            routeSearches++;
+            IPathfindingService pathfinding = unitManager.PathfindingService;
+            bool found = pathfinding is GridAStarPathfindingService gridPathfinding
+                ? gridPathfinding.TryFindProductionPath(footprint.Radius, exitWaypoint, point, deploymentRoute)
+                : pathfinding.TryFindPath(definition.Prefab, exitWaypoint, point, deploymentRoute);
+
+            if (found && deploymentRoute.Count > 0 &&
+                Vector3.ProjectOnPlane(deploymentRoute[deploymentRoute.Count - 1] - point, Vector3.up).sqrMagnitude < 0.0001f)
+            {
+                deploymentRoute[deploymentRoute.Count - 1] = point;
+                return true;
+            }
+
+            unreachableDestinations.Add(cell);
+            return false;
+        }
+
+        GridCoord? result = RallyPoint is Vector3 rally
+            ? unitManager.FormationDestinations?.FindRallyDestination(grid.WorldToCell(rally), IsAvailable)
+            : deployment.FindDestination(grid, entrance, forward, Vector3.Dot(exitWaypoint - entrance, forward),
+                largestProductionRadius + exitCorridorPadding, largestProductionRadius, deploymentSpacing,
+                maxDeploymentRows, maxDeploymentColumnsPerSide, IsAvailable);
+
+        // Resume after failed paths on later ticks. Once the search has visited every viable slot, reconsider them.
+        if (!result.HasValue && routeSearches < MaxRouteSearchesPerAttempt)
+            unreachableDestinations.Clear();
+
+        destination = result.GetValueOrDefault();
+        return result.HasValue;
+    }
+
+    private bool IsPhysicsClear(Vector3 position, SpawnFootprint footprint, bool ignoreProducer = false)
+    {
+        Vector3 lower = position + Vector3.up * footprint.LowerCenter;
+        Vector3 upper = position + Vector3.up * footprint.UpperCenter;
+        if (!ignoreProducer)
+            return !Physics.CheckCapsule(lower, upper, footprint.Radius, spawnBlockingMask, QueryTriggerInteraction.Ignore);
+
+        int count = Physics.OverlapCapsuleNonAlloc(lower, upper, footprint.Radius, spawnBlockers,
+            spawnBlockingMask, QueryTriggerInteraction.Ignore);
+        if (count == spawnBlockers.Length)
+            return false;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (!spawnBlockers[i].transform.IsChildOf(building.transform))
+                return false;
+        }
+
+        return true;
+    }
+
+    private readonly struct SpawnFootprint
+    {
+        public readonly float Radius;
+        public readonly float LowerCenter;
+        public readonly float UpperCenter;
+
+        private SpawnFootprint(float radius, float lowerCenter, float upperCenter)
+        {
+            Radius = radius;
+            LowerCenter = lowerCenter;
+            UpperCenter = upperCenter;
+        }
+
+        public static SpawnFootprint FromDefinition(UnitDefinition definition)
+        {
+            float radius = Mathf.Max(0.05f, definition.NavigationRadius, definition.Prefab.NavigationRadius);
+            float lower = radius;
+            float upper = radius;
+            Transform root = definition.Prefab.transform;
+            Matrix4x4 fromWorld = Matrix4x4.Scale(root.localScale) * root.worldToLocalMatrix;
+            foreach (Collider collider in definition.Prefab.GetComponentsInChildren<Collider>())
+            {
+                if (!collider.enabled || collider.isTrigger)
+                    continue;
+
+                Matrix4x4 toSpawn = fromWorld * collider.transform.localToWorldMatrix;
+                switch (collider)
+                {
+                    case CapsuleCollider capsule:
+                        Vector3 axis = capsule.direction == 0 ? Vector3.right : capsule.direction == 1 ? Vector3.up : Vector3.forward;
+                        IncludeCapsule(capsule.center, axis * Mathf.Max(0f, capsule.height * 0.5f - capsule.radius), capsule.radius);
+                        break;
+                    case SphereCollider sphere:
+                        IncludeCapsule(sphere.center, Vector3.zero, sphere.radius);
+                        break;
+                    case CharacterController character:
+                        IncludeCapsule(character.center, Vector3.up * Mathf.Max(0f, character.height * 0.5f - character.radius),
+                            character.radius);
+                        break;
+                    case BoxCollider box:
+                        IncludeBounds(new Bounds(box.center, box.size));
+                        break;
+                    case MeshCollider mesh when mesh.sharedMesh != null:
+                        IncludeBounds(mesh.sharedMesh.bounds);
+                        break;
+                }
+
+                void IncludeCapsule(Vector3 center, Vector3 halfSegment, float localRadius)
+                {
+                    float scale = Mathf.Max(toSpawn.MultiplyVector(Vector3.right).magnitude,
+                        toSpawn.MultiplyVector(Vector3.up).magnitude, toSpawn.MultiplyVector(Vector3.forward).magnitude);
+                    IncludePoint(toSpawn.MultiplyPoint3x4(center - halfSegment), localRadius * scale);
+                    IncludePoint(toSpawn.MultiplyPoint3x4(center + halfSegment), localRadius * scale);
+                }
+
+                void IncludeBounds(Bounds bounds)
+                {
+                    for (int i = 0; i < 8; i++)
+                    {
+                        Vector3 corner = new Vector3((i & 1) == 0 ? bounds.min.x : bounds.max.x,
+                            (i & 2) == 0 ? bounds.min.y : bounds.max.y, (i & 4) == 0 ? bounds.min.z : bounds.max.z);
+                        IncludePoint(toSpawn.MultiplyPoint3x4(corner), 0f);
+                    }
+                }
+            }
+
+            return new SpawnFootprint(radius, lower, upper);
+
+            void IncludePoint(Vector3 center, float padding)
+            {
+                float horizontal = new Vector2(center.x, center.z).magnitude;
+                radius = Mathf.Max(radius, horizontal + padding);
+                lower = Mathf.Min(lower, center.y);
+                upper = Mathf.Max(upper, center.y);
+            }
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -476,6 +704,8 @@ public sealed class UnitProductionComponent : MonoBehaviour
     private void ResolveProducibleUnits()
     {
         producibleUnits.Clear();
+        spawnFootprints.Clear();
+        largestProductionRadius = 0f;
 
         FactionDefinition factionDefinition = building.OwnerFaction?.Definition;
 
@@ -497,6 +727,13 @@ public sealed class UnitProductionComponent : MonoBehaviour
             }
 
             producibleUnits.Add(definition);
+
+            if (definition.Prefab != null && !spawnFootprints.ContainsKey(definition))
+            {
+                SpawnFootprint footprint = SpawnFootprint.FromDefinition(definition);
+                spawnFootprints.Add(definition, footprint);
+                largestProductionRadius = Mathf.Max(largestProductionRadius, footprint.Radius);
+            }
         }
     }
 
@@ -529,11 +766,58 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
     private void OnValidate()
     {
-        initialSpawnDepth = Mathf.Max(1, initialSpawnDepth);
-        maximumExtraSpawnDepth = Mathf.Max(0, maximumExtraSpawnDepth);
-        spawnOpennessRadius = Mathf.Max(0, spawnOpennessRadius);
-        spawnOpennessWeight = Mathf.Max(0, spawnOpennessWeight);
-        spawnDistanceWeight = Mathf.Max(0, spawnDistanceWeight);
-        spawnClearanceRadius = Mathf.Max(0.01f, spawnClearanceRadius);
+        exitCorridorPadding = Mathf.Max(0f, exitCorridorPadding);
+        deploymentSpacing = Mathf.Max(0f, deploymentSpacing);
+        deploymentForwardBuffer = Mathf.Max(0f, deploymentForwardBuffer);
+        maxDeploymentRows = Mathf.Max(1, maxDeploymentRows);
+        maxDeploymentColumnsPerSide = Mathf.Max(1, maxDeploymentColumnsPerSide);
+    }
+}
+
+internal sealed class BuildingProductionFormationAllocator
+{
+    private bool preferRight;
+
+    public GridCoord? FindDestination(TerrainGrid grid, Vector3 entrance, Vector3 forward,
+        float firstRowDepth, float corridorHalfWidth, float largestRadius, float spacing,
+        int rows, int columnsPerSide, Func<GridCoord, bool> isAvailable)
+    {
+        Vector3 right = Vector3.Cross(Vector3.up, forward);
+        float snapMargin = grid.CellSize * 0.707107f;
+        float minimumSideDistance = corridorHalfWidth + largestRadius;
+        float step = Mathf.Max(grid.CellSize, 2f * largestRadius + spacing) + grid.CellSize * 0.5f;
+
+        // Visit nearer combinations of row and column first, alternating sides after each assignment.
+        for (int depth = 0; depth < rows + columnsPerSide - 1; depth++)
+        {
+            int firstColumn = Mathf.Max(0, depth - rows + 1);
+            int lastColumn = Mathf.Min(depth, columnsPerSide - 1);
+            for (int column = firstColumn; column <= lastColumn; column++)
+            {
+                int row = depth - column;
+                Vector3 rowCenter = entrance + forward * (firstRowDepth + snapMargin + row * step);
+                float lateral = minimumSideDistance + snapMargin + column * step;
+
+                for (int side = 0; side < 2; side++)
+                {
+                    bool onRight = side == 0 ? preferRight : !preferRight;
+                    GridCoord cell = grid.WorldToCell(rowCenter + right * (onRight ? lateral : -lateral));
+                    if (!grid.IsInside(cell))
+                        continue;
+
+                    // Check the actual cell center after snapping to the grid.
+                    Vector3 offset = grid.CellToWorld(cell) - entrance;
+                    if (Vector3.Dot(offset, forward) < firstRowDepth ||
+                        Mathf.Abs(Vector3.Dot(offset, right)) < minimumSideDistance ||
+                        !isAvailable(cell))
+                        continue;
+
+                    preferRight = !onRight;
+                    return cell;
+                }
+            }
+        }
+
+        return null;
     }
 }

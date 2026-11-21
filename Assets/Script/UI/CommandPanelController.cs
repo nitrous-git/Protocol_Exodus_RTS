@@ -38,6 +38,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
     // Building command presentation
     private const int TrainUnitSlot = 0;
+    private const int TrainMechaSlot = 1;
     private const int UpgradeSlot = 1;
     private const int SetRallyPointSlot = 5;
     private const int CloseBuildingSelectionSlot = 8;
@@ -221,6 +222,7 @@ public sealed class CommandPanelController : MonoBehaviour
                 return CommandPanelLayout.WorkerUnit;
 
             case UnitType.Combat:
+            case UnitType.Mech:
                 return CommandPanelLayout.CombatUnit;
 
             default:
@@ -360,9 +362,10 @@ public sealed class CommandPanelController : MonoBehaviour
         bool operational = CanOperateSelectedBuilding();
 
         UnitDefinition combatDefinition = GetSelectedBuildingUnitDefinition(UnitType.Combat);
+        UnitDefinition mechDefinition = GetSelectedBuildingUnitDefinition(UnitType.Mech);
 
-        ConfigureGameplaySlot(TrainUnitSlot, "C", operational, CommandPanelAction.TrainUnit(combatDefinition));
-        ConfigureDisabledSlot(UpgradeSlot, "U");
+        ConfigureGameplaySlot(TrainUnitSlot, "C", operational && combatDefinition != null, CommandPanelAction.TrainUnit(combatDefinition));
+        ConfigureGameplaySlot(TrainMechaSlot, "M", operational && mechDefinition != null, CommandPanelAction.TrainUnit(mechDefinition));
         ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
     }
