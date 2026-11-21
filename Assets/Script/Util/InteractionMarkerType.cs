@@ -6,5 +6,7 @@ public enum InteractionMarkerType
     AttackTargeting,
     AttackMoveIssued,
 
-    DefaultMoveIssued
+    DefaultMoveIssued,
+    RallyPointIssued,
+    RallyPoint
 }

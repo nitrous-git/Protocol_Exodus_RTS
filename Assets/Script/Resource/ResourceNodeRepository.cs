@@ -83,7 +83,7 @@ public sealed class ResourceNodeRepository
 
             if (node == null)
             {
-                resourceNodeList.RemoveAt(i);
+                UnregisterNode(node);
                 continue;
             }
 
@@ -105,58 +105,54 @@ public sealed class ResourceNodeRepository
         if (node == null)
             return false;
 
-        if (resourceNodeList.Contains(node))
+        if (node.IsInitialized)
             return false;
 
-        if (terrainGrid == null)
+        if (terrainGrid == null || gameContext == null)
             return false;
 
-        GridCoord originCell = terrainGrid.WorldToCell(node.Position);
-        GridCell gridCell = terrainGrid.GetCell(originCell);
+        Vector2Int size = node.Footprint;
+        GridCoord centerCell = terrainGrid.WorldToCell(node.Position);
 
-        if (gridCell == null)
+        GridCoord originCell = new GridCoord(centerCell.x - size.x / 2, centerCell.z - size.y / 2);
+
+        if (!terrainGrid.CanPlaceFootprint(originCell, size))
         {
-            Debug.LogError($"{node.name} is outside the TerrainGrid and cannot be registered.");
-
+            Debug.LogError(
+                $"{node.name}: Invalid footprint {size} at {originCell}"
+            );
             return false;
         }
 
-        if (gridCell.Occupied || gridCell.Reserved)
+        Vector3 previousPosition = node.Position;
+        node.transform.position = terrainGrid.GetFootprintWorldCenter(originCell, size);
+        if (!node.Initialize(this, gameContext, originCell, size))
         {
-            Debug.LogError($"{node.name} cannot occupy footprint ({originCell.x}, {originCell.z}) because it is unavailable.");
-
+            node.transform.position = previousPosition;
             return false;
         }
 
-        //Debug.Log("Node registered at cell : " + occupiedCell.x + ", " + occupiedCell.z);
-
-        // Snap the scene-authored resource node to the exact
-        // center of its resolved grid cell.
-        node.transform.position = gridCell.WorldCenter;
-
-        node.Initialize(this, originCell);
-
-        if (!node.IsInitialized)
+        if (!terrainGrid.SetFootprintOccupied(originCell, size, true, resourceNodeId: node.ResourceNodeId))
+        {
+            node.NotifyRemoved();
+            node.transform.position = previousPosition;
             return false;
+        }
 
         resourceNodeList.Add(node);
-
-        //terrainGrid.SetOccupied(originCell, true, resourceNodeId: node.ResourceNodeId);
-        terrainGrid.SetFootprintOccupied(originCell, node.Footprint, node.ResourceNodeId);
-
-        gameContext?.RegisterResourceNode(node);
+        gameContext.RegisterResourceNode(node);
 
         return true;
     }
 
     /// <summary>
-    /// Removes a node from repositories and releases its occupied grid cell.
+    /// Removes a node from repositories and releases its occupied footprint.
     ///
     /// Does not destroy the GameObject.
     /// </summary>
     public void UnregisterNode(ResourceNode node)
     {
-        if (node == null)
+        if (ReferenceEquals(node, null))
             return;
 
         bool wasRegistered = resourceNodeList.Remove(node);
@@ -166,10 +162,10 @@ public sealed class ResourceNodeRepository
 
         gameContext?.UnregisterResourceNode(node);
 
-        if (terrainGrid != null && node.IsInitialized)
-        {
-            terrainGrid.SetOccupied(node.OriginCell, false, node.ResourceNodeId);
-        }
+        terrainGrid.SetFootprintOccupied(node.OriginCell, node.Footprint, false,
+            resourceNodeId: node.ResourceNodeId);
+        if (node != null)
+            node.NotifyRemoved();
     }
 
     public bool Contains(ResourceNode node)
@@ -225,8 +221,9 @@ public sealed class ResourceNodeRepository
 
         UnregisterNode(node);
 
-        node.NotifyRemoved();
-
         Object.Destroy(node.gameObject);
     }
+
+
+
 }

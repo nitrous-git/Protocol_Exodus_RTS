@@ -75,7 +75,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     public virtual void Initialize(Faction ownerFaction, 
                                 GameContext gameContext, 
                                 IPathfindingService pathfindingService, 
-                                UnitManager owningUnitManager)
+                                UnitManager owningUnitManager,
+                                bool preserveSpawnPosition = false)
     {
         if (IsInitialized)
             return;
@@ -110,7 +111,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         health.OnDied += HandleDied;
 
         localSteeringSystem?.Initialize(this, gameContext.AllUnits);
-        motor?.Initialize(this, pathfindingService, TerrainGrid, GridNavigationStateSystem, localSteeringSystem, definition.moveSpeed);
+        motor?.Initialize(this, pathfindingService, TerrainGrid, GridNavigationStateSystem, localSteeringSystem,
+            definition.moveSpeed, preserveSpawnPosition);
         sensor?.Initialize(this, gameContext);
         view?.Initialize(this);
 

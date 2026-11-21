@@ -8,6 +8,7 @@ public sealed class InteractionMarkerPresenter
     private readonly Dictionary<InteractionMarkerType, InteractionMarkerDefinition> definitions = new();
     private readonly Transform root;
     private GameObject activeMarker;
+    private GameObject rallyMarker;
 
     public InteractionMarkerPresenter(IReadOnlyList<InteractionMarkerDefinition> markerDefinitions, Transform root)
     {
@@ -41,7 +42,7 @@ public sealed class InteractionMarkerPresenter
         if (definition == null)
             return;
 
-        activeMarker = Object.Instantiate(definition.Prefab, root);
+        activeMarker = CreateMarker(definition);
         activeMarker.SetActive(false);
     }
 
@@ -76,10 +77,43 @@ public sealed class InteractionMarkerPresenter
         if (definition == null)
             return;
 
-        GameObject marker = Object.Instantiate(definition.Prefab, root);
+        GameObject marker = CreateMarker(definition);
         SetMarkerTransform(marker.transform, groundPosition, groundNormal);
         marker.SetActive(true);
         Object.Destroy(marker, definition.Duration);
+    }
+
+    public void ShowRallyPoint(Vector3 position, Vector3 normal)
+    {
+        if (rallyMarker == null)
+        {
+            InteractionMarkerDefinition definition = GetDefinition(InteractionMarkerType.RallyPoint);
+            if (definition == null)
+                return;
+
+            rallyMarker = CreateMarker(definition);
+        }
+
+        SetMarkerTransform(rallyMarker.transform, position, normal);
+        rallyMarker.SetActive(true);
+    }
+
+    public void HideRallyPoint()
+    {
+        if (rallyMarker == null)
+            return;
+
+        rallyMarker.SetActive(false);
+        Object.Destroy(rallyMarker);
+        rallyMarker = null;
+    }
+
+    private GameObject CreateMarker(InteractionMarkerDefinition definition)
+    {
+        GameObject marker = Object.Instantiate(definition.Prefab, root);
+        if (definition.UniformScale > 0f)
+            marker.transform.localScale = Vector3.one * definition.UniformScale;
+        return marker;
     }
 
     private InteractionMarkerDefinition GetDefinition(InteractionMarkerType type)

@@ -52,7 +52,8 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
         }
 
         //reservedInteractionCell = unit.ReserveInteractionCell(dropOffBuilding);
-        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, dropOffBuilding.FootprintOrigin, dropOffBuilding.Definition.FootprintSize);
+        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(
+            unit, dropOffBuilding.FootprintOrigin, dropOffBuilding.PlacedFootprintSize);
 
         if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
         {

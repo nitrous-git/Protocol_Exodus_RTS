@@ -26,6 +26,8 @@ public sealed class PlayerInputBindings
 
     [Header("Interaction")]
     [SerializeField] private KeyCode cancelInteractionKey = KeyCode.Escape;
+    [SerializeField] private KeyCode rallyPointKey = KeyCode.R;
+    [SerializeField] private KeyCode rotateBuildingKey = KeyCode.R;
 
     public KeyCode CameraNorthKey => cameraNorthKey;
     public KeyCode CameraSouthKey => cameraSouthKey;
@@ -45,4 +47,6 @@ public sealed class PlayerInputBindings
     public bool IssueMoveOnSecondaryPointer => issueMoveOnSecondaryPointer;
 
     public KeyCode CancelInteractionKey => cancelInteractionKey;
+    public KeyCode RallyPointKey => rallyPointKey;
+    public KeyCode RotateBuildingKey => rotateBuildingKey;
 }

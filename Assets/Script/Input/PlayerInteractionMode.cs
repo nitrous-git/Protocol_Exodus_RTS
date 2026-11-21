@@ -14,4 +14,5 @@ public enum PlayerInteractionMode
     BuildPlacement,
     AttackTarget,
     MoveTargeting,
+    RallyPointTargeting,
 }

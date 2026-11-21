@@ -115,10 +115,18 @@ public class TerrainGrid
         float worldZ = terrainOrigin.z + (coord.z + 0.5f) * CellSize;
 
         Vector3 worldPosition = new Vector3(worldX, 0f, worldZ);
-        float terrainHeight = terrain.SampleHeight(worldPosition) + terrainOrigin.y;
-        worldPosition.y = terrainHeight;
+        worldPosition.y = SampleHeight(worldPosition);
 
         return worldPosition;
+    }
+
+    public float SampleHeight(Vector3 position) => terrain.SampleHeight(position) + terrainOrigin.y;
+
+    public Vector3 SampleNormal(Vector3 position)
+    {
+        float normalizedX = (position.x - terrainOrigin.x) / terrainSize.x;
+        float normalizedZ = (position.z - terrainOrigin.z) / terrainSize.z;
+        return terrainData.GetInterpolatedNormal(normalizedX, normalizedZ);
     }
 
     public GridCoord WorldToCell(Vector3 worldPosition)
@@ -224,59 +232,53 @@ public class TerrainGrid
     }
 
     /// <summary>
-    /// Marks every cell in a building footprint as occupied.
-    /// Call only after validating the footprint.
+    /// Occupies or releases an entire footprint for exactly one static entity.
+    /// Returns false without changing any cells if validation fails.
     /// </summary>
-    public void SetFootprintOccupied(GridCoord origin, Vector2Int footprintSize, int buildingId)
+    public bool SetFootprintOccupied(GridCoord origin, Vector2Int footprintSize, bool occupied,
+        int buildingId = -1, int resourceNodeId = -1)
     {
+        bool hasBuilding = buildingId > 0 && resourceNodeId == -1;
+        bool hasResourceNode = resourceNodeId > 0 && buildingId == -1;
+        if (!hasBuilding && !hasResourceNode)
+            return false;
+
+        if (!IsInside(origin) || footprintSize.x <= 0 || footprintSize.y <= 0 ||
+            footprintSize.x > Width - origin.x || footprintSize.y > Height - origin.z)
+            return false;
+
+        for (int z = 0; z < footprintSize.y; z++)
+        {
+            for (int x = 0; x < footprintSize.x; x++)
+            {
+                GridCell cell = cells[origin.x + x, origin.z + z];
+                if (cell == null || cell.OccupyingUnitId != -1)
+                    return false;
+
+                if (occupied)
+                {
+                    if (!cell.IsFreeForBuilding() || cell.OccupyingBuildingId != -1 ||
+                        cell.OccupyingResourceNodeId != -1)
+                        return false;
+                }
+                else if (!cell.Occupied || cell.OccupyingBuildingId != buildingId ||
+                    cell.OccupyingResourceNodeId != resourceNodeId)
+                {
+                    return false;
+                }
+            }
+        }
+
         for (int z = 0; z < footprintSize.y; z++)
         {
             for (int x = 0; x < footprintSize.x; x++)
             {
                 GridCoord coord = new GridCoord(origin.x + x, origin.z + z);
-
-                GridCell cell = GetCell(coord);
-
-                if (cell == null)
-                    continue;
-
-                cell.Occupied = true;
-                cell.OccupyingBuildingId = buildingId;
-                cell.OccupyingUnitId = -1;
-                cell.OccupyingResourceNodeId = buildingId; //temporary use this Id
+                SetOccupied(coord, occupied, buildingId: buildingId, resourceNodeId: resourceNodeId);
             }
         }
 
-        staticClearanceField.SetDirty(true);
-    }
-
-    /// <summary>
-    /// Clears footprint cells currently occupied by the specified building.
-    /// </summary>
-    public void ClearFootprintOccupied(GridCoord origin, Vector2Int footprintSize, int buildingId)
-    {
-        for (int z = 0; z < footprintSize.y; z++)
-        {
-            for (int x = 0; x < footprintSize.x; x++)
-            {
-                GridCoord coord = new GridCoord(origin.x + x, origin.z + z);
-
-                GridCell cell = GetCell(coord);
-
-                if (cell == null)
-                    continue;
-
-                if (cell.OccupyingBuildingId != buildingId)
-                    continue;
-
-                cell.Occupied = false;
-                cell.OccupyingBuildingId = -1;
-                cell.OccupyingUnitId = -1;
-                cell.OccupyingResourceNodeId = -1;
-            }
-        }
-
-        staticClearanceField.SetDirty(true);
+        return true;
     }
 
     /// <summary>

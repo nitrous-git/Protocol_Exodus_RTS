@@ -13,6 +13,7 @@ public sealed class GameContext
     private ResourceNode selectedResourceNode;
 
     private int nextUnitId = 1;
+    private int lastStaticEntityId;
     private int nextMovementGroupId = 1;
 
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
@@ -124,12 +125,12 @@ public sealed class GameContext
 
     public void UnregisterBuilding(BuildingBase building)
     {
-        if (building == null)
+        if (ReferenceEquals(building, null))
             return;
 
         allBuildings.Remove(building);
 
-        if (selectedBuilding == building)
+        if (ReferenceEquals(selectedBuilding, building))
             ClearSelectedBuilding();
 
         UnregisterTargetable(building);
@@ -150,12 +151,12 @@ public sealed class GameContext
 
     public void UnregisterResourceNode(ResourceNode resourceNode)
     {
-        if (resourceNode == null)
+        if (ReferenceEquals(resourceNode, null))
             return;
 
         allResourceNodes.Remove(resourceNode);
 
-        if (selectedResourceNode == resourceNode)
+        if (ReferenceEquals(selectedResourceNode, resourceNode))
             ClearSelectedResourceNode();
     }
 
@@ -266,10 +267,9 @@ public sealed class GameContext
 
     public void ClearSelectedBuilding()
     {
-        if (selectedBuilding == null)
-            return;
+        if (selectedBuilding != null)
+            selectedBuilding.SetSelected(false);
 
-        selectedBuilding.SetSelected(false);
         selectedBuilding = null;
     }
 
@@ -292,10 +292,9 @@ public sealed class GameContext
 
     public void ClearSelectedResourceNode()
     {
-        if (selectedResourceNode == null)
-            return;
+        if (selectedResourceNode != null)
+            selectedResourceNode.SetSelected(false);
 
-        selectedResourceNode.SetSelected(false);
         selectedResourceNode = null;
     }
 
@@ -333,6 +332,7 @@ public sealed class GameContext
         PathfindingService = null;
 
         nextUnitId = 1;
+        lastStaticEntityId = 0;
         nextMovementGroupId = 1;
     }
 
@@ -346,6 +346,11 @@ public sealed class GameContext
         nextUnitId++;
 
         return unitId;
+    }
+
+    internal int AllocateStaticEntityId()
+    {
+        return checked(++lastStaticEntityId);
     }
 
     public int AllocateMovementGroupId()

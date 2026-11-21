@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Generic FIFO production queue for buildings.
@@ -16,8 +17,12 @@ public sealed class UnitProductionComponent : MonoBehaviour
     [Header("Production Options")]
     [SerializeField] private List<UnitType> producibleUnitTypes = new();
 
+    [Header("Spawn and Rally Points")]
+    [FormerlySerializedAs("SpawnPoint")]
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private Transform defaultRallyPoint;
+
     [Header("Spawn Search")]
-    [SerializeField] private Transform SpawnPoint;
     [SerializeField, Min(1)] private int initialSpawnDepth = 1;
     [SerializeField, Min(0)] private int maximumExtraSpawnDepth = 4;
     [SerializeField, Min(0)] private int spawnOpennessRadius = 2;
@@ -30,7 +35,6 @@ public sealed class UnitProductionComponent : MonoBehaviour
     [SerializeField] private float spawnHeightOffset = 0f;
 
     private readonly List<UnitDefinition> productionQueue = new();
-    private readonly Collider[] overlapBuffer = new Collider[16];
 
     private BuildingBase building;
     private float productionElapsed;
@@ -43,6 +47,21 @@ public sealed class UnitProductionComponent : MonoBehaviour
     // ---------------------------------------------------------------------
 
     public BuildingBase Building => building;
+    public Vector3? RallyPoint { get; private set; }
+    public Vector3? EffectiveRallyPoint => RallyPoint ?? (defaultRallyPoint != null ? defaultRallyPoint.position : null);
+    public Vector3 RallyPointNormal { get; private set; } = Vector3.up;
+
+    internal void SetRallyPoint(Vector3 position, Vector3 normal)
+    {
+        RallyPoint = position;
+        RallyPointNormal = normal;
+    }
+
+    internal void ClearRallyPoint()
+    {
+        RallyPoint = null;
+        RallyPointNormal = Vector3.up;
+    }
 
     public IReadOnlyList<UnitDefinition> ProducibleUnits => producibleUnits;
     public IReadOnlyList<UnitDefinition> ProductionQueue => productionQueue;
@@ -93,6 +112,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
         }
 
         this.building = building;
+        ClearRallyPoint();
 
         ResolveProducibleUnits();
 
@@ -134,6 +154,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
             return;
 
         removalHandled = true;
+        ClearRallyPoint();
 
         // Production is lost when the building is destroyed.
         // Resources are not refunded, but reserved supply must be released.
@@ -144,11 +165,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     {
         // Safety fallback for destruction paths that bypass
         // BuildingBase.NotifyRemoved().
-        if (!removalHandled)
-        {
-            removalHandled = true;
-            ClearQueue(refundResources: false);
-        }
+        NotifyBuildingRemoved();
     }
 
     // ---------------------------------------------------------------------
@@ -306,16 +323,11 @@ public sealed class UnitProductionComponent : MonoBehaviour
         if (terrainGrid == null)
             return false;
 
-        GridCoord? spawnCell = FindSpawnCell(terrainGrid);
-
-        if (!spawnCell.HasValue)
+        if (!TryFindSpawnPosition(terrainGrid, unitManager.NavigationState, out Vector3 spawnPosition))
             return false;
 
-        Vector3 spawnPosition = terrainGrid.CellToWorld(spawnCell.Value);
-
-        spawnPosition.y += spawnHeightOffset;
-
-        UnitBase spawnedUnit = unitManager.SpawnUnit(definition.Prefab, spawnPosition, building.transform.rotation);
+        UnitBase spawnedUnit = unitManager.SpawnUnit(definition.Prefab, spawnPosition, building.transform.rotation,
+            preserveSpawnPosition: spawnPoint != null);
 
         if (spawnedUnit == null)
             return false;
@@ -326,6 +338,9 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         productionQueue.RemoveAt(0);
         productionElapsed = 0f;
+
+        if (EffectiveRallyPoint is Vector3 destination)
+            spawnedUnit.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
 
         return true;
     }
@@ -347,87 +362,66 @@ public sealed class UnitProductionComponent : MonoBehaviour
     // Spawn placement
     // ---------------------------------------------------------------------
 
-    private GridCoord? FindSpawnCell(TerrainGrid terrainGrid)
+    private bool TryFindSpawnPosition(TerrainGrid terrainGrid, GridNavigationStateSystem navigationState, out Vector3 position)
     {
+        position = default;
         if (building.Definition == null)
-            return null;
+            return false;
 
+        bool IsCellClear(GridCoord coord) => navigationState?.HasUnitOccupancy(coord) != true &&
+            IsSpawnPositionClear(terrainGrid.CellToWorld(coord) + Vector3.up * spawnHeightOffset);
 
-        GridCoord spawnPointCell = terrainGrid.WorldToCell(SpawnPoint.position);
+        GridCoord? fallbackCell;
+        if (spawnPoint != null)
+        {
+            Vector3 doorway = spawnPoint.position;
+            GridCoord doorwayCell = terrainGrid.WorldToCell(doorway);
+            if (terrainGrid.IsWalkable(doorwayCell) && navigationState?.HasUnitOccupancy(doorwayCell) != true)
+            {
+                doorway.y = Mathf.Max(doorway.y, terrainGrid.SampleHeight(doorway)) + spawnHeightOffset;
+                if (IsSpawnPositionClear(doorway))
+                {
+                    position = doorway;
+                    return true;
+                }
+            }
 
-        //GridCoord preferredFrontCell = 
-        //    PlacementUtil.GetFootprintSideCenter(
-        //        building.FootprintOrigin,
-        //        building.Definition.FootprintSize,
-        //        gridForward,
-        //        distance: initialSpawnDepth);
-
-        return PlacementUtil
-            .GetPlacementAroundFootprintScoredWithFallback(
+            fallbackCell = PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
+                terrainGrid, doorwayCell, Vector2Int.one, initialDepth: 0,
+                maxExtraDepth: initialSpawnDepth + maximumExtraSpawnDepth,
+                preferredCell: doorwayCell, policy: PlacementUtil.PlacementPolicy.Closest,
+                openRadius: 0, openWeight: 0, distanceWeight: 1, additionalValidator: IsCellClear);
+        }
+        else
+        {
+            fallbackCell = PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
                 terrainGrid,
                 building.FootprintOrigin,
-                building.Definition.FootprintSize,
+                building.PlacedFootprintSize,
                 initialDepth: initialSpawnDepth,
                 maxExtraDepth: maximumExtraSpawnDepth,
-                preferredCell: spawnPointCell,
+                preferredCell: null,
                 policy: PlacementUtil.PlacementPolicy.OpenThenClose,
                 openRadius: spawnOpennessRadius,
                 openWeight: spawnOpennessWeight,
                 distanceWeight: spawnDistanceWeight,
-                additionalValidator: IsSpawnCellPhysicallyClear);
-    }
-
-    /// <summary>
-    /// Converts the building's world-space forward direction into one
-    /// cardinal grid direction.
-    ///
-    /// Quaternion.identity therefore produces toward positive grid Z.
-    /// </summary>
-    private Vector2Int GetBuildingGridForward()
-    {
-        Vector3 forward = building.transform.forward;
-
-        if (Mathf.Abs(forward.x) > Mathf.Abs(forward.z))
-        {
-            return forward.x >= 0f ? Vector2Int.right : Vector2Int.left;
+                additionalValidator: IsCellClear);
         }
 
-        return forward.z >= 0f ? Vector2Int.up : Vector2Int.down;
-    }
-
-    private bool IsSpawnCellPhysicallyClear(GridCoord coord)
-    {
-        TerrainGrid terrainGrid = GetTerrainGrid();
-
-        if (terrainGrid == null)
+        if (fallbackCell is not GridCoord cell)
             return false;
 
-        Vector3 center = terrainGrid.CellToWorld(coord);
+        position = terrainGrid.CellToWorld(cell) + Vector3.up * spawnHeightOffset;
+        return true;
+    }
 
-        center.y += spawnClearanceRadius;
-
-        int overlapCount = Physics.OverlapSphereNonAlloc(
-            center,
+    private bool IsSpawnPositionClear(Vector3 position)
+    {
+        return !Physics.CheckSphere(
+            position + Vector3.up * spawnClearanceRadius,
             spawnClearanceRadius,
-            overlapBuffer,
             spawnBlockingMask,
             QueryTriggerInteraction.Ignore);
-
-        for (int i = 0; i < overlapCount; i++)
-        {
-            Collider overlap = overlapBuffer[i];
-
-            if (overlap == null)
-                continue;
-
-            // Ignore colliders belonging to the producing building.
-            if (overlap.transform.IsChildOf(building.transform))
-                continue;
-
-            return false;
-        }
-
-        return true;
     }
 
     // ---------------------------------------------------------------------
@@ -460,6 +454,24 @@ public sealed class UnitProductionComponent : MonoBehaviour
     // ---------------------------------------------------------------------
     // Production Roster
     // ---------------------------------------------------------------------
+
+    internal Vector3? GetDefaultRallyOffset(Transform buildingRoot, FactionDefinition factionDefinition)
+    {
+        if (defaultRallyPoint == null || factionDefinition == null)
+            return null;
+
+        for (int i = 0; i < producibleUnitTypes.Count; i++)
+        {
+            UnitDefinition definition = factionDefinition.GetUnitDefinition(producibleUnitTypes[i]);
+            if (definition == null || definition.Prefab == null)
+                continue;
+
+            Vector3 localPoint = buildingRoot.InverseTransformPoint(defaultRallyPoint.position);
+            return Vector3.Scale(localPoint, buildingRoot.localScale);
+        }
+
+        return null;
+    }
 
     private void ResolveProducibleUnits()
     {

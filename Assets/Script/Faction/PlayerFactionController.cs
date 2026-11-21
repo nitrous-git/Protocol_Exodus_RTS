@@ -28,6 +28,8 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     private bool selectionPointerCaptured;
 
     private InteractionMarkerPresenter interactionMarkerPresenter;
+    private UnitProductionComponent rallyTarget;
+    private UnitProductionComponent visibleRallyOwner;
 
     private BuildingPlacementController buildingPlacementController;
     private BuildingDefinition pendingBuildingDefinition;
@@ -107,6 +109,9 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         // Interaction-dependent input
         HandleCurrentInteraction();
+        if (currentInteractionMode != PlayerInteractionMode.RallyPointTargeting &&
+            currentInteractionMode != PlayerInteractionMode.BuildPlacement)
+            RefreshSelectedRallyMarker();
     }
 
     // ---------------------------------------------------------------------
@@ -150,7 +155,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 break;
 
             case CommandPanelActionType.BeginRallyPointTargeting:
-                //BeginRallyPointTargeting();
+                BeginRallyPointTargeting();
                 break;
 
             case CommandPanelActionType.CancelProduction:
@@ -209,6 +214,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         if (currentInteractionMode == PlayerInteractionMode.BuildPlacement)
         {
             buildingPlacementController.Begin(definition);
+            interactionMarkerPresenter.HideRallyPoint();
             return;
         }
 
@@ -248,6 +254,79 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         Debug.Log($"Queued {unitDefinition.DisplayName} at {selectedBuilding.name}. Queue: {production.QueueCount}/ {production.QueueCapacity}");
     }
 
+    private UnitProductionComponent GetSelectedRallyProducer()
+    {
+        BuildingBase building = gameContext.SelectedBuilding;
+        if (building == null || building.OwnerFaction != faction || !building.IsInitialized ||
+            !building.IsAlive || !building.IsOperational || building.Definition == null)
+            return null;
+
+        BuildingType type = building.Definition.Type;
+        if (type != BuildingType.CommandCenter && type != BuildingType.Barracks)
+            return null;
+
+        UnitProductionComponent producer = building.UnitProduction;
+        return producer != null && producer.ProducibleUnits.Count > 0 ? producer : null;
+    }
+
+    private void BeginRallyPointTargeting()
+    {
+        if (currentInteractionMode != PlayerInteractionMode.Default)
+            return;
+
+        rallyTarget = GetSelectedRallyProducer();
+        if (rallyTarget != null)
+            SetInteractionMode(PlayerInteractionMode.RallyPointTargeting);
+    }
+
+    private void HandleRallyPointTargeting()
+    {
+        if (mouseInputHandler.SecondaryPressed || keyInputHandler.CancelInteractionPressed ||
+            rallyTarget == null || rallyTarget != GetSelectedRallyProducer())
+        {
+            CancelCurrentInteraction();
+            return;
+        }
+
+        bool hasGround = UpdateRallyPreview();
+        if (!mouseInputHandler.PrimaryPressed || !hasGround)
+            return;
+
+        Vector3 position = commandIssuer.CurrentGroundPosition;
+        Vector3 normal = commandIssuer.CurrentGroundNormal;
+        rallyTarget.SetRallyPoint(position, normal);
+        interactionMarkerPresenter.PlayTemporary(InteractionMarkerType.RallyPointIssued, position, normal);
+        SetInteractionMode(PlayerInteractionMode.Default);
+    }
+
+    private bool UpdateRallyPreview()
+    {
+        bool hasGround = !IsWorldPointerBlocked() && commandIssuer != null &&
+            commandIssuer.TryResolveGroundPositionFromScreen(mouseInputHandler.PointerPosition);
+        if (hasGround)
+            interactionMarkerPresenter.ShowRallyPoint(commandIssuer.CurrentGroundPosition, commandIssuer.CurrentGroundNormal);
+        else
+            RefreshSelectedRallyMarker(force: true);
+        return hasGround;
+    }
+
+    private void RefreshSelectedRallyMarker(bool force = false)
+    {
+        UnitProductionComponent owner = GetSelectedRallyProducer();
+        if (owner != null && !owner.RallyPoint.HasValue)
+            owner = null;
+
+        // Unity treats a destroyed owner as null before its marker has been removed.
+        if (!force && ReferenceEquals(owner, visibleRallyOwner))
+            return;
+
+        visibleRallyOwner = owner;
+        if (owner == null)
+            interactionMarkerPresenter.HideRallyPoint();
+        else
+            interactionMarkerPresenter.ShowRallyPoint(owner.RallyPoint.Value, owner.RallyPointNormal);
+    }
+
     // ---------------------------------------------------------------------
     // Interaction routing
     // ---------------------------------------------------------------------
@@ -258,6 +337,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         {
             case PlayerInteractionMode.Default:
                 HandleDefaultInteraction();
+                break;
+
+            case PlayerInteractionMode.RallyPointTargeting:
+                HandleRallyPointTargeting();
                 break;
 
             case PlayerInteractionMode.MoveTargeting:
@@ -339,6 +422,19 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private void HandleDefaultInteraction()
     {
+        if (keyInputHandler.RallyPointPressed)
+        {
+            if (keyInputHandler.RallyPointResetModifierHeld)
+            {
+                GetSelectedRallyProducer()?.ClearRallyPoint();
+                return;
+            }
+
+            BeginRallyPointTargeting();
+            if (currentInteractionMode == PlayerInteractionMode.RallyPointTargeting)
+                return;
+        }
+
         HandleSelectionInput();
         HandleDefaultCommandInput();
     }
@@ -407,7 +503,15 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         bool pointerBlocked = IsWorldPointerBlocked();
 
+        if (keyInputHandler.RotateBuildingPressed)
+            buildingPlacementController.RotateClockwise();
+
         buildingPlacementController.UpdatePlacement(mouseInputHandler.PointerPosition, pointerBlocked);
+
+        if (buildingPlacementController.TryGetDefaultRallyPoint(out Vector3 rallyPosition, out Vector3 rallyNormal))
+            interactionMarkerPresenter.ShowRallyPoint(rallyPosition, rallyNormal);
+        else
+            interactionMarkerPresenter.HideRallyPoint();
 
         if (mouseInputHandler.SecondaryPressed)
         {
@@ -519,6 +623,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
                 EnterDefaultInteraction();
                 break;
 
+            case PlayerInteractionMode.RallyPointTargeting:
+                UpdateRallyPreview();
+                break;
+
             case PlayerInteractionMode.MoveTargeting:
                 EnterMoveTargeting();
                 break;
@@ -543,6 +651,11 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
             case PlayerInteractionMode.MoveTargeting:
                 ExitMoveTargeting();
+                break;
+
+            case PlayerInteractionMode.RallyPointTargeting:
+                rallyTarget = null;
+                RefreshSelectedRallyMarker(force: true);
                 break;
 
             case PlayerInteractionMode.AttackTarget:
@@ -588,12 +701,14 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         buildingPlacementController.Begin(pendingBuildingDefinition);
         pendingBuildingDefinition = null;
+        interactionMarkerPresenter.HideRallyPoint();
     }
 
     private void ExitBuildingPlacement()
     {
         pendingBuildingDefinition = null;
         buildingPlacementController?.Cancel();
+        RefreshSelectedRallyMarker(force: true);
     }
 
     // Attack

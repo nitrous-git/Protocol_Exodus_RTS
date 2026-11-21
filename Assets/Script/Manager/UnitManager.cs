@@ -16,6 +16,7 @@ public class UnitManager
 
     public Faction OwnerFaction { get; private set; }
     public IReadOnlyList<UnitBase> UnitList => unitList;
+    internal GridNavigationStateSystem NavigationState => gameContext?.GridNavigationStateSystem;
 
     public int CurrentPopulation => currentPopulation;
     public int ReservedPopulation => reservedPopulation;
@@ -106,7 +107,8 @@ public class UnitManager
     // Helpers
     // ---------------------------------------------------------------------
 
-    public UnitBase SpawnUnit(UnitBase prefab, Vector3 position, Quaternion rotation, Transform parent = null)
+    public UnitBase SpawnUnit(UnitBase prefab, Vector3 position, Quaternion rotation, Transform parent = null,
+        bool preserveSpawnPosition = false)
     {
         if (prefab == null)
         {
@@ -117,7 +119,7 @@ public class UnitManager
         Transform resolvedParent = parent != null ? parent : unitsRoot;
 
         UnitBase unit = Object.Instantiate(prefab, position, rotation, resolvedParent);
-        unit.Initialize(OwnerFaction, gameContext, pathfindingService, this);
+        unit.Initialize(OwnerFaction, gameContext, pathfindingService, this, preserveSpawnPosition);
 
         if (!unit.IsInitialized)
         {

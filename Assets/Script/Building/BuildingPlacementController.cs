@@ -21,8 +21,11 @@ public sealed class BuildingPlacementController
     private readonly BuildingPlacementPreview preview;
 
     private BuildingDefinition activeDefinition;
+    private int rotationSteps;
+    private Vector3? defaultRallyOffset;
 
     private GridCoord currentFootprintOrigin;
+    private Vector3 currentWorldCenter;
 
     private bool hasCurrentPlacement;
     private bool canConstructAtCurrentPlacement;
@@ -34,6 +37,8 @@ public sealed class BuildingPlacementController
     public bool CanConstructAtCurrentPlacement => canConstructAtCurrentPlacement;
 
     public BuildingDefinition ActiveDefinition => activeDefinition;
+
+    private Vector2Int EffectiveFootprintSize => activeDefinition.GetRotatedFootprintSize(rotationSteps);
 
     public BuildingPlacementController(
     TerrainGrid terrainGrid,
@@ -60,6 +65,8 @@ public sealed class BuildingPlacementController
     public void Begin(BuildingDefinition definition)
     {
         activeDefinition = definition;
+        rotationSteps = 0;
+        defaultRallyOffset = null;
 
         ClearCurrentPlacement();
 
@@ -69,13 +76,19 @@ public sealed class BuildingPlacementController
             return;
         }
 
-        preview?.Configure(activeDefinition.FootprintSize, terrainGrid.CellSize);
+        BuildingBase prefab = activeDefinition.Prefab;
+        if (prefab != null && prefab.TryGetComponent(out UnitProductionComponent production))
+            defaultRallyOffset = production.GetDefaultRallyOffset(prefab.transform, buildingManager?.OwnerFaction?.Definition);
+
+        preview?.Configure(EffectiveFootprintSize, terrainGrid.CellSize);
         preview?.Hide();
     }
 
     public void Cancel()
     {
         activeDefinition = null;
+        rotationSteps = 0;
+        defaultRallyOffset = null;
         ClearCurrentPlacement();
         preview?.Hide();
     }
@@ -83,6 +96,16 @@ public sealed class BuildingPlacementController
     // ---------------------------------------------------------------------
     // Placement
     // ---------------------------------------------------------------------
+
+    public void RotateClockwise()
+    {
+        if (!IsActive)
+            return;
+
+        rotationSteps = (rotationSteps + 1) % 4;
+        ClearCurrentPlacement();
+        preview?.Configure(EffectiveFootprintSize, terrainGrid.CellSize);
+    }
 
     /// <summary>
     /// Updates the prospective placement from the current screen position.
@@ -109,16 +132,33 @@ public sealed class BuildingPlacementController
 
         GridCoord centerCell = terrainGrid.WorldToCell(commandIssuer.CurrentGroundPosition);
 
-        currentFootprintOrigin = GetFootprintOrigin(centerCell, activeDefinition.FootprintSize);
+        Vector2Int footprintSize = EffectiveFootprintSize;
+        currentFootprintOrigin = GetFootprintOrigin(centerCell, footprintSize);
 
-        Vector3 worldCenter = terrainGrid.GetFootprintWorldCenter(currentFootprintOrigin, activeDefinition.FootprintSize);
+        currentWorldCenter = terrainGrid.GetFootprintWorldCenter(currentFootprintOrigin, footprintSize);
 
-        canConstructAtCurrentPlacement = buildingManager.CanConstruct(activeDefinition, currentFootprintOrigin);
+        canConstructAtCurrentPlacement = buildingManager.CanConstruct(activeDefinition, currentFootprintOrigin, rotationSteps);
 
         hasCurrentPlacement = true;
 
-        preview?.Show(worldCenter, canConstructAtCurrentPlacement);
+        preview?.Show(currentWorldCenter, canConstructAtCurrentPlacement);
 
+        return true;
+    }
+
+    public bool TryGetDefaultRallyPoint(out Vector3 position, out Vector3 normal)
+    {
+        position = default;
+        normal = default;
+        if (!hasCurrentPlacement || defaultRallyOffset is not Vector3 offset)
+            return false;
+
+        position = currentWorldCenter + BuildingManager.GetPlacementRotation(rotationSteps) * offset;
+        if (!terrainGrid.IsInside(terrainGrid.WorldToCell(position)))
+            return false;
+
+        position.y = terrainGrid.SampleHeight(position);
+        normal = terrainGrid.SampleNormal(position);
         return true;
     }
 
@@ -138,7 +178,7 @@ public sealed class BuildingPlacementController
         if (!canConstructAtCurrentPlacement)
             return false;
 
-        BuildingBase building = buildingManager.Construct(activeDefinition, currentFootprintOrigin);
+        BuildingBase building = buildingManager.Construct(activeDefinition, currentFootprintOrigin, rotationSteps);
 
         return building != null;
     }

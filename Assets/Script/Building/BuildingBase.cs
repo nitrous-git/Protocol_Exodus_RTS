@@ -33,7 +33,8 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
 
     public BuildingDefinition Definition { get; private set; }
     public GridCoord FootprintOrigin { get; private set; }
-    public int BuildingId => 0; // find a unique ID 
+    public Vector2Int PlacedFootprintSize { get; private set; }
+    public int BuildingId { get; private set; }
     public bool IsInitialized { get; private set; }
 
     public BuildingState State { get; private set; }
@@ -76,7 +77,8 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         Faction ownerFaction,
         GameContext gameContext,
         BuildingManager owningBuildingManager,
-        GridCoord footprintOrigin)
+        GridCoord footprintOrigin,
+        Vector2Int? placedFootprintSize = null)
     {
         if (IsInitialized)
             return;
@@ -114,6 +116,8 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         this.owningBuildingManager = owningBuildingManager;
 
         FootprintOrigin = footprintOrigin;
+        PlacedFootprintSize = placedFootprintSize ?? definition.FootprintSize;
+        BuildingId = gameContext.AllocateStaticEntityId();
 
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;

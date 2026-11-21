@@ -51,7 +51,7 @@ public sealed class BuildingManager
 
             if (building == null)
             {
-                buildingList.RemoveAt(i);
+                UnregisterBuilding(building);
                 continue;
             }
 
@@ -69,7 +69,7 @@ public sealed class BuildingManager
     /// Returns whether the faction can currently construct the given
     /// building at the requested footprint origin.
     /// </summary>
-    public bool CanConstruct(BuildingDefinition definition, GridCoord footprintOrigin)
+    public bool CanConstruct(BuildingDefinition definition, GridCoord footprintOrigin, int rotationSteps = 0)
     {
         if (OwnerFaction == null)
             return false;
@@ -91,7 +91,7 @@ public sealed class BuildingManager
             return false;
         }
 
-        return terrainGrid.CanPlaceFootprint(footprintOrigin, definition.FootprintSize);
+        return terrainGrid.CanPlaceFootprint(footprintOrigin, definition.GetRotatedFootprintSize(rotationSteps));
     }
 
     /// <summary>
@@ -99,9 +99,9 @@ public sealed class BuildingManager
     ///
     /// Returns null when construction is not permitted.
     /// </summary>
-    public BuildingBase Construct(BuildingDefinition definition, GridCoord footprintOrigin)
+    public BuildingBase Construct(BuildingDefinition definition, GridCoord footprintOrigin, int rotationSteps = 0)
     {
-        if (!CanConstruct(definition, footprintOrigin))
+        if (!CanConstruct(definition, footprintOrigin, rotationSteps))
         {
             return null;
         }
@@ -111,22 +111,37 @@ public sealed class BuildingManager
         if (!resourcesSpent)
             return null;
 
-        Vector3 worldPosition = terrainGrid.GetFootprintWorldCenter(footprintOrigin, definition.FootprintSize);
+        Vector2Int footprintSize = definition.GetRotatedFootprintSize(rotationSteps);
+        Vector3 worldPosition = terrainGrid.GetFootprintWorldCenter(footprintOrigin, footprintSize);
+        Quaternion rotation = GetPlacementRotation(rotationSteps);
 
-        BuildingBase building = Object.Instantiate(definition.Prefab, worldPosition, Quaternion.identity, buildingsRoot);
+        BuildingBase building = Object.Instantiate(definition.Prefab, worldPosition, rotation, buildingsRoot);
 
-        building.Initialize(definition, OwnerFaction, gameContext, this, footprintOrigin);
+        building.Initialize(definition, OwnerFaction, gameContext, this, footprintOrigin, footprintSize);
 
-        if (!building.IsInitialized)
+        if (!building.IsInitialized ||
+            !terrainGrid.SetFootprintOccupied(building.FootprintOrigin, building.PlacedFootprintSize, true,
+                buildingId: building.BuildingId))
         {
-            Debug.LogError($"BuildingManager failed to initialize " + $"{definition.DisplayName}.");
+            Debug.LogError($"BuildingManager failed to place {definition.DisplayName} at {footprintOrigin}.");
+            if (building.IsInitialized)
+            {
+                building.NotifyRemoved();
+                UnregisterBuilding(building);
+            }
+
+            OwnerFaction.ResourceManager.AddMinerals(definition.Cost.Minerals);
+            OwnerFaction.ResourceManager.AddGas(definition.Cost.Gas);
             Object.Destroy(building.gameObject);
             return null;
         }
 
-        terrainGrid.SetFootprintOccupied(footprintOrigin, definition.FootprintSize, building.BuildingId);
-
         return building;
+    }
+
+    internal static Quaternion GetPlacementRotation(int rotationSteps)
+    {
+        return Quaternion.Euler(0f, rotationSteps * 90f, 0f);
     }
 
     // ---------------------------------------------------------------------
@@ -160,20 +175,17 @@ public sealed class BuildingManager
     /// </summary>
     public void UnregisterBuilding(BuildingBase building)
     {
-        if (building == null)
+        if (ReferenceEquals(building, null))
             return;
 
         pendingRemovalList.Remove(building);
-        buildingList.Remove(building);
+        if (!buildingList.Remove(building))
+            return;
 
         gameContext?.UnregisterBuilding(building);
 
-        if (terrainGrid == null || building.Definition == null)
-        {
-            return;
-        }
-
-        terrainGrid.ClearFootprintOccupied(building.FootprintOrigin, building.Definition.FootprintSize, building.BuildingId);
+        terrainGrid?.SetFootprintOccupied(building.FootprintOrigin, building.PlacedFootprintSize, false,
+            buildingId: building.BuildingId);
     }
 
     public bool Contains(BuildingBase building)

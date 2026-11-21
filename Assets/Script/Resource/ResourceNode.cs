@@ -1,4 +1,3 @@
-using Unity.GraphToolkit.Editor;
 using UnityEngine;
 
 /// <summary>
@@ -13,7 +12,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     [Header("Resource")]
     [SerializeField] private ResourceType resourceType = ResourceType.Minerals;
     [SerializeField, Min(1)] private int initialAmount = 1500;
-    [SerializeField, Min(1)] private Vector2Int footprint = new Vector2Int(1,1);
+    [SerializeField] private Vector2Int footprint = Vector2Int.one;
 
     [Header("Selection")]
     [SerializeField] private bool canBeSelected = true;
@@ -21,6 +20,8 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     [SerializeField] private GameObject selectionVisual;
 
     private ResourceNodeRepository repository;
+    private GameContext idContext;
+    private Vector2Int registeredFootprint;
 
     public GridCoord OriginCell { get; private set; }
     public bool IsInitialized { get; private set; }
@@ -30,11 +31,11 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     public ResourceType ResourceType => resourceType;
     public int InitialAmount => initialAmount;
     public bool IsDepleted => RemainingAmount <= 0;
-    public int ResourceNodeId => 0; // eventually find a unique Id
+    public int ResourceNodeId { get; private set; }
     public bool CanBeSelected => canBeSelected && IsInitialized && !IsDepleted;
     public Vector3 Position => transform.position;
     public Vector3 SelectionPosition => selectionPoint != null ? selectionPoint.position : transform.position;
-    public Vector2Int Footprint => footprint;
+    public Vector2Int Footprint => IsInitialized ? registeredFootprint : footprint;
 
     private void Awake()
     {
@@ -50,26 +51,28 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     ///
     /// Called by ResourceNodeRepository during match construction.
     /// </summary>
-    internal void Initialize(ResourceNodeRepository repository, GridCoord originCell)
+    internal bool Initialize(ResourceNodeRepository repository, GameContext gameContext,
+        GridCoord originCell, Vector2Int size)
     {
-        if (IsInitialized)
-            return;
-
-        if (repository == null)
-        {
-            Debug.LogError($"{name} cannot initialize because its repository is missing.");
-            return;
-        }
+        if (IsInitialized || (idContext != null && idContext != gameContext))
+            return false;
 
         this.repository = repository;
 
+        if (ResourceNodeId == 0)
+        {
+            ResourceNodeId = gameContext.AllocateStaticEntityId();
+            idContext = gameContext;
+            RemainingAmount = Mathf.Max(1, initialAmount);
+        }
+
         OriginCell = originCell;
-        RemainingAmount = Mathf.Max(1, initialAmount);
+        registeredFootprint = size;
 
         IsInitialized = true;
 
         SetSelected(false);
-
+        return true;
     }
 
     /// <summary>
@@ -136,5 +139,6 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
     private void OnValidate()
     {
         initialAmount = Mathf.Max(1, initialAmount);
+        footprint = Vector2Int.Max(footprint, Vector2Int.one);
     }
 }

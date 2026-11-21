@@ -30,6 +30,11 @@ public sealed class BuildingDefinition : ScriptableObject
     public float MaxHealth => maxHealth;
     public float ConstructionDuration => constructionDuration;
 
+    internal Vector2Int GetRotatedFootprintSize(int rotationSteps)
+    {
+        return (rotationSteps & 1) == 0 ? FootprintSize : new Vector2Int(FootprintSize.y, FootprintSize.x);
+    }
+
     private void OnValidate()
     {
         footprintSize.x = Mathf.Max(1, footprintSize.x);

@@ -17,6 +17,9 @@ public sealed class KeyInputHandler
     public bool AddToSelectionHeld { get; private set; }
 
     public bool CancelInteractionPressed { get; private set; }
+    public bool RallyPointPressed { get; private set; }
+    public bool RotateBuildingPressed { get; private set; }
+    public bool RallyPointResetModifierHeld => Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
 
     public KeyInputHandler(PlayerInputBindings bindings)
     {
@@ -59,6 +62,8 @@ public sealed class KeyInputHandler
         AddToSelectionHeld = bindings.AdditiveSelectionEnabled && (Input.GetKey(bindings.AddToSelectionKey) || Input.GetKey(bindings.AlternateAddToSelectionKey));
 
         CancelInteractionPressed = Input.GetKeyDown(bindings.CancelInteractionKey);
+        RallyPointPressed = Input.GetKeyDown(bindings.RallyPointKey);
+        RotateBuildingPressed = Input.GetKeyDown(bindings.RotateBuildingKey);
     }
 
     public void Reset()
@@ -66,5 +71,7 @@ public sealed class KeyInputHandler
         CameraMovement = Vector2.zero;
         AddToSelectionHeld = false;
         CancelInteractionPressed = false;
+        RallyPointPressed = false;
+        RotateBuildingPressed = false;
     }
 }

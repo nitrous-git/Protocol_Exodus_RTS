@@ -32,9 +32,10 @@ public class CombatUnit : UnitBase
         weapon = GetComponent<UnitWeapon>();
     }
 
-    public override void Initialize(Faction ownerFaction, GameContext gameContext, IPathfindingService pathfindingService, UnitManager owningUnitManager)
+    public override void Initialize(Faction ownerFaction, GameContext gameContext, IPathfindingService pathfindingService,
+        UnitManager owningUnitManager, bool preserveSpawnPosition = false)
     {
-        base.Initialize(ownerFaction, gameContext, pathfindingService, owningUnitManager);
+        base.Initialize(ownerFaction, gameContext, pathfindingService, owningUnitManager, preserveSpawnPosition);
 
         if (!IsInitialized)
             return;

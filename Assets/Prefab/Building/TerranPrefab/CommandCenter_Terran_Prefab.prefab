@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6199801733921121469}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3345221947180220593
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 563233987794545794}
+  m_Layer: 0
+  m_Name: DefaultRallyPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &563233987794545794
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3345221947180220593}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.6099997, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6199801733921121469}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4014892969430726452
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,6 +191,7 @@ Transform:
   - {fileID: 1919983092373979024}
   - {fileID: 1560095059782851742}
   - {fileID: 4612522233545990119}
+  - {fileID: 563233987794545794}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &815761704318080444
@@ -202,7 +234,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitProductionComponent
   producibleUnitTypes: 00000000
-  SpawnPoint: {fileID: 4612522233545990119}
+  spawnPoint: {fileID: 4612522233545990119}
+  defaultRallyPoint: {fileID: 563233987794545794}
   initialSpawnDepth: 1
   maximumExtraSpawnDepth: 4
   spawnOpennessRadius: 2
@@ -210,7 +243,7 @@ MonoBehaviour:
   spawnDistanceWeight: 2
   spawnBlockingMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 384
   spawnClearanceRadius: 0.4
   spawnHeightOffset: 0
 --- !u!114 &1920856704544015253

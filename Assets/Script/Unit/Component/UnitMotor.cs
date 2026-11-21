@@ -65,7 +65,8 @@ public class UnitMotor : MonoBehaviour
         TerrainGrid terrainGrid,
         GridNavigationStateSystem navigationState,
         LocalSteeringSystem localSteeringSystem,
-        float moveSpeed)
+        float moveSpeed,
+        bool preserveSpawnPosition = false)
     {
         this.owner = owner;
         this.pathfindingService = pathfindingService;
@@ -77,8 +78,11 @@ public class UnitMotor : MonoBehaviour
         if (terrain == null)
             terrain = Terrain.activeTerrain;
 
-        SnapToGround();
-        SnapToCurrentCellCenter(terrainGrid.WorldToCell(owner.transform.position));
+        if (!preserveSpawnPosition)
+        {
+            SnapToGround();
+            SnapToCurrentCellCenter(terrainGrid.WorldToCell(owner.transform.position));
+        }
 
         UpdateUnitOccupancy();
     }
@@ -260,7 +264,7 @@ public class UnitMotor : MonoBehaviour
 
         UpdateUnitOccupancy();
 
-        RotateTowardsMovement(nextPosition - previousPosition);
+        RotateTowardsMovement(currentVelocity);
     }
 
     private void CompleteDestination(Vector3 target)
