@@ -177,6 +177,8 @@ public class GameBuilder : MonoBehaviour
 
         Vector3 origin = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
+        if (faction.Controller is AIFactionController aiController)
+            aiController.SetBaseAnchor(origin);
 
         for (int i = 0; i < startingCombatCount; i++)
         {

@@ -21,10 +21,12 @@ public class CombatUnit : UnitBase
     private ITargetable currentTarget;
     private bool attackAnimationActive;
     private ITargetable attackTarget;
+    private CombatUnitAI combatAI;
 
     public float ChaseRepathDistance => chaseRepathDistance;
     public ITargetable CurrentTarget => currentTarget;
     public UnitWeapon Weapon => weapon;
+    public CombatUnitAI CombatAI => combatAI;
 
     protected override void CacheComponents()
     {
@@ -35,6 +37,9 @@ public class CombatUnit : UnitBase
     public override void Initialize(Faction ownerFaction, GameContext gameContext, IPathfindingService pathfindingService,
         UnitManager owningUnitManager, bool preserveSpawnPosition = false)
     {
+        if (IsInitialized)
+            return;
+
         base.Initialize(ownerFaction, gameContext, pathfindingService, owningUnitManager, preserveSpawnPosition);
 
         if (!IsInitialized)
@@ -53,6 +58,8 @@ public class CombatUnit : UnitBase
         }
 
         weapon.Initialize(this, gameContext);
+        if (ownerFaction?.Controller is AIFactionController aiController && CanAttack() && CanReceiveCommands)
+            combatAI = new CombatUnitAI(this, aiController.BaseAnchor ?? Position);
     }
 
     public override void Tick(float deltaTime)
@@ -61,9 +68,10 @@ public class CombatUnit : UnitBase
 
         using (CombatAwarenessTickMarker.Auto())
         {
-            UpdateCombatAwareness();
+            combatAI?.Tick(deltaTime);
+            if (combatAI == null || combatAI.AllowsCombatAwareness)
+                UpdateCombatAwareness();
         }
-        //UpdateCombatAwareness();
 
         base.Tick(deltaTime);
     }
@@ -72,6 +80,9 @@ public class CombatUnit : UnitBase
     {
         if (!CanReceiveCommands)
             return;
+
+        if (commandType != CommandType.Idle)
+            combatAI?.ClearMission();
 
         ApplyCommandContext(commandType, context);
 
@@ -145,8 +156,107 @@ public class CombatUnit : UnitBase
         if (target == null)
             return;
 
-        SetState(new AttackState(target));
+        SetState(combatAI != null && CurrentCommand != CommandType.AttackMove
+            ? new AttackState(target, combatAI.Settings, canPursue: false)
+            : new AttackState(target));
     }
+
+    internal AttackState StartTacticalAttack(ITargetable target)
+    {
+        var attack = new AttackState(target, combatAI.Settings, canPursue: true);
+        ApplyCommandContext(CommandType.Attack, CommandContext.AttackTarget(target));
+        SetState(attack);
+        return attack;
+    }
+
+    internal MoveState StartTacticalMove(GridCoord reservedDestination)
+    {
+        Vector3 destination = TerrainGrid.CellToWorld(reservedDestination);
+        var move = new MoveState(reservedDestination);
+        ApplyCommandContext(CommandType.Move, CommandContext.MoveTo(destination));
+        SetState(move);
+        if (Motor.MoveTo(destination))
+            return move;
+
+        EnterCombatIdle();
+        return null;
+    }
+
+    internal bool IsExecutingTacticalOrder(IUnitState order) => order != null && currentState == order;
+
+    public override void TakeDamage(DamageInfo damageInfo)
+    {
+        base.TakeDamage(damageInfo);
+        combatAI?.RecordDamage(damageInfo);
+    }
+
+    protected override void HandleDied()
+    {
+        ReleaseCombatAI();
+        base.HandleDied();
+    }
+
+    protected override void OnDestroy()
+    {
+        ReleaseCombatAI();
+        base.OnDestroy();
+    }
+
+    private void ReleaseCombatAI()
+    {
+        if (combatAI == null)
+            return;
+
+        combatAI.Release();
+        combatAI = null;
+        SetState(null);
+        ApplyCommandContext(CommandType.Idle, CommandContext.None());
+    }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    [ContextMenu("Combat AI/Attack Player Faction")]
+    private void TestAttackMission()
+    {
+        combatAI?.TryStartMission(CombatMission.AttackFaction(gameContext.PlayerFaction));
+    }
+
+    [ContextMenu("Combat AI/Attack Nearest Enemy Unit")]
+    private void TestAttackUnitMission()
+    {
+        if (combatAI == null)
+            return;
+
+        UnitBase closest = null;
+        float bestDistance = float.PositiveInfinity;
+        foreach (UnitBase candidate in gameContext.AllUnits)
+        {
+            if (!IsValidAttackTarget(candidate))
+                continue;
+
+            Vector3 offset = candidate.Position - Position;
+            offset.y = 0f;
+            if (offset.sqrMagnitude < bestDistance)
+            {
+                closest = candidate;
+                bestDistance = offset.sqrMagnitude;
+            }
+        }
+
+        combatAI.TryStartMission(CombatMission.AttackTarget(closest));
+    }
+
+    [ContextMenu("Combat AI/Defend Current Position")]
+    private void TestDefendMission()
+    {
+        combatAI?.TryStartMission(CombatMission.DefendArea(Position, combatAI.Settings.pursuitDistance));
+    }
+
+    [ContextMenu("Combat AI/Cancel Mission")]
+    private void TestCancelMission()
+    {
+        combatAI?.ClearMission();
+    }
+#endif
 
     public void UpdateAttack(float deltaTime)
     {

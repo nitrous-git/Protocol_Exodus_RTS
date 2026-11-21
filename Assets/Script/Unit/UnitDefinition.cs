@@ -28,6 +28,8 @@ public class UnitDefinition : ScriptableObject
     [Min(0f)] public float attackDamage = 10f;
     [Min(0.01f)] public float attackCooldown = 1f;
 
+    [SerializeField] private CombatUnitAISettings combatAI = new();
+
     [Header("Selection")]
     public float selectionRadius = 0.5f;
 
@@ -41,6 +43,7 @@ public class UnitDefinition : ScriptableObject
     public Cost Cost => cost;
     public float ProductionDuration => productionDuration;
     public float NavigationRadius => navigationRadius;
+    internal CombatUnitAISettings CombatAI => combatAI;
 
     private void OnValidate()
     {

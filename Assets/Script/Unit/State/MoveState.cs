@@ -44,7 +44,7 @@ public class MoveState : UnitState<UnitBase>
             return;
         }
 
-        // Production already validated the path and reserved this exact cell.
+        // Production and tactical orders supply an exact reservation and start the motor themselves.
         if (reservedDestinationCell.HasValue)
         {
             pathRequested = true;

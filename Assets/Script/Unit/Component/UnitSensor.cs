@@ -39,6 +39,12 @@ public class UnitSensor : MonoBehaviour
 
     public ITargetable FindClosestEnemy(float maxRange)
     {
+        return FindClosestEnemy(maxRange, default, float.PositiveInfinity, false, null, null);
+    }
+
+    internal ITargetable FindClosestEnemy(float maxRange, Vector3 areaCenter, float areaRadius,
+        bool unitsOnly, ITargetable objective, HashSet<ITargetable> excluded)
+    {
 
         if (owner == null || gameContext == null || owner.OwnerFaction == null)
             return null;
@@ -53,18 +59,24 @@ public class UnitSensor : MonoBehaviour
         {
             ITargetable closestTarget = null;
             float maxRangeSqr = maxRange * maxRange;
+            float areaRadiusSqr = areaRadius * areaRadius;
+            bool limitToArea = !float.IsPositiveInfinity(areaRadius);
             float bestDistanceSqr = float.MaxValue;
+            Vector3 position = owner.Position;
 
             IReadOnlyList<ITargetable> targetables = gameContext.AllTargetables;
 
             for (int i = 0; i < targetables.Count; i++)
             {
                 ITargetable candidate = targetables[i];
+                if ((unitsOnly && candidate is not UnitBase) || candidate == objective)
+                    continue;
 
                 if (!IsValidEnemyTarget(candidate))
                     continue;
 
-                Vector3 difference = candidate.Position - owner.Position;
+                Vector3 candidatePosition = candidate.Position;
+                Vector3 difference = candidatePosition - position;
 
                 difference.y = 0f;
 
@@ -75,6 +87,15 @@ public class UnitSensor : MonoBehaviour
 
                 if (distanceSqr >= bestDistanceSqr)
                     continue;
+                if (excluded?.Contains(candidate) == true)
+                    continue;
+                if (limitToArea)
+                {
+                    Vector3 fromCenter = candidatePosition - areaCenter;
+                    fromCenter.y = 0f;
+                    if (fromCenter.sqrMagnitude > areaRadiusSqr)
+                        continue;
+                }
 
                 closestTarget = candidate;
                 bestDistanceSqr = distanceSqr;
@@ -86,7 +107,7 @@ public class UnitSensor : MonoBehaviour
 
     public bool IsValidEnemyTarget(ITargetable candidate)
     {
-        if (candidate == null || owner == null)
+        if (candidate == null || (candidate is Object unityObject && unityObject == null) || owner == null)
             return false;
 
         if (ReferenceEquals(candidate, owner) || !candidate.IsAlive)
