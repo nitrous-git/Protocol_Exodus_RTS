@@ -48,6 +48,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     private BuildingBase building;
     private float productionElapsed;
     private float spawnRetryRemaining;
+    private float spawnRetryDelay;
     private bool removalHandled;
     private bool warnedAboutExitTransforms;
     private float largestProductionRadius;
@@ -168,7 +169,12 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         spawnRetryRemaining -= Mathf.Max(0f, deltaTime);
         if (spawnRetryRemaining <= 0f && !TrySpawnActiveOrder())
-            spawnRetryRemaining = SpawnRetryInterval;
+        {
+            spawnRetryDelay = building.OwnerFaction?.Controller is AIFactionController { EconomyEnabled: true }
+                ? Mathf.Clamp(spawnRetryDelay * 2f, SpawnRetryInterval, 8f)
+                : SpawnRetryInterval;
+            spawnRetryRemaining = spawnRetryDelay;
+        }
     }
 
     public void NotifyBuildingRemoved()
@@ -415,6 +421,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     private void ResetSpawnRetry()
     {
         spawnRetryRemaining = 0f;
+        spawnRetryDelay = 0f;
         unreachableDestinations.Clear();
     }
 
@@ -424,26 +431,34 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
     private void GetExitFrame(TerrainGrid grid, float radius, out Vector3 entrance, out Vector3 forward)
     {
-        entrance = spawnPoint != null ? spawnPoint.position : building.Position;
-        bool hasSpawnMarker = spawnPoint != null && float.IsFinite(entrance.x) &&
+        bool hasValidMarkers = ResolveExitFrame(grid.CellSize, building.Position, building.transform.forward,
+            building.PlacedFootprintSize, radius, spawnPoint != null ? spawnPoint.position : null,
+            defaultRallyPoint != null ? defaultRallyPoint.position : null, out entrance, out forward);
+
+        if (!hasValidMarkers && !warnedAboutExitTransforms)
+        {
+            Debug.LogWarning($"{name}: production exit transforms are missing, coincident, or point inward. Using the building's outward direction.", this);
+            warnedAboutExitTransforms = true;
+        }
+    }
+
+    private static bool ResolveExitFrame(float cellSize, Vector3 center, Vector3 buildingForward, Vector2Int size,
+        float radius, Vector3? spawn, Vector3? rally, out Vector3 entrance, out Vector3 forward)
+    {
+        entrance = spawn ?? center;
+        bool hasSpawnMarker = spawn.HasValue && float.IsFinite(entrance.x) &&
             float.IsFinite(entrance.y) && float.IsFinite(entrance.z);
-        Vector3 offset = Vector3.ProjectOnPlane(entrance - building.Position, Vector3.up);
-        forward = defaultRallyPoint != null ? defaultRallyPoint.position - entrance : Vector3.zero;
+        Vector3 offset = Vector3.ProjectOnPlane(entrance - center, Vector3.up);
+        forward = rally.HasValue ? rally.Value - entrance : Vector3.zero;
         forward.y = 0f;
         float markerDistance = forward.magnitude;
         if (hasSpawnMarker && float.IsFinite(markerDistance) && markerDistance > 0.001f && Vector3.Dot(forward, offset) >= 0f)
         {
             forward /= markerDistance;
-            return;
+            return true;
         }
 
-        if (!warnedAboutExitTransforms)
-        {
-            Debug.LogWarning($"{name}: production exit transforms are missing, coincident, or point inward. Using the building's outward direction.", this);
-            warnedAboutExitTransforms = true;
-        }
-
-        forward = Vector3.ProjectOnPlane(building.transform.forward, Vector3.up).normalized;
+        forward = Vector3.ProjectOnPlane(buildingForward, Vector3.up).normalized;
         if (forward.sqrMagnitude < 0.001f)
             forward = Vector3.forward;
 
@@ -458,12 +473,58 @@ public sealed class UnitProductionComponent : MonoBehaviour
         else
         {
             // Place the fallback just outside the front face of the producer's grid footprint.
-            Vector2Int size = building.PlacedFootprintSize;
             float xDepth = forward.x == 0f ? float.PositiveInfinity : size.x * 0.5f / Mathf.Abs(forward.x);
             float zDepth = forward.z == 0f ? float.PositiveInfinity : size.y * 0.5f / Mathf.Abs(forward.z);
-            Vector3 center = grid.GetFootprintWorldCenter(building.FootprintOrigin, size);
-            entrance = center + forward * (Mathf.Min(xDepth, zDepth) * grid.CellSize + radius + 0.01f);
+            entrance = center + forward * (Mathf.Min(xDepth, zDepth) * cellSize + radius + 0.01f);
         }
+
+        return false;
+    }
+
+    internal float GetPlacementSpawnRadius(FactionDefinition faction)
+    {
+        float radius = 0f;
+        foreach (UnitType type in producibleUnitTypes)
+        {
+            UnitDefinition definition = faction.GetUnitDefinition(type);
+            if (definition != null && definition.Prefab != null)
+                radius = Mathf.Max(radius, SpawnFootprint.FromDefinition(definition).Radius);
+        }
+
+        return radius;
+    }
+
+    internal (Vector3 Entrance, Vector3 End, float Radius) GetPlacementExit(TerrainGrid grid,
+        Quaternion rotation, Vector2Int footprint, float spawnRadius)
+    {
+        Vector3? spawn = GetMarkerOffset(spawnPoint);
+        Vector3? rally = GetMarkerOffset(defaultRallyPoint);
+        ResolveExitFrame(grid.CellSize, Vector3.zero, rotation * Vector3.forward, footprint, spawnRadius,
+            spawn, rally, out Vector3 entrance, out Vector3 forward);
+        return GetPlacementExit(grid, entrance, forward, rally, spawnRadius);
+
+        Vector3? GetMarkerOffset(Transform marker)
+        {
+            if (marker == null)
+                return null;
+
+            return rotation * Vector3.Scale(transform.InverseTransformPoint(marker.position), transform.localScale);
+        }
+    }
+
+    internal (Vector3 Entrance, Vector3 End, float Radius) GetPlacementExit(TerrainGrid grid)
+    {
+        GetExitFrame(grid, largestProductionRadius, out Vector3 entrance, out Vector3 forward);
+        return GetPlacementExit(grid, entrance, forward, defaultRallyPoint != null ? defaultRallyPoint.position : null,
+            largestProductionRadius);
+    }
+
+    private (Vector3 Entrance, Vector3 End, float Radius) GetPlacementExit(TerrainGrid grid, Vector3 entrance,
+        Vector3 forward, Vector3? rally, float spawnRadius)
+    {
+        float radius = spawnRadius + exitClearancePadding;
+        float depth = GetExitDepth(entrance, forward, radius, rally);
+        return (entrance, entrance + forward * (depth + 2f * grid.CellSize), radius);
     }
 
     private bool TryFindSpawnPosition(TerrainGrid grid, GridNavigationStateSystem navigation,
@@ -551,7 +612,8 @@ public sealed class UnitProductionComponent : MonoBehaviour
         Vector2 entranceXZ = new(entrance.x, entrance.z);
         Vector2 exitDirection = new(forward.x, forward.z);
         float exitHalfWidth = largestProductionRadius + exitClearancePadding;
-        float exitDepth = GetExitDepth(entrance, forward, exitHalfWidth);
+        float exitDepth = GetExitDepth(entrance, forward, exitHalfWidth,
+            defaultRallyPoint != null ? defaultRallyPoint.position : null);
 
         // The capsule's front cap extends beyond the default marker by the exit half-width.
         float protectedRadius = exitHalfWidth + footprint.Radius;
@@ -620,7 +682,8 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         GetExitFrame(grid, largestProductionRadius, out Vector3 entrance, out Vector3 forward);
         float exitHalfWidth = largestProductionRadius + exitClearancePadding;
-        float exitDepth = GetExitDepth(entrance, forward, exitHalfWidth);
+        float exitDepth = GetExitDepth(entrance, forward, exitHalfWidth,
+            defaultRallyPoint != null ? defaultRallyPoint.position : null);
         Vector3 offset = position - entrance;
         offset.y = 0f;
         float depth = Mathf.Clamp(Vector3.Dot(offset, forward), 0f, exitDepth);
@@ -628,12 +691,12 @@ public sealed class UnitProductionComponent : MonoBehaviour
         return (offset - forward * depth).sqrMagnitude < radius * radius;
     }
 
-    private float GetExitDepth(Vector3 entrance, Vector3 forward, float exitHalfWidth)
+    private static float GetExitDepth(Vector3 entrance, Vector3 forward, float exitHalfWidth, Vector3? rally)
     {
-        if (defaultRallyPoint == null)
+        if (!rally.HasValue)
             return exitHalfWidth;
 
-        Vector3 offset = defaultRallyPoint.position - entrance;
+        Vector3 offset = rally.Value - entrance;
         offset.y = 0f;
         float depth = Vector3.Dot(offset, forward);
         return float.IsFinite(depth) ? Mathf.Max(exitHalfWidth, depth) : exitHalfWidth;

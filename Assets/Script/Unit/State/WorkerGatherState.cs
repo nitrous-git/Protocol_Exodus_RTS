@@ -61,7 +61,8 @@ public class WorkerGatherState : UnitState<WorkerUnit>
 
         if (!pathRequested)
         {
-            Debug.LogWarning($"{unit.name} could not reach {targetNode.name}.");
+            if (!unit.UsesEconomyAssignments)
+                Debug.LogWarning($"{unit.name} could not reach {targetNode.name}.");
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
         }
     }

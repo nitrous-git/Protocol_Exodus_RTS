@@ -7,6 +7,7 @@ public sealed class WorkerUnit : UnitBase
     private WorkerResourceComponent resourceComponent;
 
     public WorkerResourceComponent ResourceComponent => resourceComponent;
+    internal bool UsesEconomyAssignments => OwnerFaction?.Controller is AIFactionController { EconomyEnabled: true };
     //public TerrainGrid TerrainGrid => ownerFaction?.BuildingManager?.TerrainGrid;
     public ResourceNodeRepository ResourceNodeRepository => gameContext?.ResourceNodeRepository;
 
@@ -100,7 +101,7 @@ public sealed class WorkerUnit : UnitBase
     /// </summary>
     public ResourceNode FindReplacementResourceNode()
     {
-        if (resourceComponent == null || !resourceComponent.HasAssignedResourceType)
+        if (UsesEconomyAssignments || resourceComponent == null || !resourceComponent.HasAssignedResourceType)
         {
             return null;
         }

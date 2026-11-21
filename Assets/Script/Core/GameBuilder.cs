@@ -23,6 +23,9 @@ public class GameBuilder : MonoBehaviour
     [Header("AI Waves")]
     [SerializeField] private AIWaveSettings aiWaves = new AIWaveSettings();
 
+    [Header("AI Economy")]
+    [SerializeField] private AIEconomySettings aiEconomy = new AIEconomySettings();
+
     private AIFactionController aiFactionController;
 
     public GameContext GameContext { get; private set; }
@@ -90,7 +93,7 @@ public class GameBuilder : MonoBehaviour
         Faction playerFaction = BuildFaction(FactionTerran_Definition, FactionColorType.Blue, playerFactionController);
         SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
 
-        aiFactionController = new AIFactionController(aiWaves);
+        aiFactionController = new AIFactionController(aiWaves, aiEconomy);
         Faction aiFaction01 = BuildFaction(FactionTerran_Definition, FactionColorType.Green, aiFactionController);
         SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
 
@@ -192,6 +195,20 @@ public class GameBuilder : MonoBehaviour
     {
         if (Application.isPlaying)
             aiFactionController?.MissionDirector?.CancelAll();
+    }
+
+    [ContextMenu("AI Economy/Reevaluate")]
+    private void ReevaluateAIEconomy()
+    {
+        if (Application.isPlaying)
+            aiFactionController?.EconomyManager?.RequestReevaluation();
+    }
+
+    [ContextMenu("AI Economy/Log Status")]
+    private void LogAIEconomyStatus()
+    {
+        if (Application.isPlaying && aiFactionController?.EconomyManager is AIEconomyManager economy)
+            Debug.Log(economy.GetStatus(), this);
     }
 #endif
 

@@ -46,7 +46,8 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
 
         if (dropOffBuilding == null)
         {
-            Debug.LogWarning($"{unit.name} has cargo but no operational headquarters is available.");
+            if (!unit.UsesEconomyAssignments)
+                Debug.LogWarning($"{unit.name} has cargo but no operational headquarters is available.");
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
             return;
         }
@@ -66,7 +67,8 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
 
         if (!pathRequested)
         {
-            Debug.LogWarning($"{unit.name} could not reach {dropOffBuilding.name}.");
+            if (!unit.UsesEconomyAssignments)
+                Debug.LogWarning($"{unit.name} could not reach {dropOffBuilding.name}.");
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
         }
     }
