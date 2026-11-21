@@ -3871,6 +3871,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6725a1a9feeb4da45a17472307359a10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MinimapPanelController
+  mapArea: {fileID: 0}
+  captureResolution: 512
+  terrainRendererIndex: 1
+  markerUpdateInterval: 0.1
+  unitMarkerSize: 4
+  minimumBuildingMarkerSize: 7
+  mineralMarkerSize: 4
+  friendlyColor: {r: 0.28, g: 0.66, b: 1, a: 1}
+  enemyColor: {r: 1, g: 0.32, b: 0.3, a: 1}
+  mineralColor: {r: 1, g: 0.81, b: 0.27, a: 1}
+  viewportLineWidth: 1.5
+  viewportColor: {r: 0.96, g: 0.97, b: 1, a: 0.93}
 --- !u!1 &1149530443
 GameObject:
   m_ObjectHideFlags: 0

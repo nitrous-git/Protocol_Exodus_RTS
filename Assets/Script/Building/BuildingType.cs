@@ -2,5 +2,6 @@ public enum BuildingType
 {
     Barracks,
     SupplyDepot,
-    CommandCenter
+    CommandCenter,
+    Turret
 }

@@ -17,7 +17,7 @@ public sealed class ProjectileManager
     Projectile prefab,
     Vector3 position,
     Quaternion rotation,
-    UnitBase source,
+    ITargetable source,
     Vector3 direction,
     float speed,
     float damage,

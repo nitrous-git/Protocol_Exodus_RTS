@@ -9,7 +9,8 @@ public class Projectile : MonoBehaviour
 
     private readonly RaycastHit[] hitBuffer = new RaycastHit[HitBufferSize];
 
-    private UnitBase source;
+    private ITargetable source;
+    private Transform sourceTransform;
     private Faction sourceFaction;
     private Vector3 direction;
     private float speed;
@@ -20,10 +21,10 @@ public class Projectile : MonoBehaviour
     private bool initialized;
     private Transform projectileRoot;
 
-    public UnitBase Source => source;
+    public ITargetable Source => source;
 
     public void Initialize(
-        UnitBase source,
+        ITargetable source,
         Vector3 direction,
         float speed,
         float damage,
@@ -33,7 +34,8 @@ public class Projectile : MonoBehaviour
         Transform projectileRoot)
     {
         this.source = source;
-        sourceFaction = source != null ? source.OwnerFaction : null;
+        sourceFaction = source?.OwnerFaction;
+        sourceTransform = source is Component component && component != null ? component.transform : null;
         this.direction = direction.normalized;
         this.speed = Mathf.Max(0f, speed);
         this.damage = Mathf.Max(0f, damage);
@@ -106,7 +108,7 @@ public class Projectile : MonoBehaviour
         if (targetable == null || !targetable.IsAlive) return;
 
         SpawnHitColisionFx();
-        targetable.TakeDamage(new DamageInfo(damage, source));
+        targetable.TakeDamage(new DamageInfo(damage, source, sourceFaction));
     }
 
     private void SpawnHitColisionFx()
@@ -122,8 +124,8 @@ public class Projectile : MonoBehaviour
         Transform t = candidate.transform;
         Transform self = transform;
 
-        // Check if the collider belongs to this projectile or its source unit
-        return t == self || t.IsChildOf(self) || (source != null && (t == source.transform || t.IsChildOf(source.transform)));
+        return t == self || t.IsChildOf(self) ||
+               (sourceTransform != null && (t == sourceTransform || t.IsChildOf(sourceTransform)));
     }
 
     private static ITargetable ResolveTargetable(Collider candidate)

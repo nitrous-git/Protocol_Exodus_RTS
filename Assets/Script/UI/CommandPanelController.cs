@@ -34,6 +34,7 @@ public sealed class CommandPanelController : MonoBehaviour
     private const int CommandCenterSlot = 0;
     private const int SupplyDepotSlot = 1;
     private const int BarracksSlot = 2;
+    private const int TurretSlot = 3;
     private const int BackSlot = 8;
 
     // Building command presentation
@@ -148,6 +149,10 @@ public sealed class CommandPanelController : MonoBehaviour
                 ShowSupplyDepotCommands();
                 break;
 
+            case CommandPanelLayout.Turret:
+                ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
+                break;
+
             case CommandPanelLayout.Empty:
             case CommandPanelLayout.Uninitialized:
             default:
@@ -246,6 +251,9 @@ public sealed class CommandPanelController : MonoBehaviour
             case BuildingType.SupplyDepot:
                 return CommandPanelLayout.SupplyDepot;
 
+            case BuildingType.Turret:
+                return CommandPanelLayout.Turret;
+
             default:
                 return CommandPanelLayout.Empty;
         }
@@ -279,10 +287,13 @@ public sealed class CommandPanelController : MonoBehaviour
         BuildingDefinition commandCenterDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.CommandCenter);
         BuildingDefinition barracksDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.Barracks);
         BuildingDefinition supplyDepotDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.SupplyDepot);
+        BuildingDefinition turretDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.Turret);
 
         ConfigureGameplaySlot(CommandCenterSlot, commandCenterDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(commandCenterDefinition));
         ConfigureGameplaySlot(SupplyDepotSlot, supplyDepotDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(supplyDepotDefinition));
         ConfigureGameplaySlot(BarracksSlot, barracksDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(barracksDefinition));
+        if (turretDefinition != null)
+            ConfigureGameplaySlot(TurretSlot, turretDefinition.Icon, true, CommandPanelAction.PlaceBuilding(turretDefinition));
         ConfigureLocalSlot(BackSlot, icons?.Back, true, CloseBuildMenu);
     }
 
@@ -497,6 +508,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
         CommandCenter,
         Barracks,
-        SupplyDepot
+        SupplyDepot,
+        Turret
     }
 }

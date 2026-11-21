@@ -19,6 +19,8 @@ MonoBehaviour:
   unitRoster:
   - {fileID: 11400000, guid: ea92cac7fc4badb44add3ecd343daac1, type: 2}
   - {fileID: 11400000, guid: 520add825dc70e047a389bc6359b1f35, type: 2}
+  buildingRoster:
+  - {fileID: 11400000, guid: 9d5301827c7fe154ab293e0f7bdfd6f0, type: 2}
   colorVariants:
   - colorType: 6
     displayName: Spectral Purple

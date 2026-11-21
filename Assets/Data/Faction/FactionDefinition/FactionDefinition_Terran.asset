@@ -24,6 +24,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ede45adabc5d310449a52735a88b0715, type: 2}
   - {fileID: 11400000, guid: 285fa27c69b84764292bab8873a17d6b, type: 2}
   - {fileID: 11400000, guid: fdd08ba98d30dff45a12d55655a69a25, type: 2}
+  - {fileID: 11400000, guid: 9d5301827c7fe154ab293e0f7bdfd6f0, type: 2}
   colorVariants:
   - colorType: 0
     displayName: Circadia Red

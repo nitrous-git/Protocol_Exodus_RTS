@@ -25,6 +25,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
     protected UnitProductionComponent unitProduction;
     protected SupplyProviderComponent supplyProvider;
     protected HeadquartersComponent headquarters;
+    private TurretDefenseComponent turretDefense;
 
     private bool removalNotified;
 
@@ -71,6 +72,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         unitProduction = GetComponent<UnitProductionComponent>();
         supplyProvider = GetComponent<SupplyProviderComponent>();
         headquarters = GetComponent<HeadquartersComponent>();
+        turretDefense = GetComponent<TurretDefenseComponent>();
     }
 
     public virtual void Initialize(
@@ -127,6 +129,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         unitProduction?.Initialize(this);
         supplyProvider?.Initialize(this);
         headquarters?.Initialize(this);
+        turretDefense?.Initialize(this, gameContext);
 
         BeginConstruction();
 
@@ -151,6 +154,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         unitProduction?.Tick(deltaTime);
         supplyProvider?.Tick(deltaTime);
         headquarters?.Tick(deltaTime);
+        turretDefense?.Tick(deltaTime);
     }
 
     public virtual void SetSelected(bool selected)
@@ -193,6 +197,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         unitProduction?.NotifyBuildingRemoved();
         supplyProvider?.NotifyBuildingRemoved();
         headquarters?.NotifyBuildingRemoved();
+        turretDefense?.NotifyBuildingRemoved();
     }
 
     // ---------------------------------------------------------------------
@@ -246,6 +251,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         State = BuildingState.InOperation;
         view?.TransitionToOperational();
         supplyProvider?.Activate();
+        turretDefense?.BeginDeployment();
         GameLog?.Log($"{Definition.DisplayName} construction completed.", ownerFaction);
     }
 
