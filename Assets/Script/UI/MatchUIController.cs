@@ -4,7 +4,7 @@ using UnityEngine;
 /// Runtime coordinator for all match HUD sections.
 ///
 /// MatchUIController owns initialization and centralized ticking of the
-/// Minimap, Selection, Command, and Game Log panels. Individual panels remain
+/// Minimap, Selection, Command, Game Log, and Top Bar panels. Individual panels remain
 /// responsible for their own presentation behavior.
 /// </summary>
 [DisallowMultipleComponent]
@@ -15,6 +15,7 @@ public sealed class MatchUIController : MonoBehaviour
     [SerializeField] private SelectionPanelController selectionPanel;
     [SerializeField] private CommandPanelController commandPanel;
     [SerializeField] private GameLogPanel gameLogPanel;
+    [SerializeField] private TopBarPanelController topBarPanel;
 
     private GameContext gameContext;
     private MatchWorld matchWorld;
@@ -22,10 +23,13 @@ public sealed class MatchUIController : MonoBehaviour
 
     private bool isInitialized;
 
+    public bool CanOpenPauseMenu => topBarPanel != null && topBarPanel.CanOpenPauseMenu;
+
     public void Initialize(
         Faction playerFaction,
         GameContext gameContext,
-        MatchWorld matchWorld)
+        MatchWorld matchWorld,
+        GameLoop gameLoop)
     {
         this.playerFaction = playerFaction;
         this.gameContext = gameContext;
@@ -33,10 +37,11 @@ public sealed class MatchUIController : MonoBehaviour
 
         ResolvePanelReferences();
 
-        minimapPanel?.Initialize(gameContext, matchWorld);
+        minimapPanel?.Initialize(gameContext, matchWorld, gameLoop);
         selectionPanel?.Initialize(playerFaction, gameContext);
         commandPanel?.Initialize(playerFaction, gameContext);
         gameLogPanel?.Initialize(gameContext.GameLog);
+        topBarPanel?.Initialize(playerFaction, gameLoop);
 
         isInitialized = true;
     }
@@ -53,6 +58,15 @@ public sealed class MatchUIController : MonoBehaviour
         selectionPanel?.Tick(deltaTime);
         commandPanel?.Tick(deltaTime);
         gameLogPanel?.Tick();
+        topBarPanel?.Tick();
+    }
+
+    public void SetPaused(bool paused)
+    {
+        if (paused)
+            minimapPanel?.CancelNavigation();
+
+        topBarPanel?.SetPauseMenuVisible(paused);
     }
 
     private void ResolvePanelReferences()
@@ -68,6 +82,9 @@ public sealed class MatchUIController : MonoBehaviour
 
         if (gameLogPanel == null)
             gameLogPanel = GetComponentInChildren<GameLogPanel>(true);
+
+        if (topBarPanel == null)
+            topBarPanel = GetComponentInChildren<TopBarPanelController>(true);
     }
 
 #if UNITY_EDITOR

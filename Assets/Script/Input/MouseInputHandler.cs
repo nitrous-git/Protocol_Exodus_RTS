@@ -29,6 +29,7 @@ public sealed class MouseInputHandler
 
     public bool PointerOverUI { get; private set; }
     public bool PointerBlockedByMinimap { get; private set; }
+    public bool PointerBlockedByTopBar { get; private set; }
 
     public MouseInputHandler(PlayerInputBindings bindings)
     {
@@ -65,6 +66,7 @@ public sealed class MouseInputHandler
             pressedMinimap = null;
 
         PointerBlockedByMinimap = pressedMinimap != null && pressedMinimap.isActiveAndEnabled;
+        PointerBlockedByTopBar = false;
         EventSystem eventSystem = EventSystem.current;
         PointerOverUI = eventSystem != null && eventSystem.IsPointerOverGameObject();
         if (eventSystem == null || !(PrimaryPressed || SecondaryPressed || leftPressed))
@@ -82,6 +84,7 @@ public sealed class MouseInputHandler
         GameObject hit = uiHits.Count > 0 ? uiHits[0].gameObject : null;
         uiHits.Clear();
         PointerOverUI = hit != null;
+        PointerBlockedByTopBar = hit != null && hit.GetComponentInParent<TopBarPanelController>() != null;
 
         MinimapPanelController minimap = hit != null ? hit.GetComponentInParent<MinimapPanelController>() : null;
         if (minimap == null || !minimap.isActiveAndEnabled)
@@ -106,6 +109,7 @@ public sealed class MouseInputHandler
 
         PointerOverUI = false;
         PointerBlockedByMinimap = false;
+        PointerBlockedByTopBar = false;
         pressedMinimap = null;
     }
 }

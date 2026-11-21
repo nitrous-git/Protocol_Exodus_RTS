@@ -102,7 +102,7 @@ public class GameBuilder : MonoBehaviour
         matchWorld.Initialize(GameContext, FactionManager, ResourceNodeRepository, ProjectileManager, PlayerFaction);
         matchWorld.TerrainGrid?.RebuildStaticClearanceField(); // Build clearance field once after all static initialization
 
-        matchUI?.Initialize(PlayerFaction, GameContext, matchWorld);
+        matchUI?.Initialize(PlayerFaction, GameContext, matchWorld, gameLoop);
 
         // --- controller init ---
         playerFactionController?.InitializePlayerControl(
@@ -113,7 +113,8 @@ public class GameBuilder : MonoBehaviour
             matchWorld.TerrainGrid,
             matchWorld.InteractionMarkers,
             matchWorld.BuildingPlacementPreviewPrefab,
-            matchWorld.InteractionMarkersRoot
+            matchWorld.InteractionMarkersRoot,
+            gameLoop
         );
     }
 

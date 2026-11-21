@@ -41,6 +41,7 @@ public sealed class MinimapPanelController : MonoBehaviour, IPointerDownHandler,
     private readonly Image[] outlineEdges = new Image[4];
 
     private GameContext gameContext;
+    private GameLoop gameLoop;
     private CameraController cameraController;
     private Camera gameplayCamera;
     private Terrain terrain;
@@ -64,9 +65,10 @@ public sealed class MinimapPanelController : MonoBehaviour, IPointerDownHandler,
     private Matrix4x4 lastProjectionMatrix;
     private int? navigationPointerId;
 
-    public void Initialize(GameContext gameContext, MatchWorld matchWorld)
+    public void Initialize(GameContext gameContext, MatchWorld matchWorld, GameLoop gameLoop)
     {
         this.gameContext = gameContext;
+        this.gameLoop = gameLoop;
         cameraController = matchWorld != null ? matchWorld.CameraController : null;
         gameplayCamera = cameraController != null ? cameraController.GetComponentInChildren<Camera>() : null;
         terrain = cameraController != null ? cameraController.Terrain : null;
@@ -349,9 +351,15 @@ public sealed class MinimapPanelController : MonoBehaviour, IPointerDownHandler,
             navigationPointerId = null;
     }
 
+    public void CancelNavigation()
+    {
+        navigationPointerId = null;
+    }
+
     private bool TryNavigate(PointerEventData eventData, bool requireInsideMap)
     {
-        if (terrain == null || terrainImage == null || cameraController == null || !cameraController.isActiveAndEnabled ||
+        if (gameLoop?.IsGameplayInputBlocked == true || terrain == null || terrainImage == null ||
+            cameraController == null || !cameraController.isActiveAndEnabled ||
             gameplayCamera == null || !gameplayCamera.isActiveAndEnabled)
             return false;
 

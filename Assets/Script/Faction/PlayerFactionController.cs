@@ -12,6 +12,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 {
     private Faction faction;
     private GameContext gameContext;
+    private GameLoop gameLoop;
 
     private PlayerInteractionMode currentInteractionMode = PlayerInteractionMode.Default;
 
@@ -60,8 +61,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         TerrainGrid terrainGrid,
         IReadOnlyList<InteractionMarkerDefinition> interactiveMarkers,
         BuildingPlacementPreview buildingPlacementPreviewPrefab,
-        Transform interactionMarkersRoot)
+        Transform interactionMarkersRoot,
+        GameLoop gameLoop)
     {
+        this.gameLoop = gameLoop;
         this.inputBindings = inputBindings;
         this.selectionManager = selectionManager;
         this.commandIssuer = commandIssuer;
@@ -97,7 +100,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     {
         if (!isPlayerControlInitialized)
         {
-            ResetPlayerInputState();
+            CancelPlayerInput();
             return;
         }
 
@@ -106,6 +109,9 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         // Global input
         cameraController?.SetMovementInput(keyInputHandler.CameraMovement);
+
+        if (keyInputHandler.CancelInteractionPressed && TryCancelCurrentInteraction())
+            return;
 
         // Interaction-dependent input
         HandleCurrentInteraction();
@@ -126,7 +132,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     /// </summary>
     public void HandleCommandPanelAction(CommandPanelAction action)
     {
-        if (!isPlayerControlInitialized)
+        if (!isPlayerControlInitialized || gameLoop?.IsGameplayInputBlocked == true)
             return;
 
         switch (action.Type)
@@ -273,8 +279,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private void HandleRallyPointTargeting()
     {
-        if (WorldSecondaryPressed || keyInputHandler.CancelInteractionPressed ||
-            rallyTarget == null || rallyTarget != GetSelectedRallyProducer())
+        if (WorldSecondaryPressed || rallyTarget == null || rallyTarget != GetSelectedRallyProducer())
         {
             CancelCurrentInteraction();
             return;
@@ -632,6 +637,15 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         SetInteractionMode(PlayerInteractionMode.Default);
     }
 
+    public bool TryCancelCurrentInteraction()
+    {
+        if (currentInteractionMode == PlayerInteractionMode.Default)
+            return false;
+
+        CancelCurrentInteraction();
+        return true;
+    }
+
     private void EnterInteractionMode(PlayerInteractionMode mode)
     {
         switch (mode)
@@ -746,22 +760,21 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private bool IsWorldPointerBlocked()
     {
-        return mouseInputHandler.PointerBlockedByMinimap ||
+        return mouseInputHandler.PointerBlockedByMinimap || mouseInputHandler.PointerBlockedByTopBar ||
                (inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI);
     }
 
     private bool WorldSecondaryPressed => mouseInputHandler.SecondaryPressed && !mouseInputHandler.PointerBlockedByMinimap;
 
-    private void ResetPlayerInputState()
+    public void CancelPlayerInput()
     {
+        CancelCurrentInteraction();
         cameraController?.ClearMovementInput();
 
         CancelSelectionGesture();
 
         keyInputHandler?.Reset();
         mouseInputHandler?.Reset();
-
-        currentInteractionMode = PlayerInteractionMode.Default;
     }
 
     private void CancelSelectionGesture()

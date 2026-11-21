@@ -4,16 +4,21 @@ public sealed class GameLoop : MonoBehaviour
 {
     private MatchWorld matchWorld;
     private MatchUIController matchUI;
+    private PlayerFactionController playerController;
 
     private bool isInitialized;
     private bool isPaused;
+    private int pauseChangedFrame = -1;
+
+    public bool IsGameplayInputBlocked => isPaused || pauseChangedFrame == Time.frameCount;
 
     public void Initialize(
         MatchWorld matchWorld,
         MatchUIController matchUI)
     {
         this.matchWorld = matchWorld;
-        this.matchUI = matchUI; 
+        this.matchUI = matchUI;
+        playerController = matchWorld?.PlayerFaction?.Controller as PlayerFactionController;
 
         isInitialized = true;
     }
@@ -25,9 +30,11 @@ public sealed class GameLoop : MonoBehaviour
 
         float deltaTime = Time.deltaTime;
 
-        matchWorld?.TickInput(deltaTime);
+        bool escapeHandled = HandleEscape();
+        if (!IsGameplayInputBlocked && !escapeHandled)
+            matchWorld?.TickInput(deltaTime);
 
-        if (!isPaused)
+        if (!IsGameplayInputBlocked)
             matchWorld?.TickSimulation(deltaTime);
 
         matchUI?.Tick(deltaTime);
@@ -35,7 +42,7 @@ public sealed class GameLoop : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!isInitialized)
+        if (!isInitialized || IsGameplayInputBlocked)
             return;
 
         float deltaTime = Time.deltaTime;
@@ -45,6 +52,32 @@ public sealed class GameLoop : MonoBehaviour
 
     public void SetPaused(bool paused)
     {
+        if (!isInitialized || isPaused == paused)
+            return;
+
         isPaused = paused;
+        // A menu click can be dispatched before or after the world tick in the same frame.
+        pauseChangedFrame = Time.frameCount;
+        if (paused)
+            playerController?.CancelPlayerInput();
+
+        matchUI?.SetPaused(paused);
+    }
+
+    private bool HandleEscape()
+    {
+        if (pauseChangedFrame == Time.frameCount || !Input.GetKeyDown(KeyCode.Escape))
+            return false;
+
+        if (!isPaused && playerController?.TryCancelCurrentInteraction() == true)
+            return true;
+
+        if (isPaused || matchUI?.CanOpenPauseMenu == true)
+        {
+            SetPaused(!isPaused);
+            return true;
+        }
+
+        return false;
     }
 }
