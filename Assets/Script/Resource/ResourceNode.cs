@@ -101,6 +101,7 @@ public sealed class ResourceNode : MonoBehaviour, ISelectable
         {
             RemainingAmount = 0;
             SetSelected(false);
+            repository?.NotifyDepleted(this);
         }
 
         return extractedAmount;

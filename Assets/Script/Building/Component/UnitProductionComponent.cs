@@ -11,6 +11,15 @@ using UnityEngine.Serialization;
 /// </summary>
 public sealed class UnitProductionComponent : MonoBehaviour
 {
+    private enum EnqueueFailure
+    {
+        None,
+        Unavailable,
+        QueueFull,
+        InsufficientResources,
+        InsufficientSupply
+    }
+
     public const int MaximumQueueSize = 5;
     private const float SpawnRetryInterval = 0.25f;
     private const int MaxRouteSearchesPerAttempt = 3;
@@ -200,42 +209,29 @@ public sealed class UnitProductionComponent : MonoBehaviour
     /// </summary>
     public bool CanEnqueue(UnitDefinition definition)
     {
-        if (building == null)
-            return false;
+        return ValidateEnqueue(definition) == EnqueueFailure.None;
+    }
 
-        if (!building.IsInitialized)
-            return false;
-
-        if (!building.IsAlive)
-            return false;
-
-        if (!building.IsOperational)
-            return false;
-
-        if (!Supports(definition))
-            return false;
-
-        if (definition.Prefab == null)
-            return false;
+    private EnqueueFailure ValidateEnqueue(UnitDefinition definition)
+    {
+        if (building == null || !building.IsInitialized || !building.IsAlive || !building.IsOperational ||
+            !Supports(definition) || definition.Prefab == null)
+            return EnqueueFailure.Unavailable;
 
         if (IsQueueFull)
-            return false;
+            return EnqueueFailure.QueueFull;
 
         Faction ownerFaction = building.OwnerFaction;
-
-        if (ownerFaction == null)
-            return false;
-
-        UnitManager unitManager = ownerFaction.UnitManager;
-        ResourceManager resourceManager = ownerFaction.ResourceManager;
+        UnitManager unitManager = ownerFaction?.UnitManager;
+        ResourceManager resourceManager = ownerFaction?.ResourceManager;
 
         if (unitManager == null || resourceManager == null)
-            return false;
+            return EnqueueFailure.Unavailable;
 
         if (!resourceManager.CanAffordResources(definition.Cost))
-            return false;
+            return EnqueueFailure.InsufficientResources;
 
-        return unitManager.CanReservePopulation(definition);
+        return unitManager.CanReservePopulation(definition) ? EnqueueFailure.None : EnqueueFailure.InsufficientSupply;
     }
 
     /// <summary>
@@ -244,8 +240,12 @@ public sealed class UnitProductionComponent : MonoBehaviour
     /// </summary>
     public bool TryEnqueue(UnitDefinition definition)
     {
-        if (!CanEnqueue(definition))
+        EnqueueFailure failure = ValidateEnqueue(definition);
+        if (failure != EnqueueFailure.None)
+        {
+            ReportEnqueueFailure(definition, failure);
             return false;
+        }
 
         Faction ownerFaction = building.OwnerFaction;
         UnitManager unitManager = ownerFaction.UnitManager;
@@ -254,18 +254,44 @@ public sealed class UnitProductionComponent : MonoBehaviour
         bool populationReserved = unitManager.TryReservePopulation(definition);
 
         if (!populationReserved)
+        {
+            ReportEnqueueFailure(definition, EnqueueFailure.InsufficientSupply);
             return false;
+        }
 
         bool resourcesSpent = resourceManager.TrySpendResources(definition.Cost);
 
         if (!resourcesSpent)
         {
             unitManager.ReleaseReservedPopulation(definition);
+            ReportEnqueueFailure(definition, EnqueueFailure.InsufficientResources);
             return false;
         }
 
         productionQueue.Add(definition);
+        building.GameLog?.Log($"Queued {definition.DisplayName} for production.", ownerFaction);
         return true;
+    }
+
+    private void ReportEnqueueFailure(UnitDefinition definition, EnqueueFailure failure)
+    {
+        if (building == null)
+            return;
+
+        Faction ownerFaction = building.OwnerFaction;
+        switch (failure)
+        {
+            case EnqueueFailure.QueueFull:
+                building.GameLog?.Log("Production queue full.", ownerFaction);
+                break;
+            case EnqueueFailure.InsufficientResources:
+                string resource = ownerFaction.ResourceManager.Minerals < definition.Cost.Minerals ? "minerals" : "gas";
+                building.GameLog?.Log($"Not enough {resource} to train {definition.DisplayName}.", ownerFaction);
+                break;
+            case EnqueueFailure.InsufficientSupply:
+                building.GameLog?.Log("Insufficient supply.", ownerFaction);
+                break;
+        }
     }
 
     /// <summary>
@@ -366,6 +392,8 @@ public sealed class UnitProductionComponent : MonoBehaviour
         productionQueue.RemoveAt(0);
         productionElapsed = 0f;
         ResetSpawnRetry();
+
+        building.GameLog?.Log($"{definition.DisplayName} production completed.", building.OwnerFaction);
 
         return true;
     }

@@ -94,6 +94,27 @@ public sealed class ResourceNodeRepository
         }
     }
 
+    internal void NotifyDepleted(ResourceNode node)
+    {
+        Faction playerFaction = gameContext.PlayerFaction;
+        IReadOnlyList<UnitBase> playerUnits = playerFaction?.UnitManager?.UnitList;
+        if (playerUnits == null)
+            return;
+
+        // Check assignments only on depletion, including when another faction takes the last resources.
+        for (int i = 0; i < playerUnits.Count; i++)
+        {
+            if (playerUnits[i] is WorkerUnit worker && worker != null && worker.IsAlive &&
+                worker.CurrentCommand is CommandType.Gather or CommandType.Deliver &&
+                worker.ResourceComponent?.AssignedNode == node)
+            {
+                string resource = node.ResourceType == ResourceType.Gas ? "Gas" : "Mineral";
+                gameContext.GameLog.Log($"{resource} node depleted.", playerFaction);
+                return;
+            }
+        }
+    }
+
     /// <summary>
     /// Registers a scene-authored or runtime-created resource node.
     ///

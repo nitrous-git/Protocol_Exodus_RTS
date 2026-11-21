@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,6 +12,10 @@ using UnityEngine.EventSystems;
 public sealed class MouseInputHandler
 {
     private readonly PlayerInputBindings bindings;
+    private readonly List<RaycastResult> uiHits = new();
+    private PointerEventData pointerEvent;
+    private EventSystem pointerEventSystem;
+    private MinimapPanelController pressedMinimap;
 
     public Vector2 PointerPosition { get; private set; }
 
@@ -23,6 +28,7 @@ public sealed class MouseInputHandler
     public bool SecondaryReleased { get; private set; }
 
     public bool PointerOverUI { get; private set; }
+    public bool PointerBlockedByMinimap { get; private set; }
 
     public MouseInputHandler(PlayerInputBindings bindings)
     {
@@ -50,7 +56,40 @@ public sealed class MouseInputHandler
         SecondaryHeld = Input.GetMouseButton(secondaryButton);
         SecondaryReleased = Input.GetMouseButtonUp(secondaryButton);
 
-        PointerOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+        UpdatePointerBlocking(Input.GetMouseButtonDown(0));
+    }
+
+    private void UpdatePointerBlocking(bool leftPressed)
+    {
+        if (!Input.GetMouseButton(0))
+            pressedMinimap = null;
+
+        PointerBlockedByMinimap = pressedMinimap != null && pressedMinimap.isActiveAndEnabled;
+        EventSystem eventSystem = EventSystem.current;
+        PointerOverUI = eventSystem != null && eventSystem.IsPointerOverGameObject();
+        if (eventSystem == null || !(PrimaryPressed || SecondaryPressed || leftPressed))
+            return;
+
+        // A press can reach the match tick before the EventSystem updates its cached hover target.
+        if (pointerEvent == null || pointerEventSystem != eventSystem)
+        {
+            pointerEvent = new PointerEventData(eventSystem);
+            pointerEventSystem = eventSystem;
+        }
+
+        pointerEvent.position = PointerPosition;
+        eventSystem.RaycastAll(pointerEvent, uiHits);
+        GameObject hit = uiHits.Count > 0 ? uiHits[0].gameObject : null;
+        uiHits.Clear();
+        PointerOverUI = hit != null;
+
+        MinimapPanelController minimap = hit != null ? hit.GetComponentInParent<MinimapPanelController>() : null;
+        if (minimap == null || !minimap.isActiveAndEnabled)
+            return;
+
+        PointerBlockedByMinimap = true;
+        if (leftPressed)
+            pressedMinimap = minimap;
     }
 
     public void Reset()
@@ -66,5 +105,7 @@ public sealed class MouseInputHandler
         SecondaryReleased = false;
 
         PointerOverUI = false;
+        PointerBlockedByMinimap = false;
+        pressedMinimap = null;
     }
 }

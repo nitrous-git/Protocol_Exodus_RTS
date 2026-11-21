@@ -8,6 +8,8 @@ public class GameBuilder : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private MatchUIController matchUI;
+    [SerializeField, Min(1)] private int gameLogCapacity = GameLog.DefaultCapacity;
+    [SerializeField, Min(0.01f)] private float gameLogDisplayDuration = GameLog.DefaultDisplayDuration;
 
     [Header("Faction Definitions")]
     [SerializeField] private FactionDefinition FactionTerran_Definition;
@@ -52,7 +54,7 @@ public class GameBuilder : MonoBehaviour
 
     private void BuildMatch()
     {
-        GameContext = new GameContext();
+        GameContext = new GameContext(gameLogCapacity, gameLogDisplayDuration);
 
         GameContext.SetTerrainGrid(matchWorld.TerrainGrid);
 

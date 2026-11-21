@@ -175,9 +175,7 @@ public sealed class BuildingPlacementController
         if (!hasCurrentPlacement)
             return false;
 
-        if (!canConstructAtCurrentPlacement)
-            return false;
-
+        // Revalidate confirmation so rejected attempts can report the actual failure.
         BuildingBase building = buildingManager.Construct(activeDefinition, currentFootprintOrigin, rotationSteps);
 
         return building != null;

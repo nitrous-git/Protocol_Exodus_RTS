@@ -1562,6 +1562,7 @@ RectTransform:
   - {fileID: 894637023}
   - {fileID: 1685889830}
   - {fileID: 565812547}
+  - {fileID: 1063239761}
   m_Father: {fileID: 1612411920}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2372,6 +2373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bba0a1631f0febb4787998a37627a1a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CommandPanelController
+  icons: {fileID: 11400000, guid: 0687ce9a2759c6040af9d917bd718477, type: 2}
   commandSlots:
   - {fileID: 1812300222}
   - {fileID: 1805914656}
@@ -4218,6 +4220,8 @@ MonoBehaviour:
   gameLoop: {fileID: 914989404}
   matchWorld: {fileID: 1050158195}
   matchUI: {fileID: 1612411921}
+  gameLogCapacity: 8
+  gameLogDisplayDuration: 3
   FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
   FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
   startingCombatCount: 15
@@ -5358,6 +5362,7 @@ MonoBehaviour:
   minimapPanel: {fileID: 894637024}
   selectionPanel: {fileID: 1685889831}
   commandPanel: {fileID: 565812548}
+  gameLogPanel: {fileID: 1063239762}
 --- !u!1 &1685889829
 GameObject:
   m_ObjectHideFlags: 0
@@ -6389,6 +6394,119 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1063239760
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 455851300}
+    m_Modifications:
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 420
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 44
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 362
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6784959584277376818, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+      propertyPath: m_Name
+      value: GameLogPanel
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+--- !u!224 &1063239761 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3708315517977056925, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+  m_PrefabInstance: {fileID: 1063239760}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1063239762 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7847583772685114200, guid: 4cadb6ebbd0ad68408e11020bfb6a393, type: 3}
+  m_PrefabInstance: {fileID: 1063239760}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67f2f26f9cf351449853023196804520, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::GameLogPanel
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

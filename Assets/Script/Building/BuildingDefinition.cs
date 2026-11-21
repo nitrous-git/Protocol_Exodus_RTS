@@ -6,6 +6,7 @@ public sealed class BuildingDefinition : ScriptableObject
     [Header("Identity")]
     public BuildingType buildingType;
     public string displayName;
+    public Sprite icon;
 
     [Header("Prefab")]
     public BuildingBase prefab;
@@ -24,6 +25,7 @@ public sealed class BuildingDefinition : ScriptableObject
 
     public BuildingType Type => buildingType;
     public string DisplayName => displayName;
+    public Sprite Icon => icon;
     public BuildingBase Prefab => prefab;
     public Cost Cost => cost;
     public Vector2Int FootprintSize => footprintSize;

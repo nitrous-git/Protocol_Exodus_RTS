@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 1
   displayName: Specter Infantry
-  icon: {fileID: 21300000, guid: c95aa9b9869418d44b8e3474aa9274c0, type: 3}
+  icon: {fileID: 21300000, guid: b9fe1712b0524f598895d92436f17c81, type: 3}
   prefab: {fileID: 4881824056415600144, guid: d1d85ba253e12974486573bb6fff8430, type: 3}
   cost:
     minerals: 50

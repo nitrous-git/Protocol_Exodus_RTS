@@ -30,6 +30,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
 
     public Faction OwnerFaction => ownerFaction;
     public BuildingManager OwningBuildingManager => owningBuildingManager;
+    internal GameLog GameLog => gameContext?.GameLog;
 
     public BuildingDefinition Definition { get; private set; }
     public GridCoord FootprintOrigin { get; private set; }
@@ -245,6 +246,7 @@ public class BuildingBase : MonoBehaviour, ISelectable, ITargetable
         State = BuildingState.InOperation;
         view?.TransitionToOperational();
         supplyProvider?.Activate();
+        GameLog?.Log($"{Definition.DisplayName} construction completed.", ownerFaction);
     }
 
 }

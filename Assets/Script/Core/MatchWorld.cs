@@ -39,6 +39,7 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private BuildingPlacementPreview buildingPlacementPreviewPrefab;
 
     private UnitDepenetrationSystem unitDepenetrationSystem;
+    private GameLog gameLog;
 
     public Transform UnitsRoot => unitsRoot;
     public Transform BuildingsRoot => buildingsRoot;
@@ -84,6 +85,7 @@ public sealed class MatchWorld : MonoBehaviour
         ResourceNodeRepository = resourceNodeRepository;
         ProjectileManager = projectileManager;
         PlayerFaction = playerFaction;
+        gameLog = gameContext.GameLog;
 
         unitDepenetrationSystem = new UnitDepenetrationSystem(gameContext.AllUnits);
 
@@ -101,6 +103,7 @@ public sealed class MatchWorld : MonoBehaviour
 
     public void TickInput(float deltaTime)
     {
+        gameLog?.Tick();
         PlayerFaction?.TickInput(deltaTime);
     }
 

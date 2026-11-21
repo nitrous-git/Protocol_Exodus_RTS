@@ -48,15 +48,9 @@ public sealed class CommandPanelController : MonoBehaviour
     [Header("Command Grid")]
     [SerializeField] private CommandSlotView[] commandSlots = new CommandSlotView[SlotCount];
 
-    //[Header("Building Definition")]
-    //[SerializeField] private BuildingDefinition commandCenterDefinition;
-    //[SerializeField] private BuildingDefinition supplyDepotDefinition;
-    //[SerializeField] private BuildingDefinition barracksDefinition;
+    [SerializeField] private CommandIconLibrary icons;
 
-    //[Header("Unit Definitions")]
-    //[SerializeField] private UnitDefinition workerUnitDefinition;
-    //[SerializeField] private UnitDefinition combatUnitDefinition;
-
+    private BuildingBase lastSelectedBuilding;
     private Faction playerFaction;
     private GameContext gameContext;
 
@@ -77,7 +71,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
         isInitialized = true;
 
-        RefreshCommands();
+        RefreshCommands(forceRefresh: true);
     }
 
     /// <summary>
@@ -105,7 +99,7 @@ public sealed class CommandPanelController : MonoBehaviour
         bool layoutChanged = nextLayout != currentLayout;
         bool operationalStateChanged = selectedBuildingOperational != lastSelectedBuildingOperational;
 
-        if (!layoutChanged && !operationalStateChanged && !forceRefresh)
+        if (!layoutChanged && selectedBuilding == lastSelectedBuilding && !operationalStateChanged && !forceRefresh)
             return;
 
         if (layoutChanged)
@@ -116,6 +110,7 @@ public sealed class CommandPanelController : MonoBehaviour
             currentMenu = CommandPanelMenu.Main;
         }
 
+        lastSelectedBuilding = selectedBuilding;
         lastSelectedBuildingOperational = selectedBuildingOperational;
 
         ClearAllSlots();
@@ -276,7 +271,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowMainMenu()
     {
-        ConfigureLocalSlot(BuildMenuSlot, "B", true, OpenBuildMenu);
+        ConfigureLocalSlot(BuildMenuSlot, icons?.BuildMenu, true, OpenBuildMenu);
     }
 
     private void ShowBuildMenu()
@@ -285,10 +280,10 @@ public sealed class CommandPanelController : MonoBehaviour
         BuildingDefinition barracksDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.Barracks);
         BuildingDefinition supplyDepotDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.SupplyDepot);
 
-        ConfigureGameplaySlot(CommandCenterSlot, "C", true, CommandPanelAction.PlaceBuilding(commandCenterDefinition));
-        ConfigureGameplaySlot(SupplyDepotSlot, "S", true, CommandPanelAction.PlaceBuilding(supplyDepotDefinition));
-        ConfigureGameplaySlot(BarracksSlot, "B", true, CommandPanelAction.PlaceBuilding(barracksDefinition));
-        ConfigureLocalSlot(BackSlot, "X", true, CloseBuildMenu);
+        ConfigureGameplaySlot(CommandCenterSlot, commandCenterDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(commandCenterDefinition));
+        ConfigureGameplaySlot(SupplyDepotSlot, supplyDepotDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(supplyDepotDefinition));
+        ConfigureGameplaySlot(BarracksSlot, barracksDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(barracksDefinition));
+        ConfigureLocalSlot(BackSlot, icons?.Back, true, CloseBuildMenu);
     }
 
     private void OpenBuildMenu()
@@ -320,25 +315,25 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowWorkerUnitCommands()
     {
-        ConfigureGameplaySlot(MoveSlot,"M", true, CommandPanelAction.Move());
-        ConfigureGameplaySlot(HoldPositionSlot,"H", true, CommandPanelAction.HoldPosition());
-        ConfigureGameplaySlot(AttackSlot,"A", false, CommandPanelAction.Attack());
-        ConfigureGameplaySlot(GatherSlot, "G", false, CommandPanelAction.Gather());
-        ConfigureGameplaySlot(RepairSlot, "R", false, CommandPanelAction.Repair());
+        ConfigureGameplaySlot(MoveSlot, icons?.Move, true, CommandPanelAction.Move());
+        ConfigureGameplaySlot(HoldPositionSlot, icons?.HoldPosition, true, CommandPanelAction.HoldPosition());
+        ConfigureGameplaySlot(AttackSlot, icons?.Attack, false, CommandPanelAction.Attack());
+        ConfigureGameplaySlot(GatherSlot, icons?.Gather, false, CommandPanelAction.Gather());
+        ConfigureGameplaySlot(RepairSlot, icons?.Repair, false, CommandPanelAction.Repair());
     }
 
     private void ShowCombatUnitCommands()
     {
-        ConfigureGameplaySlot(MoveSlot, "M", true, CommandPanelAction.Move());
-        ConfigureGameplaySlot(HoldPositionSlot, "H", true, CommandPanelAction.HoldPosition());
-        ConfigureGameplaySlot(AttackSlot, "A", true, CommandPanelAction.Attack());
+        ConfigureGameplaySlot(MoveSlot, icons?.Move, true, CommandPanelAction.Move());
+        ConfigureGameplaySlot(HoldPositionSlot, icons?.HoldPosition, true, CommandPanelAction.HoldPosition());
+        ConfigureGameplaySlot(AttackSlot, icons?.Attack, true, CommandPanelAction.Attack());
     }
 
     private void ShowMultipleUnitCommands()
     {
-        ConfigureGameplaySlot(MoveSlot, "M", true, CommandPanelAction.Move());
-        ConfigureGameplaySlot(HoldPositionSlot, "H", true, CommandPanelAction.HoldPosition());
-        ConfigureGameplaySlot(AttackSlot, "A", true, CommandPanelAction.Attack());
+        ConfigureGameplaySlot(MoveSlot, icons?.Move, true, CommandPanelAction.Move());
+        ConfigureGameplaySlot(HoldPositionSlot, icons?.HoldPosition, true, CommandPanelAction.HoldPosition());
+        ConfigureGameplaySlot(AttackSlot, icons?.Attack, true, CommandPanelAction.Attack());
     }
 
     // ---------------------------------------------------------------------
@@ -351,10 +346,10 @@ public sealed class CommandPanelController : MonoBehaviour
 
         UnitDefinition workerDefinition = GetSelectedBuildingUnitDefinition(UnitType.Worker);
 
-        ConfigureGameplaySlot(TrainUnitSlot, "W", operational, CommandPanelAction.TrainUnit(workerDefinition));
-        ConfigureDisabledSlot(UpgradeSlot, "U");
-        ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
-        ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true, CommandPanelAction.ClearSelection());
+        ConfigureGameplaySlot(TrainUnitSlot, workerDefinition?.Icon, operational, CommandPanelAction.TrainUnit(workerDefinition));
+        ConfigureLocalSlot(UpgradeSlot, icons?.Upgrade, false, null);
+        ConfigureGameplaySlot(SetRallyPointSlot, icons?.RallyPoint, operational, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
     }
 
     private void ShowBarracksCommands()
@@ -364,23 +359,23 @@ public sealed class CommandPanelController : MonoBehaviour
         UnitDefinition combatDefinition = GetSelectedBuildingUnitDefinition(UnitType.Combat);
         UnitDefinition mechDefinition = GetSelectedBuildingUnitDefinition(UnitType.Mech);
 
-        ConfigureGameplaySlot(TrainUnitSlot, "C", operational && combatDefinition != null, CommandPanelAction.TrainUnit(combatDefinition));
-        ConfigureGameplaySlot(TrainMechaSlot, "M", operational && mechDefinition != null, CommandPanelAction.TrainUnit(mechDefinition));
-        ConfigureGameplaySlot(SetRallyPointSlot, "R", operational, CommandPanelAction.SetRallyPoint());
-        ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", true,CommandPanelAction.ClearSelection());
+        ConfigureGameplaySlot(TrainUnitSlot, combatDefinition?.Icon, operational && combatDefinition != null, CommandPanelAction.TrainUnit(combatDefinition));
+        ConfigureGameplaySlot(TrainMechaSlot, mechDefinition?.Icon, operational && mechDefinition != null, CommandPanelAction.TrainUnit(mechDefinition));
+        ConfigureGameplaySlot(SetRallyPointSlot, icons?.RallyPoint, operational, CommandPanelAction.SetRallyPoint());
+        ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
     }
 
     private void ShowSupplyDepotCommands()
     {
         bool operational = CanOperateSelectedBuilding();
-        ConfigureGameplaySlot(CloseBuildingSelectionSlot, "X", operational, CommandPanelAction.ClearSelection());
+        ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, operational, CommandPanelAction.ClearSelection());
     }
 
     // ---------------------------------------------------------------------
     // Slot configuration
     // ---------------------------------------------------------------------
 
-    private void ConfigureGameplaySlot(int slotIndex, string label, bool interactable, CommandPanelAction action, Sprite icon = null)
+    private void ConfigureGameplaySlot(int slotIndex, Sprite icon, bool interactable, CommandPanelAction action)
     {
         CommandSlotView slot = GetSlot(slotIndex);
 
@@ -388,10 +383,10 @@ public sealed class CommandPanelController : MonoBehaviour
             return;
 
         slot.SetClickAction(interactable ? () => HandleGameplayAction(action) : null);
-        slot.SetVisual(label, icon, interactable);
+        slot.SetVisual(string.Empty, icon, interactable);
     }
 
-    private void ConfigureLocalSlot(int slotIndex, string label, bool interactable, UnityEngine.Events.UnityAction clickAction)
+    private void ConfigureLocalSlot(int slotIndex, Sprite icon, bool interactable, UnityEngine.Events.UnityAction clickAction)
     {
         CommandSlotView slot = GetSlot(slotIndex);
 
@@ -399,18 +394,7 @@ public sealed class CommandPanelController : MonoBehaviour
             return;
 
         slot.SetClickAction(interactable ? clickAction : null);
-        slot.SetVisual(label, null, interactable);
-    }
-
-    private void ConfigureDisabledSlot(int slotIndex, string label)
-    {
-        CommandSlotView slot = GetSlot(slotIndex);
-
-        if (slot == null)
-            return;
-
-        slot.SetClickAction(null);
-        slot.SetVisual(label, null, false);
+        slot.SetVisual(string.Empty, icon, interactable);
     }
 
     private void HandleGameplayAction(CommandPanelAction action)

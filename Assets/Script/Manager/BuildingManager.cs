@@ -7,6 +7,14 @@ using UnityEngine;
 /// </summary>
 public sealed class BuildingManager
 {
+    private enum ConstructionFailure
+    {
+        None,
+        Unavailable,
+        InsufficientResources,
+        InvalidPlacement
+    }
+
     //[Header("Production Options")]
     //[SerializeField] private List<BuildingType> producibleBuildingTypes = new();
 
@@ -71,27 +79,20 @@ public sealed class BuildingManager
     /// </summary>
     public bool CanConstruct(BuildingDefinition definition, GridCoord footprintOrigin, int rotationSteps = 0)
     {
-        if (OwnerFaction == null)
-            return false;
+        return ValidateConstruction(definition, footprintOrigin, rotationSteps) == ConstructionFailure.None;
+    }
 
-        if (OwnerFaction.ResourceManager == null)
-            return false;
-
-        if (terrainGrid == null)
-            return false;
-
-        if (definition == null)
-            return false;
-
-        if (definition.Prefab == null)
-            return false;
+    private ConstructionFailure ValidateConstruction(BuildingDefinition definition, GridCoord footprintOrigin, int rotationSteps)
+    {
+        if (OwnerFaction?.ResourceManager == null || terrainGrid == null || definition == null || definition.Prefab == null)
+            return ConstructionFailure.Unavailable;
 
         if (!OwnerFaction.ResourceManager.CanAffordResources(definition.Cost))
-        {
-            return false;
-        }
+            return ConstructionFailure.InsufficientResources;
 
-        return terrainGrid.CanPlaceFootprint(footprintOrigin, definition.GetRotatedFootprintSize(rotationSteps));
+        return terrainGrid.CanPlaceFootprint(footprintOrigin, definition.GetRotatedFootprintSize(rotationSteps))
+            ? ConstructionFailure.None
+            : ConstructionFailure.InvalidPlacement;
     }
 
     /// <summary>
@@ -101,15 +102,24 @@ public sealed class BuildingManager
     /// </summary>
     public BuildingBase Construct(BuildingDefinition definition, GridCoord footprintOrigin, int rotationSteps = 0)
     {
-        if (!CanConstruct(definition, footprintOrigin, rotationSteps))
+        ConstructionFailure failure = ValidateConstruction(definition, footprintOrigin, rotationSteps);
+        if (failure != ConstructionFailure.None)
         {
+            if (failure == ConstructionFailure.InsufficientResources)
+                gameContext?.GameLog.Log($"Not enough resources to build {definition.DisplayName}.", OwnerFaction);
+            else if (failure == ConstructionFailure.InvalidPlacement)
+                gameContext?.GameLog.Log($"Cannot place {definition.DisplayName} here.", OwnerFaction);
+
             return null;
         }
 
         bool resourcesSpent = OwnerFaction.ResourceManager.TrySpendResources(definition.Cost);
 
         if (!resourcesSpent)
+        {
+            gameContext?.GameLog.Log($"Not enough resources to build {definition.DisplayName}.", OwnerFaction);
             return null;
+        }
 
         Vector2Int footprintSize = definition.GetRotatedFootprintSize(rotationSteps);
         Vector3 worldPosition = terrainGrid.GetFootprintWorldCenter(footprintOrigin, footprintSize);
@@ -133,9 +143,11 @@ public sealed class BuildingManager
             OwnerFaction.ResourceManager.AddMinerals(definition.Cost.Minerals);
             OwnerFaction.ResourceManager.AddGas(definition.Cost.Gas);
             Object.Destroy(building.gameObject);
+            gameContext?.GameLog.Log($"Could not place {definition.DisplayName}.", OwnerFaction);
             return null;
         }
 
+        gameContext?.GameLog.Log($"{definition.DisplayName} construction started.", OwnerFaction);
         return building;
     }
 

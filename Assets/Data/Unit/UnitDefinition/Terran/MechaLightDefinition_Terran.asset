@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 2
   displayName: 'Mecha '
-  icon: {fileID: 21300000, guid: c95aa9b9869418d44b8e3474aa9274c0, type: 3}
+  icon: {fileID: 21300000, guid: 9c9da1f31dbd4dd499ad75e728b304e7, type: 3}
   prefab: {fileID: 8452645722603036603, guid: e2e0fdd86e607d94fb2d39c36939564d, type: 3}
   cost:
     minerals: 100

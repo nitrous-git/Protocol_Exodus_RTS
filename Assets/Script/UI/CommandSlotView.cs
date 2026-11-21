@@ -22,7 +22,7 @@ public sealed class CommandSlotView : MonoBehaviour
     {
         if (labelText != null)
         {
-            bool hasLabel = !string.IsNullOrWhiteSpace(label);
+            bool hasLabel = icon == null && !string.IsNullOrWhiteSpace(label);
 
             labelText.text = hasLabel ? label : string.Empty;
             labelText.gameObject.SetActive(hasLabel);
@@ -33,6 +33,7 @@ public sealed class CommandSlotView : MonoBehaviour
             bool hasIcon = icon != null;
 
             iconImage.sprite = icon;
+            iconImage.color = interactable ? Color.white : new Color(0.61f, 0.66f, 0.70f, 0.76f);
             iconImage.gameObject.SetActive(hasIcon);
         }
 

@@ -145,6 +145,7 @@ public class CommandIssuer : MonoBehaviour
         CollectCommandableSelectedUnits();
 
         bool issuedAnyCommand = false;
+        bool startedGathering = false;
 
         for (int i = 0; i < commandableUnits.Count; i++)
         {
@@ -153,7 +154,11 @@ public class CommandIssuer : MonoBehaviour
 
             worker.IssueCommand(CommandType.Gather, CommandContext.Gather(resourceNode));
             issuedAnyCommand = true;
+            startedGathering |= worker.CurrentCommand != CommandType.Idle;
         }
+
+        if (issuedAnyCommand && !startedGathering)
+            gameContext.GameLog.Log("Selected workers could not start gathering from that node.", issuingFaction);
 
         return issuedAnyCommand;
     }
@@ -205,6 +210,7 @@ public class CommandIssuer : MonoBehaviour
         CollectCommandableSelectedUnits();
 
         bool issuedAnyCommand = false;
+        bool startedDelivery = false;
 
         for (int i = 0; i < commandableUnits.Count; i++)
         {
@@ -221,7 +227,11 @@ public class CommandIssuer : MonoBehaviour
             worker.IssueCommand(CommandType.Deliver, CommandContext.DeliverTo(building));
 
             issuedAnyCommand = true;
+            startedDelivery |= worker.CurrentCommand != CommandType.Idle;
         }
+
+        if (issuedAnyCommand && !startedDelivery)
+            gameContext.GameLog.Log($"Selected workers could not reach {building.Definition.DisplayName} to deliver resources.", issuingFaction);
 
         return issuedAnyCommand;
     }

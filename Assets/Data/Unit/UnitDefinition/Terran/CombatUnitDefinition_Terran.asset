@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 1
   displayName: 'Terran Infantry '
-  icon: {fileID: 21300000, guid: c95aa9b9869418d44b8e3474aa9274c0, type: 3}
+  icon: {fileID: 21300000, guid: feb33dbcc92346248258fbf5c7ed1c79, type: 3}
   prefab: {fileID: 4010634174133816462, guid: 23898a9abd3258e40ab7885239fd7f05, type: 3}
   cost:
     minerals: 50

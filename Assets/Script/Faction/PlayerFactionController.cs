@@ -242,16 +242,8 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             return;
 
         BuildingBase selectedBuilding = gameContext.SelectedBuilding;
-        UnitProductionComponent production = selectedBuilding.UnitProduction;
-        bool enqueued = production.TryEnqueue(unitDefinition);
-
-        if (!enqueued)
-        {
-            Debug.LogWarning($"Training request rejected for {unitDefinition.DisplayName} at {selectedBuilding.name}.");
-            return;
-        }
-
-        Debug.Log($"Queued {unitDefinition.DisplayName} at {selectedBuilding.name}. Queue: {production.QueueCount}/ {production.QueueCapacity}");
+        if (selectedBuilding != null && selectedBuilding.OwnerFaction == faction && selectedBuilding.UnitProduction != null)
+            selectedBuilding.UnitProduction.TryEnqueue(unitDefinition);
     }
 
     private UnitProductionComponent GetSelectedRallyProducer()
@@ -281,7 +273,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private void HandleRallyPointTargeting()
     {
-        if (mouseInputHandler.SecondaryPressed || keyInputHandler.CancelInteractionPressed ||
+        if (WorldSecondaryPressed || keyInputHandler.CancelInteractionPressed ||
             rallyTarget == null || rallyTarget != GetSelectedRallyProducer())
         {
             CancelCurrentInteraction();
@@ -289,12 +281,19 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         }
 
         bool hasGround = UpdateRallyPreview();
-        if (!mouseInputHandler.PrimaryPressed || !hasGround)
+        if (!mouseInputHandler.PrimaryPressed || IsWorldPointerBlocked())
             return;
+
+        if (!hasGround)
+        {
+            gameContext.GameLog.Log("Choose a ground position for the rally point.", faction);
+            return;
+        }
 
         Vector3 position = commandIssuer.CurrentGroundPosition;
         Vector3 normal = commandIssuer.CurrentGroundNormal;
         rallyTarget.SetRallyPoint(position, normal);
+        gameContext.GameLog.Log("Rally point updated.", faction);
         interactionMarkerPresenter.PlayTemporary(InteractionMarkerType.RallyPointIssued, position, normal);
         SetInteractionMode(PlayerInteractionMode.Default);
     }
@@ -394,7 +393,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         if (!inputBindings.IssueMoveOnSecondaryPointer)
             return;
 
-        if (!mouseInputHandler.SecondaryPressed)
+        if (!WorldSecondaryPressed)
             return;
 
         if (IsWorldPointerBlocked())
@@ -426,7 +425,15 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         {
             if (keyInputHandler.RallyPointResetModifierHeld)
             {
-                GetSelectedRallyProducer()?.ClearRallyPoint();
+                UnitProductionComponent producer = GetSelectedRallyProducer();
+                if (producer != null)
+                {
+                    bool hadRallyPoint = producer.RallyPoint.HasValue;
+                    producer.ClearRallyPoint();
+                    if (hadRallyPoint)
+                        gameContext.GameLog.Log("Rally point reset.", faction);
+                }
+
                 return;
             }
 
@@ -447,7 +454,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     {
         bool hasGroundPosition = UpdateTargetingMarker();
 
-        if (mouseInputHandler.SecondaryPressed)
+        if (WorldSecondaryPressed)
         {
             CancelCurrentInteraction();
             return;
@@ -513,7 +520,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
         else
             interactionMarkerPresenter.HideRallyPoint();
 
-        if (mouseInputHandler.SecondaryPressed)
+        if (WorldSecondaryPressed)
         {
             CancelCurrentInteraction();
             return;
@@ -524,6 +531,12 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
         if (pointerBlocked)
             return;
+
+        if (!buildingPlacementController.HasCurrentPlacement && buildingPlacementController.ActiveDefinition != null)
+        {
+            gameContext.GameLog.Log($"Cannot place {buildingPlacementController.ActiveDefinition.DisplayName} here.", faction);
+            return;
+        }
 
         bool constructed = buildingPlacementController.TryConfirm();
 
@@ -543,7 +556,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     {
         bool hasGroundPosition = UpdateTargetingMarker();
 
-        if (mouseInputHandler.SecondaryPressed)
+        if (WorldSecondaryPressed)
         {
             CancelCurrentInteraction();
             return;
@@ -573,6 +586,10 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             if (commandIssued)
             {
                 PlayAttackTargetMarker(attackTarget);
+            }
+            else
+            {
+                gameContext.GameLog.Log("Selected units cannot attack that target.", faction);
             }
         }
         else
@@ -729,9 +746,11 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
 
     private bool IsWorldPointerBlocked()
     {
-        bool blockedByUI = inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI;
-        return blockedByUI;
+        return mouseInputHandler.PointerBlockedByMinimap ||
+               (inputBindings.IgnoreWorldInputOverUI && mouseInputHandler.PointerOverUI);
     }
+
+    private bool WorldSecondaryPressed => mouseInputHandler.SecondaryPressed && !mouseInputHandler.PointerBlockedByMinimap;
 
     private void ResetPlayerInputState()
     {

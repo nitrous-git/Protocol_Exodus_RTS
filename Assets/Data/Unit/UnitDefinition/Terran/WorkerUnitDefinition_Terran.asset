@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
   unitType: 0
   displayName: Worker Drone
-  icon: {fileID: 21300000, guid: a29a59460ff911a40b521e29b11da7d1, type: 3}
+  icon: {fileID: 21300000, guid: 1e68c5e84f0e42c188558f44ca5aa78f, type: 3}
   prefab: {fileID: 7294057232379391094, guid: efca05549447b3a448f9e87ec2b7eb85, type: 3}
   cost:
     minerals: 50

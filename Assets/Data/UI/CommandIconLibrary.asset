@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 585c3d9f0f000854482e1f1e0f90162f, type: 3}
+  m_Name: CommandIconLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::CommandIconLibrary
+  Move: {fileID: 21300000, guid: a3ca5c64234963b4295cb383a2e807e7, type: 3}
+  HoldPosition: {fileID: 21300000, guid: 1a922c48494f40e489a72e36d93a5b65, type: 3}
+  Attack: {fileID: 21300000, guid: 441a7ddea248dbf4a96366ed7b5f02bc, type: 3}
+  BuildMenu: {fileID: 21300000, guid: 6eec16e2a1dbda4429e4a8a5d797b26a, type: 3}
+  Gather: {fileID: 21300000, guid: 685b2b940beebb34badbad4f237652ef, type: 3}
+  Repair: {fileID: 21300000, guid: c66dd08a7aa1e1b45a05f1613ccf3257, type: 3}
+  RallyPoint: {fileID: 21300000, guid: a74dd0e89260ab147929252fac59a289, type: 3}
+  Upgrade: {fileID: 21300000, guid: 047f345cdbae558498b2d16445abbd84, type: 3}
+  Back: {fileID: 21300000, guid: d6527e8b46424bb42a4f8a20bb63fa32, type: 3}
+  ClearSelection: {fileID: 21300000, guid: e57f51b9bb7c0f14b9f3f37db5d6dfda, type: 3}

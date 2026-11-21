@@ -28,11 +28,19 @@ public sealed class GameContext
     public TerrainGrid TerrainGrid { get; private set; }
     public FactionManager FactionManager { get; private set; }
     public Faction PlayerFaction { get; private set; }
+    public GameLog GameLog { get; }
     public ProjectileManager ProjectileManager { get; private set; }
     public ResourceNodeRepository ResourceNodeRepository { get; private set; }
     public GridNavigationStateSystem GridNavigationStateSystem { get; private set; }
     public DestinationAllocationSystem DestinationAllocationSystem { get; private set; }
     public IPathfindingService PathfindingService { get; private set; }
+
+    public GameContext(
+        int gameLogCapacity = GameLog.DefaultCapacity,
+        float gameLogDisplayDuration = GameLog.DefaultDisplayDuration)
+    {
+        GameLog = new GameLog(this, gameLogCapacity, gameLogDisplayDuration);
+    }
 
     // ---------------------------------------------------------------------
     // Setter
@@ -316,6 +324,7 @@ public sealed class GameContext
     public void Clear()
     {
         ClearSelection();
+        GameLog.Clear();
 
         allUnits.Clear();
         allBuildings.Clear();

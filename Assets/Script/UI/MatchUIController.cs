@@ -4,7 +4,7 @@ using UnityEngine;
 /// Runtime coordinator for all match HUD sections.
 ///
 /// MatchUIController owns initialization and centralized ticking of the
-/// Minimap, Selection, and Command panels. Individual panels remain
+/// Minimap, Selection, Command, and Game Log panels. Individual panels remain
 /// responsible for their own presentation behavior.
 /// </summary>
 [DisallowMultipleComponent]
@@ -14,6 +14,7 @@ public sealed class MatchUIController : MonoBehaviour
     [SerializeField] private MinimapPanelController minimapPanel;
     [SerializeField] private SelectionPanelController selectionPanel;
     [SerializeField] private CommandPanelController commandPanel;
+    [SerializeField] private GameLogPanel gameLogPanel;
 
     private GameContext gameContext;
     private MatchWorld matchWorld;
@@ -35,6 +36,7 @@ public sealed class MatchUIController : MonoBehaviour
         minimapPanel?.Initialize(gameContext, matchWorld);
         selectionPanel?.Initialize(playerFaction, gameContext);
         commandPanel?.Initialize(playerFaction, gameContext);
+        gameLogPanel?.Initialize(gameContext.GameLog);
 
         isInitialized = true;
     }
@@ -50,6 +52,7 @@ public sealed class MatchUIController : MonoBehaviour
         minimapPanel?.Tick(deltaTime);
         selectionPanel?.Tick(deltaTime);
         commandPanel?.Tick(deltaTime);
+        gameLogPanel?.Tick();
     }
 
     private void ResolvePanelReferences()
@@ -62,6 +65,9 @@ public sealed class MatchUIController : MonoBehaviour
 
         if (commandPanel == null)
             commandPanel = GetComponentInChildren<CommandPanelController>(true);
+
+        if (gameLogPanel == null)
+            gameLogPanel = GetComponentInChildren<GameLogPanel>(true);
     }
 
 #if UNITY_EDITOR
