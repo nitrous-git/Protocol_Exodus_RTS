@@ -35,25 +35,19 @@ public sealed class FormationDestinationAllocator
 
         GridCoord preferredCell = GetPreferredSlot(formationCenter, slotIndex, unitCount, spacing);
 
-        return FindDestination(preferredCell, spacing, maxFallbackDepth, unit, null);
+        return FindDestination(preferredCell, spacing, maxFallbackDepth, unit);
     }
 
-    internal GridCoord? FindRallyDestination(GridCoord center, System.Func<GridCoord, bool> isAvailable)
+    private GridCoord? FindDestination(GridCoord preferredCell, int spacing, int maxFallbackDepth, UnitBase unit)
     {
-        return FindDestination(center, CalculateSpacing(1f), 3, null, isAvailable);
-    }
-
-    private GridCoord? FindDestination(GridCoord preferredCell, int spacing, int maxFallbackDepth,
-        UnitBase unit, System.Func<GridCoord, bool> isAvailable)
-    {
-        if (TryClaim(preferredCell, unit, isAvailable))
+        if (navigationState.TryReserveDestination(preferredCell, unit))
         {
             return preferredCell;
         }
 
         for (int depth = 1; depth <= maxFallbackDepth; depth++)
         {
-            GridCoord? fallback = TryAllocateAround(unit, preferredCell, depth, spacing, isAvailable);
+            GridCoord? fallback = TryAllocateAround(unit, preferredCell, depth, spacing);
 
             if (fallback.HasValue)
                 return fallback;
@@ -94,12 +88,7 @@ public sealed class FormationDestinationAllocator
     }
 
 
-    private GridCoord? TryAllocateAround(
-        UnitBase unit,
-        GridCoord center,
-        int depth,
-        int spacing,
-        System.Func<GridCoord, bool> isAvailable)
+    private GridCoord? TryAllocateAround(UnitBase unit, GridCoord center, int depth, int spacing)
     {
         for (int z = -depth; z <= depth; z++)
         {
@@ -112,7 +101,7 @@ public sealed class FormationDestinationAllocator
 
                 GridCoord candidate = new GridCoord(center.x + x * spacing, center.z + z * spacing);
 
-                if (TryClaim(candidate, unit, isAvailable))
+                if (navigationState.TryReserveDestination(candidate, unit))
                 {
                     return candidate;
                 }
@@ -120,11 +109,6 @@ public sealed class FormationDestinationAllocator
         }
 
         return null;
-    }
-
-    private bool TryClaim(GridCoord cell, UnitBase unit, System.Func<GridCoord, bool> isAvailable)
-    {
-        return isAvailable == null ? navigationState.TryReserveDestination(cell, unit) : isAvailable(cell);
     }
 
     // ---------------------------------------------------------------------

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -8,7 +7,7 @@ using UnityEngine.Serialization;
 ///
 /// The component queues UnitDefinition assets, not instantiated units.
 /// A unit is instantiated only when its front production order completes
-/// and a valid spawn cell is available.
+/// and a safe deployment route is available.
 /// </summary>
 public sealed class UnitProductionComponent : MonoBehaviour
 {
@@ -24,12 +23,12 @@ public sealed class UnitProductionComponent : MonoBehaviour
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private Transform defaultRallyPoint;
 
-    [Header("Default Deployment")]
-    [SerializeField, Min(0f)] private float exitCorridorPadding = 0.35f;
-    [SerializeField, Min(0f)] private float deploymentSpacing = 0.35f;
-    [SerializeField, Min(0f)] private float deploymentForwardBuffer = 0.5f;
-    [SerializeField, Min(1)] private int maxDeploymentRows = 8;
-    [SerializeField, Min(1)] private int maxDeploymentColumnsPerSide = 3;
+    [Header("Production Deployment")]
+    [SerializeField, Min(0f)] private float gatheringPadding = 0.2f;
+    [FormerlySerializedAs("exitCorridorPadding")]
+    [SerializeField, Min(0f)] private float exitClearancePadding = 0.35f;
+    [SerializeField, Min(1), Tooltip("Maximum distance from the rally point in grid cells.")]
+    private int maxGatherSearchRadius = 12;
 
     [Header("Physical Clearance")]
     [SerializeField] private LayerMask spawnBlockingMask;
@@ -46,10 +45,13 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
     private readonly List<UnitDefinition> producibleUnits = new();
     private readonly Dictionary<UnitDefinition, SpawnFootprint> spawnFootprints = new();
-    private readonly BuildingProductionFormationAllocator deployment = new();
+    private readonly List<(GridCoord Cell, float DistanceSquared)> gatheringCandidates = new();
     private readonly List<Vector3> deploymentRoute = new();
     private readonly HashSet<GridCoord> unreachableDestinations = new();
     private readonly Collider[] spawnBlockers = new Collider[8];
+    private Vector2? cachedGatherCenter;
+    private int cachedGatherRadius;
+    private GridCoord? cachedExitCell;
 
     // ---------------------------------------------------------------------
     // Public state
@@ -106,7 +108,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     public float ProductionRemainingNormalized => IsProducing ? 1f - ProductionProgress() : 0f;
 
     /// <summary>
-    /// Production is complete, but no valid spawn cell currently exists.
+    /// Production is complete and waiting for a safe deployment.
     /// </summary>
     public bool IsWaitingForSpawn => IsProducing && ProductionProgress() >= 1f;
 
@@ -123,6 +125,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
         }
 
         this.building = building;
+        cachedGatherCenter = null;
         ClearRallyPoint();
 
         ResolveProducibleUnits();
@@ -335,10 +338,10 @@ public sealed class UnitProductionComponent : MonoBehaviour
         if (terrainGrid == null || navigation == null || unitManager.PathfindingService == null)
             return false;
 
-        GetExitFrame(terrainGrid, footprint.Radius, out Vector3 entrance, out Vector3 forward, out float rallyDepth);
+        GetExitFrame(terrainGrid, footprint.Radius, out Vector3 entrance, out Vector3 forward);
         if (!TryFindSpawnPosition(terrainGrid, navigation, entrance, forward, footprint, out Vector3 spawnPosition) ||
-            !TryFindExitWaypoint(terrainGrid, navigation, spawnPosition, entrance, forward, rallyDepth, footprint, out Vector3 exitWaypoint) ||
-            !TryFindDeploymentDestination(unitManager, terrainGrid, entrance, forward, exitWaypoint, definition, footprint, out GridCoord destination))
+            !TryFindExitWaypoint(terrainGrid, navigation, spawnPosition, entrance, forward, footprint, out Vector3 exitWaypoint) ||
+            !TryFindGatheringDestination(unitManager, terrainGrid, entrance, exitWaypoint, definition, footprint, out GridCoord destination))
             return false;
 
         UnitBase spawnedUnit = unitManager.SpawnUnit(definition.Prefab, spawnPosition, building.transform.rotation,
@@ -391,8 +394,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     // Spawn placement
     // ---------------------------------------------------------------------
 
-    private void GetExitFrame(TerrainGrid grid, float radius, out Vector3 entrance,
-        out Vector3 forward, out float rallyDepth)
+    private void GetExitFrame(TerrainGrid grid, float radius, out Vector3 entrance, out Vector3 forward)
     {
         entrance = spawnPoint != null ? spawnPoint.position : building.Position;
         bool hasSpawnMarker = spawnPoint != null && float.IsFinite(entrance.x) &&
@@ -400,10 +402,10 @@ public sealed class UnitProductionComponent : MonoBehaviour
         Vector3 offset = Vector3.ProjectOnPlane(entrance - building.Position, Vector3.up);
         forward = defaultRallyPoint != null ? defaultRallyPoint.position - entrance : Vector3.zero;
         forward.y = 0f;
-        rallyDepth = forward.magnitude;
-        if (hasSpawnMarker && float.IsFinite(rallyDepth) && rallyDepth > 0.001f && Vector3.Dot(forward, offset) >= 0f)
+        float markerDistance = forward.magnitude;
+        if (hasSpawnMarker && float.IsFinite(markerDistance) && markerDistance > 0.001f && Vector3.Dot(forward, offset) >= 0f)
         {
-            forward /= rallyDepth;
+            forward /= markerDistance;
             return;
         }
 
@@ -416,7 +418,6 @@ public sealed class UnitProductionComponent : MonoBehaviour
         forward = Vector3.ProjectOnPlane(building.transform.forward, Vector3.up).normalized;
         if (forward.sqrMagnitude < 0.001f)
             forward = Vector3.forward;
-        rallyDepth = 0f;
 
         if (hasSpawnMarker)
         {
@@ -465,14 +466,12 @@ public sealed class UnitProductionComponent : MonoBehaviour
     }
 
     private bool TryFindExitWaypoint(TerrainGrid grid, GridNavigationStateSystem navigation,
-        Vector3 spawn, Vector3 entrance, Vector3 forward, float rallyDepth, SpawnFootprint footprint,
+        Vector3 spawn, Vector3 entrance, Vector3 forward, SpawnFootprint footprint,
         out Vector3 waypoint)
     {
         float spawnDepth = Vector3.Dot(spawn - entrance, forward);
-        float minimumExitDepth = Mathf.Max(rallyDepth + deploymentForwardBuffer, 2f * largestProductionRadius + deploymentSpacing);
-        float depth = RallyPoint.HasValue
-            ? spawnDepth + Mathf.Max(grid.CellSize, 2f * footprint.Radius + deploymentSpacing)
-            : Mathf.Max(minimumExitDepth, spawnDepth + grid.CellSize);
+        // Share a short exit across unit sizes. A corrected spawn may need a farther waypoint.
+        float depth = Mathf.Max(largestProductionRadius + exitClearancePadding, spawnDepth + grid.CellSize * 0.5f);
         Vector3 target = entrance + forward * (depth + grid.CellSize * 0.707107f);
         GridCoord waypointCell = grid.WorldToCell(target);
         if (!grid.IsInside(waypointCell))
@@ -506,24 +505,45 @@ public sealed class UnitProductionComponent : MonoBehaviour
         return true;
     }
 
-    private bool TryFindDeploymentDestination(UnitManager unitManager, TerrainGrid grid, Vector3 entrance,
-        Vector3 forward, Vector3 exitWaypoint, UnitDefinition definition, SpawnFootprint footprint, out GridCoord destination)
+    private bool TryFindGatheringDestination(UnitManager unitManager, TerrainGrid grid, Vector3 entrance,
+        Vector3 exitWaypoint, UnitDefinition definition, SpawnFootprint footprint, out GridCoord destination)
     {
-        int routeSearches = 0;
-        bool IsAvailable(GridCoord cell)
+        Vector3 rally = EffectiveRallyPoint ?? exitWaypoint;
+        if (!float.IsFinite(rally.x) || !float.IsFinite(rally.z))
+            rally = exitWaypoint;
+
+        CollectGatheringCandidates(grid, rally);
+        GridCoord exitCell = grid.WorldToCell(exitWaypoint);
+        if (cachedExitCell is not GridCoord previousExit || previousExit.x != exitCell.x || previousExit.z != exitCell.z)
         {
-            if (routeSearches >= MaxRouteSearchesPerAttempt || unreachableDestinations.Contains(cell) ||
-                !grid.IsStaticallyTraversable(cell, footprint.Radius))
-                return false;
+            cachedExitCell = exitCell;
+            unreachableDestinations.Clear();
+        }
+
+        Vector2 entranceXZ = new(entrance.x, entrance.z);
+        Vector2 exitSegment = new Vector2(exitWaypoint.x, exitWaypoint.z) - entranceXZ;
+        float exitLengthSquared = exitSegment.sqrMagnitude;
+        // Expand the protected segment by the candidate's radius so its footprint stays outside it.
+        float protectedRadius = largestProductionRadius + exitClearancePadding + footprint.Radius;
+        float protectedRadiusSquared = protectedRadius * protectedRadius;
+        float gatheringRadius = Mathf.Max(footprint.Radius, definition.NavigationRadius + gatheringPadding);
+        GridNavigationStateSystem navigation = unitManager.NavigationState;
+        IPathfindingService pathfinding = unitManager.PathfindingService;
+        int routeSearches = 0;
+
+        foreach (var (cell, _) in gatheringCandidates)
+        {
+            if (unreachableDestinations.Contains(cell) || !grid.IsStaticallyTraversable(cell, footprint.Radius))
+                continue;
 
             Vector3 point = grid.CellToWorld(cell);
-            float spacing = RallyPoint.HasValue ? 0f : deploymentSpacing;
-            if (!unitManager.NavigationState.IsUnitSpaceClear(point, footprint.Radius + spacing) ||
+            Vector2 offset = new Vector2(point.x, point.z) - entranceXZ;
+            float progress = exitLengthSquared > 0f ? Mathf.Clamp01(Vector2.Dot(offset, exitSegment) / exitLengthSquared) : 0f;
+            if ((offset - exitSegment * progress).sqrMagnitude < protectedRadiusSquared ||
+                navigation.IsDestinationReserved(cell) || !navigation.IsUnitSpaceClear(point, gatheringRadius) ||
                 !IsPhysicsClear(point, footprint))
-                return false;
+                continue;
 
-            routeSearches++;
-            IPathfindingService pathfinding = unitManager.PathfindingService;
             bool found = pathfinding is GridAStarPathfindingService gridPathfinding
                 ? gridPathfinding.TryFindProductionPath(footprint.Radius, exitWaypoint, point, deploymentRoute)
                 : pathfinding.TryFindPath(definition.Prefab, exitWaypoint, point, deploymentRoute);
@@ -532,25 +552,66 @@ public sealed class UnitProductionComponent : MonoBehaviour
                 Vector3.ProjectOnPlane(deploymentRoute[deploymentRoute.Count - 1] - point, Vector3.up).sqrMagnitude < 0.0001f)
             {
                 deploymentRoute[deploymentRoute.Count - 1] = point;
+                destination = cell;
                 return true;
             }
 
             unreachableDestinations.Add(cell);
-            return false;
+            if (++routeSearches == MaxRouteSearchesPerAttempt)
+                break;
         }
 
-        GridCoord? result = RallyPoint is Vector3 rally
-            ? unitManager.FormationDestinations?.FindRallyDestination(grid.WorldToCell(rally), IsAvailable)
-            : deployment.FindDestination(grid, entrance, forward, Vector3.Dot(exitWaypoint - entrance, forward),
-                largestProductionRadius + exitCorridorPadding, largestProductionRadius, deploymentSpacing,
-                maxDeploymentRows, maxDeploymentColumnsPerSide, IsAvailable);
-
-        // Resume after failed paths on later ticks. Once the search has visited every viable slot, reconsider them.
-        if (!result.HasValue && routeSearches < MaxRouteSearchesPerAttempt)
+        // Continue past failed paths on later retries. After a full pass, reconsider them.
+        if (routeSearches < MaxRouteSearchesPerAttempt)
             unreachableDestinations.Clear();
 
-        destination = result.GetValueOrDefault();
-        return result.HasValue;
+        destination = default;
+        return false;
+    }
+
+    private void CollectGatheringCandidates(TerrainGrid grid, Vector3 rally)
+    {
+        Vector2 center = new(rally.x, rally.z);
+        if (cachedGatherCenter is Vector2 previousCenter && previousCenter.Equals(center) &&
+            cachedGatherRadius == maxGatherSearchRadius)
+            return;
+
+        cachedGatherCenter = center;
+        cachedGatherRadius = maxGatherSearchRadius;
+        gatheringCandidates.Clear();
+        unreachableDestinations.Clear();
+
+        float range = maxGatherSearchRadius * grid.CellSize;
+        float rangeSquared = range * range;
+        Vector3 bounds = new(range, 0f, range);
+        GridCoord min = grid.WorldToCell(rally - bounds);
+        GridCoord max = grid.WorldToCell(rally + bounds);
+        int minX = Mathf.Max(0, min.x);
+        int maxX = Mathf.Min(grid.Width - 1, max.x);
+        int minZ = Mathf.Max(0, min.z);
+        int maxZ = Mathf.Min(grid.Height - 1, max.z);
+
+        for (int z = minZ; z <= maxZ; z++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                GridCoord cell = new(x, z);
+                Vector3 point = grid.CellToWorld(cell);
+                float distanceSquared = (new Vector2(point.x, point.z) - center).sqrMagnitude;
+                if (distanceSquared <= rangeSquared)
+                    gatheringCandidates.Add((cell, distanceSquared));
+            }
+        }
+
+        gatheringCandidates.Sort(static (left, right) =>
+        {
+            int comparison = left.DistanceSquared.CompareTo(right.DistanceSquared);
+            if (comparison != 0)
+                return comparison;
+
+            comparison = left.Cell.z.CompareTo(right.Cell.z);
+            return comparison != 0 ? comparison : left.Cell.x.CompareTo(right.Cell.x);
+        });
     }
 
     private bool IsPhysicsClear(Vector3 position, SpawnFootprint footprint, bool ignoreProducer = false)
@@ -766,58 +827,8 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
     private void OnValidate()
     {
-        exitCorridorPadding = Mathf.Max(0f, exitCorridorPadding);
-        deploymentSpacing = Mathf.Max(0f, deploymentSpacing);
-        deploymentForwardBuffer = Mathf.Max(0f, deploymentForwardBuffer);
-        maxDeploymentRows = Mathf.Max(1, maxDeploymentRows);
-        maxDeploymentColumnsPerSide = Mathf.Max(1, maxDeploymentColumnsPerSide);
-    }
-}
-
-internal sealed class BuildingProductionFormationAllocator
-{
-    private bool preferRight;
-
-    public GridCoord? FindDestination(TerrainGrid grid, Vector3 entrance, Vector3 forward,
-        float firstRowDepth, float corridorHalfWidth, float largestRadius, float spacing,
-        int rows, int columnsPerSide, Func<GridCoord, bool> isAvailable)
-    {
-        Vector3 right = Vector3.Cross(Vector3.up, forward);
-        float snapMargin = grid.CellSize * 0.707107f;
-        float minimumSideDistance = corridorHalfWidth + largestRadius;
-        float step = Mathf.Max(grid.CellSize, 2f * largestRadius + spacing) + grid.CellSize * 0.5f;
-
-        // Visit nearer combinations of row and column first, alternating sides after each assignment.
-        for (int depth = 0; depth < rows + columnsPerSide - 1; depth++)
-        {
-            int firstColumn = Mathf.Max(0, depth - rows + 1);
-            int lastColumn = Mathf.Min(depth, columnsPerSide - 1);
-            for (int column = firstColumn; column <= lastColumn; column++)
-            {
-                int row = depth - column;
-                Vector3 rowCenter = entrance + forward * (firstRowDepth + snapMargin + row * step);
-                float lateral = minimumSideDistance + snapMargin + column * step;
-
-                for (int side = 0; side < 2; side++)
-                {
-                    bool onRight = side == 0 ? preferRight : !preferRight;
-                    GridCoord cell = grid.WorldToCell(rowCenter + right * (onRight ? lateral : -lateral));
-                    if (!grid.IsInside(cell))
-                        continue;
-
-                    // Check the actual cell center after snapping to the grid.
-                    Vector3 offset = grid.CellToWorld(cell) - entrance;
-                    if (Vector3.Dot(offset, forward) < firstRowDepth ||
-                        Mathf.Abs(Vector3.Dot(offset, right)) < minimumSideDistance ||
-                        !isAvailable(cell))
-                        continue;
-
-                    preferRight = !onRight;
-                    return cell;
-                }
-            }
-        }
-
-        return null;
+        gatheringPadding = Mathf.Max(0f, gatheringPadding);
+        exitClearancePadding = Mathf.Max(0f, exitClearancePadding);
+        maxGatherSearchRadius = Mathf.Max(1, maxGatherSearchRadius);
     }
 }

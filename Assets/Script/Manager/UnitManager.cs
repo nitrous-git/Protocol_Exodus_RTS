@@ -17,7 +17,6 @@ public class UnitManager
     public Faction OwnerFaction { get; private set; }
     public IReadOnlyList<UnitBase> UnitList => unitList;
     internal GridNavigationStateSystem NavigationState => gameContext?.GridNavigationStateSystem;
-    internal FormationDestinationAllocator FormationDestinations => gameContext?.DestinationAllocationSystem?.Formation;
     internal IPathfindingService PathfindingService => pathfindingService;
 
     public int CurrentPopulation => currentPopulation;
