@@ -551,14 +551,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
         Vector2 entranceXZ = new(entrance.x, entrance.z);
         Vector2 exitDirection = new(forward.x, forward.z);
         float exitHalfWidth = largestProductionRadius + exitClearancePadding;
-        float exitDepth = exitHalfWidth;
-        if (defaultRallyPoint != null)
-        {
-            Vector3 marker = defaultRallyPoint.position;
-            float markerDepth = Vector2.Dot(new Vector2(marker.x, marker.z) - entranceXZ, exitDirection);
-            if (float.IsFinite(markerDepth))
-                exitDepth = Mathf.Max(exitDepth, markerDepth);
-        }
+        float exitDepth = GetExitDepth(entrance, forward, exitHalfWidth);
 
         // The capsule's front cap extends beyond the default marker by the exit half-width.
         float protectedRadius = exitHalfWidth + footprint.Radius;
@@ -618,6 +611,32 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
         destination = default;
         return false;
+    }
+
+    internal bool IsNearExit(TerrainGrid grid, Vector3 position, float padding)
+    {
+        if (building == null)
+            return false;
+
+        GetExitFrame(grid, largestProductionRadius, out Vector3 entrance, out Vector3 forward);
+        float exitHalfWidth = largestProductionRadius + exitClearancePadding;
+        float exitDepth = GetExitDepth(entrance, forward, exitHalfWidth);
+        Vector3 offset = position - entrance;
+        offset.y = 0f;
+        float depth = Mathf.Clamp(Vector3.Dot(offset, forward), 0f, exitDepth);
+        float radius = exitHalfWidth + padding;
+        return (offset - forward * depth).sqrMagnitude < radius * radius;
+    }
+
+    private float GetExitDepth(Vector3 entrance, Vector3 forward, float exitHalfWidth)
+    {
+        if (defaultRallyPoint == null)
+            return exitHalfWidth;
+
+        Vector3 offset = defaultRallyPoint.position - entrance;
+        offset.y = 0f;
+        float depth = Vector3.Dot(offset, forward);
+        return float.IsFinite(depth) ? Mathf.Max(exitHalfWidth, depth) : exitHalfWidth;
     }
 
     private void CollectGatheringCandidates(TerrainGrid grid, Vector3 rally)

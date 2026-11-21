@@ -27,6 +27,9 @@ public class CombatUnit : UnitBase
     public ITargetable CurrentTarget => currentTarget;
     public UnitWeapon Weapon => weapon;
     public CombatUnitAI CombatAI => combatAI;
+    internal bool IsPlayingAttackAnimation => attackAnimationActive;
+    internal int CommandRevision { get; private set; }
+    internal MoveState CurrentMoveOrder => currentState as MoveState;
 
     protected override void CacheComponents()
     {
@@ -82,7 +85,10 @@ public class CombatUnit : UnitBase
             return;
 
         if (commandType != CommandType.Idle)
+        {
+            CommandRevision++;
             combatAI?.ClearMission();
+        }
 
         ApplyCommandContext(commandType, context);
 

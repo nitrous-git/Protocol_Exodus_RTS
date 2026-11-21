@@ -41,15 +41,17 @@ public readonly struct CombatMission
     public Faction TargetFaction { get; }
     public Vector3 GuardPosition { get; }
     public float GuardRadius { get; }
+    internal Vector3? GuardPost { get; }
 
     private CombatMission(CombatMissionType type, ITargetable target = null, Faction targetFaction = null,
-        Vector3 guardPosition = default, float guardRadius = 0f)
+        Vector3 guardPosition = default, float guardRadius = 0f, Vector3? guardPost = null)
     {
         Type = type;
         Target = target;
         TargetFaction = targetFaction;
         GuardPosition = guardPosition;
         GuardRadius = guardRadius;
+        GuardPost = guardPost;
     }
 
     public static CombatMission AttackTarget(ITargetable target) =>
@@ -61,4 +63,7 @@ public readonly struct CombatMission
     /// <summary>Guards until cancelled, replaced, or unable to reach or hold the post.</summary>
     public static CombatMission DefendArea(Vector3 position, float radius) =>
         new(CombatMissionType.DefendArea, guardPosition: position, guardRadius: radius);
+
+    internal static CombatMission DefendArea(Vector3 position, float radius, Vector3 post) =>
+        new(CombatMissionType.DefendArea, guardPosition: position, guardRadius: radius, guardPost: post);
 }

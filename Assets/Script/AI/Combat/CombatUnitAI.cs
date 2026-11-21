@@ -41,6 +41,11 @@ public sealed class CombatUnitAI
 
     internal CombatUnitAISettings Settings => unit.Definition.CombatAI ?? DefaultSettings;
     internal bool AllowsCombatAwareness => !IsMissionActive && CurrentTacticalBehavior != CombatTacticalBehavior.Retreat;
+    // Terminal status still belongs to this revision until another assignment replaces it.
+    internal int MissionRevision { get; private set; }
+    internal bool IsRetreatingOrRecovering => CurrentTacticalBehavior is
+        CombatTacticalBehavior.Retreat or CombatTacticalBehavior.Recovering;
+    internal bool IsFitForSquad => !IsCriticallyDamaged && !IsRetreatingOrRecovering;
 
     internal CombatUnitAI(CombatUnit unit, Vector3 baseAnchor)
     {
@@ -59,6 +64,7 @@ public sealed class CombatUnitAI
         StopOrder();
         Disengage();
         ResetMission(CombatMissionStatus.Active);
+        MissionRevision++;
         mission = assignment;
         if (assignment.Type == CombatMissionType.AttackTarget)
             objectiveOrigin = assignment.Target.Position;
@@ -272,7 +278,8 @@ public sealed class CombatUnitAI
         }
 
         float tolerance = Mathf.Min(mission.GuardRadius, grid.CellSize * 0.5f);
-        if (InRadius(unit.Position, guardPost ?? mission.GuardPosition, tolerance))
+        Vector3 desiredPost = mission.GuardPost ?? mission.GuardPosition;
+        if (InRadius(unit.Position, guardPost ?? desiredPost, tolerance))
         {
             guardFailures = 0;
             return;
@@ -284,7 +291,7 @@ public sealed class CombatUnitAI
             return;
         }
 
-        GridCoord? cell = AllocateNear(mission.GuardPosition);
+        GridCoord? cell = AllocateNear(desiredPost);
         if (cell.HasValue && !InRadius(grid.CellToWorld(cell.Value), mission.GuardPosition, mission.GuardRadius))
         {
             unit.ReleaseDestination(cell.Value);

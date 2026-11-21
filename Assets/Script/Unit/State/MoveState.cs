@@ -48,16 +48,12 @@ public class MoveState : UnitState<UnitBase>
         if (reservedDestinationCell.HasValue)
         {
             pathRequested = true;
-            unit.View?.PlayAnim("Walk");
             return;
         }
 
         // Shared navigation
         if (TryStartSharedTravel(unit))
-        {
-            unit.View?.PlayAnim("Walk");
-            return; 
-        }
+            return;
 
         // Legacy move fallback
         if (unit.TerrainGrid == null || unit.DestinationAllocationSystem == null)
@@ -70,10 +66,7 @@ public class MoveState : UnitState<UnitBase>
         {
             Debug.Log("Could not allocate destination and move");
             unit.IssueCommand(CommandType.Idle, CommandContext.None());
-            return;
         }
-
-        unit.View?.PlayAnim("Walk");
     }
 
     protected override void TickTyped(UnitBase unit)

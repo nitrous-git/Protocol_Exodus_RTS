@@ -86,8 +86,6 @@ public sealed class AttackState :
         unit.SetCurrentTarget(
             target);
 
-        //unit.View?.PlayAnim("Idle");
-
         if (aiSettings == null)
             RequestAttackPosition(unit);
     }
@@ -133,7 +131,7 @@ public sealed class AttackState :
                 if (HasReachedAssignedRadialDepth(
                         unit))
                 {
-                    FinishTacticalApproach(
+                    StopTacticalApproach(
                         unit);
                 }
                 else if (unit.Motor != null &&
@@ -147,7 +145,7 @@ public sealed class AttackState :
                     // Exact assigned cell reached before our
                     // radial tolerance triggered.
                     //
-                    FinishTacticalApproach(
+                    StopTacticalApproach(
                         unit);
                 }
             }
@@ -163,7 +161,7 @@ public sealed class AttackState :
                     return;
                 }
 
-                FinishTacticalApproach(
+                StopTacticalApproach(
                     unit);
             }
         }
@@ -199,7 +197,7 @@ public sealed class AttackState :
         if (unit.IsWithinAttackRange(target))
         {
             if (pathRequested)
-                FinishTacticalApproach(unit);
+                StopTacticalApproach(unit);
 
             failedApproaches = 0;
             rejectedAttackCell = null;
@@ -235,10 +233,8 @@ public sealed class AttackState :
                 return;
             }
 
-            // A replacement path can start this tick. Keep the walk cycle between paths.
+            // A replacement path can start this tick.
             StopTacticalApproach(unit);
-            if (repathDelay > 0f)
-                unit.View?.PlayAnim("Idle");
         }
 
         if (failedApproaches >= 3)
@@ -255,10 +251,7 @@ public sealed class AttackState :
             lastProgressPosition = unit.Position;
             RequestAttackPosition(unit);
             if (!pathRequested)
-            {
                 failedApproaches++;
-                unit.View?.PlayAnim("Idle");
-            }
         }
     }
 
@@ -401,12 +394,7 @@ public sealed class AttackState :
                 unit.PrepareMovementGroup(
                     0);
             }
-
-            return;
         }
-
-        unit.View?.PlayAnim(
-            "Walk");
     }
 
     // =====================================================================
@@ -466,13 +454,6 @@ public sealed class AttackState :
                currentDistance <=
                    assignedDistance +
                    tolerance;
-    }
-
-    private void FinishTacticalApproach(
-        CombatUnit unit)
-    {
-        StopTacticalApproach(unit);
-        unit.View?.PlayAnim("Idle");
     }
 
     private void StopTacticalApproach(CombatUnit unit)

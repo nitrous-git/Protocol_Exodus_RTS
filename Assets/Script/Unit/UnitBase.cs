@@ -130,6 +130,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         sensor?.Tick(deltaTime);
         currentState?.Tick(this, deltaTime);
         motor?.Tick();
+        view?.SyncLocomotion(motor);
     }
 
     public virtual void TickLate(float deltaTime)

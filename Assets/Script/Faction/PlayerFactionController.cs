@@ -94,7 +94,7 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
     // Tick
     // ---------------------------------------------------------------------
 
-    public void Tick(){ }
+    public void Tick(float deltaTime) { }
 
     public void TickInput(float deltaTime)
     {

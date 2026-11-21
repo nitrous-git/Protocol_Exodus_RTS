@@ -20,6 +20,11 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private int startingCombatCount = 1;
     [SerializeField] private float startingUnitSpacing = 1f;
 
+    [Header("AI Waves")]
+    [SerializeField] private AIWaveSettings aiWaves = new AIWaveSettings();
+
+    private AIFactionController aiFactionController;
+
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }
     public ProjectileManager ProjectileManager { get; private set; }
@@ -85,7 +90,8 @@ public class GameBuilder : MonoBehaviour
         Faction playerFaction = BuildFaction(FactionTerran_Definition, FactionColorType.Blue, playerFactionController);
         SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
 
-        Faction aiFaction01 = BuildFaction(FactionTerran_Definition, FactionColorType.Green, new AIFactionController());
+        aiFactionController = new AIFactionController(aiWaves);
+        Faction aiFaction01 = BuildFaction(FactionTerran_Definition, FactionColorType.Green, aiFactionController);
         SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
 
         //Faction aiFaction02 = BuildFaction(FactionTerran_Definition, FactionColorType.Red, new AIFactionController());
@@ -160,6 +166,34 @@ public class GameBuilder : MonoBehaviour
 
         gameLoop.Initialize(matchWorld, matchUI);
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("AI Missions/Launch Test Assault")]
+    private void LaunchTestAssault()
+    {
+        if (Application.isPlaying && aiFactionController?.MissionDirector?.TryLaunchAssault() == false)
+            Debug.Log("Test assault unavailable. Check eligible unit count, home defenders, enemy targets, and staging clearance.", this);
+    }
+
+    [ContextMenu("AI Missions/Assign Test Base Defense")]
+    private void AssignTestBaseDefense()
+    {
+        if (!Application.isPlaying || aiFactionController?.BaseAnchor is not Vector3 anchor)
+            return;
+
+        AIWaveSettings settings = aiFactionController.WaveSettings;
+        if (!aiFactionController.MissionDirector.TryDefendArea(anchor, settings.defenseGuardRadius,
+                Mathf.Max(1, settings.homeDefenders)))
+            Debug.Log("Test defense unavailable. Check eligible units, guard radius, and active defense.", this);
+    }
+
+    [ContextMenu("AI Missions/Cancel Active AI Missions")]
+    private void CancelActiveAIMissions()
+    {
+        if (Application.isPlaying)
+            aiFactionController?.MissionDirector?.CancelAll();
+    }
+#endif
 
     // Helper methods (should be moved later on)
     private void SpawnStartingUnits(Faction faction, Transform spawnPoint)
