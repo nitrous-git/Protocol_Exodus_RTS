@@ -111,6 +111,12 @@ public class UnitManager
     // Helpers
     // ---------------------------------------------------------------------
 
+    internal Vector3 ResolveAirSpawnPosition(Transform launch, float radius)
+    {
+        return AirMovement.FindSpacedPosition(launch.position, launch.right,
+            gameContext.TerrainGrid, radius, gameContext.AirUnits);
+    }
+
     public UnitBase SpawnUnit(UnitBase prefab, Vector3 position, Quaternion rotation, Transform parent = null,
         bool preserveSpawnPosition = false)
     {

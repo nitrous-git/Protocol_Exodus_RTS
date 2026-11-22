@@ -26,6 +26,7 @@ public class CommandIssuer : MonoBehaviour
     [SerializeField] private LayerMask contextCommandMask = ~0;
 
     private List<UnitBase> commandableUnits = new List<UnitBase>();
+    private readonly List<UnitBase> airTravelUnits = new List<UnitBase>();
     private readonly List<CombatUnit> attackCommandUnits = new List<CombatUnit>();
     private readonly Dictionary<CombatUnit, GridCoord> attackAssignments = new Dictionary<CombatUnit, GridCoord>();
 
@@ -313,6 +314,7 @@ public class CommandIssuer : MonoBehaviour
 
         attackCommandUnits.Clear();
         attackAssignments.Clear();
+        bool issuedToAir = false;
 
         // ---------------------------------------------------------
         // Collect valid attackers.
@@ -333,11 +335,19 @@ public class CommandIssuer : MonoBehaviour
                 continue;
             }
 
-            attackCommandUnits.Add(combatUnit);
+            if (combatUnit.IsAirUnit)
+            {
+                combatUnit.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
+                issuedToAir = true;
+            }
+            else
+            {
+                attackCommandUnits.Add(combatUnit);
+            }
         }
 
         if (attackCommandUnits.Count == 0)
-            return false;
+            return issuedToAir;
 
         // ---------------------------------------------------------
         // The new player command supersedes all old
@@ -449,17 +459,28 @@ public class CommandIssuer : MonoBehaviour
 
         CollectCommandableSelectedUnits();
 
+        airTravelUnits.Clear();
+        for (int i = 0; i < commandableUnits.Count; i++)
+        {
+            if (commandableUnits[i].IsAirUnit)
+                airTravelUnits.Add(commandableUnits[i]);
+        }
+
+        bool issuedToAir = GroupMoveCommand.IssueAirTravel(airTravelUnits, destinationCenter, CommandType.AttackMove);
+        if (airTravelUnits.Count > 0)
+            commandableUnits.RemoveAll(unit => unit.IsAirUnit);
+
         int commandableCount = commandableUnits.Count;
 
         if (commandableCount == 0)
-            return false;
+            return issuedToAir;
 
         float formationMaxNavigationRadius = GroupMoveCommand.GetMaxNavigationRadius(commandableUnits);
 
         int movementGroupId = gameContext.AllocateMovementGroupId();
         GroupMoveCommand.PrepareMovementGroup(commandableUnits, movementGroupId);
 
-        bool issuedAnyCommand = false;
+        bool issuedAnyCommand = issuedToAir;
 
         for (int i = 0; i < commandableCount; i++)
         {

@@ -116,7 +116,15 @@ public class UnitSensor : MonoBehaviour
         if (owner.OwnerFaction == null || candidate.OwnerFaction == null)
             return false;
 
-        return owner.OwnerFaction.IsEnemy(candidate.OwnerFaction);
+        if (!owner.OwnerFaction.IsEnemy(candidate.OwnerFaction))
+            return false;
+
+        // Ground weapons can engage aircraft already within their existing 3D firing range.
+        if (owner.IsAirUnit || candidate is not UnitBase { IsAirUnit: true })
+            return true;
+
+        float range = owner.Definition?.attackRange ?? 0f;
+        return (candidate.Position - owner.Position).sqrMagnitude <= range * range;
     }
 
     // ---------------------------------------------------

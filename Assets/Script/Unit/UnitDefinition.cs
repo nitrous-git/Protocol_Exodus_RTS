@@ -1,5 +1,17 @@
 using UnityEngine;
 
+public enum UnitMovementDomain
+{
+    Ground,
+    Air
+}
+
+public enum AttackExecutionMode
+{
+    AnimationEvent,
+    ImmediateProjectile
+}
+
 [CreateAssetMenu(menuName = "Protocol Exodus/Unit/Unit Definition")]
 public class UnitDefinition : ScriptableObject
 {
@@ -27,6 +39,7 @@ public class UnitDefinition : ScriptableObject
     [Min(0f)] public float attackRange = 7f;
     [Min(0f)] public float attackDamage = 10f;
     [Min(0.01f)] public float attackCooldown = 1f;
+    public AttackExecutionMode attackExecution;
 
     [SerializeField] private CombatUnitAISettings combatAI = new();
 
@@ -34,6 +47,7 @@ public class UnitDefinition : ScriptableObject
     public float selectionRadius = 0.5f;
 
     [Header("Navigation")]
+    public UnitMovementDomain movementDomain;
     [Min(0.05f)] public float navigationRadius = 12.45f;
 
     public UnitType Type => unitType;
@@ -43,6 +57,7 @@ public class UnitDefinition : ScriptableObject
     public Cost Cost => cost;
     public float ProductionDuration => productionDuration;
     public float NavigationRadius => navigationRadius;
+    public bool IsAirUnit => movementDomain == UnitMovementDomain.Air;
     internal CombatUnitAISettings CombatAI => combatAI;
 
     private void OnValidate()

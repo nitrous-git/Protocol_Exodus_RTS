@@ -90,6 +90,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
     public IReadOnlyList<UnitDefinition> ProductionQueue => productionQueue;
     public int QueueCount => productionQueue.Count;
     public int QueueCapacity => MaximumQueueSize;
+    internal bool HasGroundDeployment => largestProductionRadius > 0f;
 
     public bool IsQueueEmpty => productionQueue.Count == 0;
     public bool IsQueueFull => productionQueue.Count >= MaximumQueueSize;
@@ -360,14 +361,49 @@ public sealed class UnitProductionComponent : MonoBehaviour
     {
         UnitDefinition definition = ActiveDefinition;
         if (definition == null || definition.Prefab == null || !definition.Prefab.CanReceiveCommands ||
-            definition.moveSpeed <= 0f || !definition.Prefab.TryGetComponent<UnitMotor>(out _) ||
-            !spawnFootprints.TryGetValue(definition, out SpawnFootprint footprint))
+            definition.moveSpeed <= 0f || !definition.Prefab.TryGetComponent<UnitMotor>(out _))
             return false;
 
         UnitManager unitManager = building.OwnerFaction?.UnitManager;
-        GridNavigationStateSystem navigation = unitManager?.NavigationState;
         TerrainGrid terrainGrid = GetTerrainGrid();
-        if (terrainGrid == null || navigation == null || unitManager.PathfindingService == null)
+        if (terrainGrid == null || unitManager == null)
+            return false;
+
+        bool deployed = definition.IsAirUnit
+            ? TryDeployAircraft(definition, unitManager)
+            : TryDeployGroundUnit(definition, unitManager, terrainGrid);
+        if (!deployed)
+            return false;
+
+        // Initialization registers the unit and transfers its cost to CurrentPopulation.
+        unitManager.ReleaseReservedPopulation(definition);
+        productionQueue.RemoveAt(0);
+        productionElapsed = 0f;
+        ResetSpawnRetry();
+        building.GameLog?.Log($"{definition.DisplayName} production completed.", building.OwnerFaction);
+        return true;
+    }
+
+    private bool TryDeployAircraft(UnitDefinition definition, UnitManager unitManager)
+    {
+        Transform launch = spawnPoint != null ? spawnPoint : building.transform;
+        Vector3 spawnPosition = unitManager.ResolveAirSpawnPosition(launch, definition.NavigationRadius);
+        UnitBase unit = unitManager.SpawnUnit(definition.Prefab, spawnPosition, launch.rotation,
+            preserveSpawnPosition: true);
+        if (unit == null)
+            return false;
+
+        if (EffectiveRallyPoint is Vector3 rally)
+            unit.IssueCommand(CommandType.Move, CommandContext.MoveTo(rally));
+
+        return true;
+    }
+
+    private bool TryDeployGroundUnit(UnitDefinition definition, UnitManager unitManager, TerrainGrid terrainGrid)
+    {
+        GridNavigationStateSystem navigation = unitManager.NavigationState;
+        if (navigation == null || unitManager.PathfindingService == null ||
+            !spawnFootprints.TryGetValue(definition, out SpawnFootprint footprint))
             return false;
 
         GetExitFrame(terrainGrid, footprint.Radius, out Vector3 entrance, out Vector3 forward);
@@ -390,16 +426,6 @@ public sealed class UnitProductionComponent : MonoBehaviour
             Destroy(spawnedUnit.gameObject);
             return false;
         }
-
-        // UnitBase.Initialize registers the new unit and increases
-        // CurrentPopulation. The queued reservation can now be released.
-        unitManager.ReleaseReservedPopulation(definition);
-
-        productionQueue.RemoveAt(0);
-        productionElapsed = 0f;
-        ResetSpawnRetry();
-
-        building.GameLog?.Log($"{definition.DisplayName} production completed.", building.OwnerFaction);
 
         return true;
     }
@@ -487,7 +513,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
         foreach (UnitType type in producibleUnitTypes)
         {
             UnitDefinition definition = faction.GetUnitDefinition(type);
-            if (definition != null && definition.Prefab != null)
+            if (definition != null && !definition.IsAirUnit && definition.Prefab != null)
                 radius = Mathf.Max(radius, SpawnFootprint.FromDefinition(definition).Radius);
         }
 
@@ -677,7 +703,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
     internal bool IsNearExit(TerrainGrid grid, Vector3 position, float padding)
     {
-        if (building == null)
+        if (building == null || (producibleUnits.Count > 0 && !HasGroundDeployment))
             return false;
 
         GetExitFrame(grid, largestProductionRadius, out Vector3 entrance, out Vector3 forward);
@@ -922,7 +948,7 @@ public sealed class UnitProductionComponent : MonoBehaviour
 
             producibleUnits.Add(definition);
 
-            if (definition.Prefab != null && !spawnFootprints.ContainsKey(definition))
+            if (!definition.IsAirUnit && definition.Prefab != null && !spawnFootprints.ContainsKey(definition))
             {
                 SpawnFootprint footprint = SpawnFootprint.FromDefinition(definition);
                 spawnFootprints.Add(definition, footprint);

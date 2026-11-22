@@ -31,6 +31,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     protected LocalSteeringSystem localSteeringSystem;
 
     public UnitDefinition Definition => definition;
+    public bool IsAirUnit => definition != null && definition.IsAirUnit;
     public Faction OwnerFaction => ownerFaction;
 
     public CommandType CurrentCommand { get; protected set; } = CommandType.Idle;
@@ -111,9 +112,10 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
         health.Initialize(definition.maxHealth);
         health.OnDied += HandleDied;
 
-        localSteeringSystem?.Initialize(this, gameContext.AllUnits);
+        if (!IsAirUnit)
+            localSteeringSystem?.Initialize(this, gameContext.AllUnits);
         motor?.Initialize(this, pathfindingService, TerrainGrid, GridNavigationStateSystem, localSteeringSystem,
-            definition.moveSpeed, preserveSpawnPosition);
+            definition.moveSpeed, preserveSpawnPosition, gameContext.AirUnits);
         sensor?.Initialize(this, gameContext);
         view?.Initialize(this);
 
@@ -129,7 +131,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
         sensor?.Tick(deltaTime);
         currentState?.Tick(this, deltaTime);
-        motor?.Tick();
+        motor?.Tick(deltaTime);
         view?.SyncLocomotion(motor);
     }
 
@@ -175,7 +177,7 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
 
     internal bool TryStartProductionMove(GridCoord destination, Vector3 exitWaypoint, List<Vector3> route)
     {
-        if (!CanReceiveCommands || motor == null || GridNavigationStateSystem == null ||
+        if (IsAirUnit || !CanReceiveCommands || motor == null || GridNavigationStateSystem == null ||
             !GridNavigationStateSystem.TryReserveDestination(destination, this))
             return false;
 
@@ -224,7 +226,8 @@ public class UnitBase : MonoBehaviour, IControllable, ISelectable, ITargetable
     {
         motor?.Stop();
 
-        GridNavigationStateSystem?.ReleaseAll(this);
+        if (!IsAirUnit)
+            GridNavigationStateSystem?.ReleaseAll(this);
 
         SetSelected(false);
         owningUnitManager?.RequestRemoveUnit(this);

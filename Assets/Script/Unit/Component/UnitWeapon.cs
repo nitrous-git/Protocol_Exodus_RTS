@@ -77,6 +77,15 @@ public class UnitWeapon : MonoBehaviour
     //    return true;
     //}
 
+    internal bool TryFireImmediate(ITargetable target)
+    {
+        if (!IsReady || !TryFireProjectile(target))
+            return false;
+
+        cooldownRemaining = owner.Definition.attackCooldown;
+        return true;
+    }
+
     public bool TryBeginAttack(ITargetable target)
     {
         if (!IsReady || !CanFireAt(target))
@@ -138,6 +147,9 @@ public class UnitWeapon : MonoBehaviour
 
         if (!owner.OwnerFaction.IsEnemy(target.OwnerFaction))
             return false;
+
+        if (owner.IsAirUnit)
+            return owner.IsWithinAttackRange(target);
 
         float range = owner.Definition.attackRange;
         return (target.Position - owner.Position).sqrMagnitude <= range * range;

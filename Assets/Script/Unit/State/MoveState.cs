@@ -44,6 +44,12 @@ public class MoveState : UnitState<UnitBase>
             return;
         }
 
+        if (unit.IsAirUnit)
+        {
+            pathRequested = unit.Motor.MoveTo(formationCenter);
+            return;
+        }
+
         // Production and tactical orders supply an exact reservation and start the motor themselves.
         if (reservedDestinationCell.HasValue)
         {

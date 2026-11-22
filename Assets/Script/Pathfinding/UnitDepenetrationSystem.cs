@@ -169,6 +169,7 @@ public sealed class UnitDepenetrationSystem
         return unit != null
             && unit.IsInitialized
             && unit.IsAlive
+            && !unit.IsAirUnit
             && unit.Motor != null
             && unit.Definition != null;
     }

@@ -21,6 +21,7 @@ public sealed class AttackState :
     private GridCoord? reservedAttackCell;
 
     private bool pathRequested;
+    private bool airApproach;
 
     private readonly CombatUnitAISettings aiSettings;
     private readonly bool canPursue;
@@ -86,7 +87,7 @@ public sealed class AttackState :
         unit.SetCurrentTarget(
             target);
 
-        if (aiSettings == null)
+        if (!unit.IsAirUnit && aiSettings == null)
             RequestAttackPosition(unit);
     }
 
@@ -102,6 +103,12 @@ public sealed class AttackState :
                 target))
         {
             unit.FinishCombatEngagement();
+            return;
+        }
+
+        if (unit.IsAirUnit)
+        {
+            TickAirCombat(unit, deltaTime);
             return;
         }
 
@@ -189,6 +196,37 @@ public sealed class AttackState :
         unit.CancelAttackAnimation();
 
         unit.ClearCurrentTarget();
+    }
+
+    private void TickAirCombat(CombatUnit unit, float deltaTime)
+    {
+        bool inRange = unit.IsWithinAttackRange(target);
+        bool canChase = unit.CurrentCommand is CommandType.Attack or CommandType.AttackMove;
+        if (!canChase && !inRange)
+        {
+            unit.FinishCombatEngagement();
+            return;
+        }
+
+        Vector3 offset = target.Position - unit.Position;
+        offset.y = 0f;
+        float range = unit.GetAttackRange();
+        float firingDistance = range - Mathf.Min(0.5f, range * 0.1f);
+        // Enter pursuit at the weapon limit and settle slightly inside it.
+        if (!inRange || (airApproach && offset.sqrMagnitude > firingDistance * firingDistance))
+        {
+            airApproach = true;
+            unit.Motor?.ApproachByAir(target.Position - offset.normalized * firingDistance);
+            return;
+        }
+
+        if (airApproach)
+        {
+            unit.Motor?.Stop();
+            airApproach = false;
+        }
+
+        unit.UpdateAttack(deltaTime);
     }
 
     private void TickAICombat(CombatUnit unit, float deltaTime)

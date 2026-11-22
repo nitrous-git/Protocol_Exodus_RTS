@@ -3,9 +3,12 @@ using UnityEngine;
 
 public class TerrainGrid
 {
+    internal const float DefaultFlightAltitude = 9f;
+
     public int Width { get; private set; }
     public int Height { get; private set; }
     public float CellSize { get; private set; }
+    internal float FlightAltitude { get; }
     public GridCell[,] cells { get; private set; }
 
     private Terrain terrain;
@@ -18,8 +21,11 @@ public class TerrainGrid
 
     private StaticClearanceField staticClearanceField;
 
-    public TerrainGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope)
+    public TerrainGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope,
+        float flightAltitude = DefaultFlightAltitude)
     {
+        FlightAltitude = flightAltitude;
+
         if (terrain == null)
         {
             Debug.LogError("TerrainGrid cannot be created because Terrain is null.");
@@ -135,6 +141,17 @@ public class TerrainGrid
         int z = Mathf.FloorToInt((worldPosition.z - terrainOrigin.z) / CellSize);
 
         return new GridCoord(x, z);
+    }
+
+    internal Vector3 ClampHorizontalPosition(Vector3 position, float padding)
+    {
+        float width = Width * CellSize;
+        float depth = Height * CellSize;
+        float xPadding = Mathf.Min(padding, width * 0.5f);
+        float zPadding = Mathf.Min(padding, depth * 0.5f);
+        position.x = Mathf.Clamp(position.x, terrainOrigin.x + xPadding, terrainOrigin.x + width - xPadding);
+        position.z = Mathf.Clamp(position.z, terrainOrigin.z + zPadding, terrainOrigin.z + depth - zPadding);
+        return position;
     }
 
     public bool IsInside(GridCoord coord)

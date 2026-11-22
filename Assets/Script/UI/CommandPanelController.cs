@@ -167,7 +167,7 @@ public sealed class CommandPanelController : MonoBehaviour
                 break;
 
             case CommandPanelLayout.HeavyProductionFacility:
-                ShowProductionBuildingCommands(CanOperateSelectedBuilding());
+                ShowHeavyProductionFacilityCommands();
                 break;
 
             case CommandPanelLayout.Empty:
@@ -240,6 +240,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
             case UnitType.Combat:
             case UnitType.Mech:
+            case UnitType.Aircraft:
                 return CommandPanelLayout.CombatUnit;
 
             default:
@@ -401,6 +402,15 @@ public sealed class CommandPanelController : MonoBehaviour
     {
         ConfigureGameplaySlot(SetRallyPointSlot, icons?.RallyPoint, operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
+    }
+
+    private void ShowHeavyProductionFacilityCommands()
+    {
+        bool operational = CanOperateSelectedBuilding();
+        UnitDefinition aircraft = GetSelectedBuildingUnitDefinition(UnitType.Aircraft);
+        ConfigureGameplaySlot(TrainUnitSlot, aircraft?.Icon, operational && aircraft != null,
+            CommandPanelAction.TrainUnit(aircraft));
+        ShowProductionBuildingCommands(operational);
     }
 
     private void ShowSupplyDepotCommands()

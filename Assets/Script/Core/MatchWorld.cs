@@ -39,6 +39,7 @@ public sealed class MatchWorld : MonoBehaviour
     [SerializeField] private BuildingPlacementPreview buildingPlacementPreviewPrefab;
 
     private UnitDepenetrationSystem unitDepenetrationSystem;
+    private IReadOnlyList<UnitBase> aircraft;
     private GameLog gameLog;
 
     public Transform UnitsRoot => unitsRoot;
@@ -88,6 +89,7 @@ public sealed class MatchWorld : MonoBehaviour
         gameLog = gameContext.GameLog;
 
         unitDepenetrationSystem = new UnitDepenetrationSystem(gameContext.AllUnits);
+        aircraft = gameContext.AirUnits;
 
         PathfindingService = pathfindingServiceComponent as IPathfindingService;
 
@@ -96,7 +98,7 @@ public sealed class MatchWorld : MonoBehaviour
 
         selectionManager?.Initialize(gameContext);
         commandIssuer?.Initialize(gameContext, playerFaction);
-        cameraController?.Initialize();
+        cameraController?.Initialize(TerrainGrid.FlightAltitude);
 
         ResourceNodeRepository?.Initialize(resourceNodesRoot);
     }
@@ -145,6 +147,6 @@ public sealed class MatchWorld : MonoBehaviour
     public void TickLate(float deltaTime)
     {
         FactionManager?.TickLate(deltaTime);
-        cameraController?.TickLate(deltaTime);
+        cameraController?.TickLate(deltaTime, aircraft is { Count: > 0 });
     }
 }

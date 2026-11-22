@@ -106,6 +106,7 @@ public class LocalSteeringSystem : MonoBehaviour
 
             if (other == null ||
                 other == owner ||
+                other.IsAirUnit ||
                 !other.IsAlive)
             {
                 continue;

@@ -79,8 +79,7 @@ internal sealed class AIBuildingPlacement
         existingExits.Clear();
         foreach (BuildingBase building in context.AllBuildings)
         {
-            if (building == null || !building.IsAlive || building.UnitProduction == null ||
-                building.UnitProduction.ProducibleUnits.Count == 0)
+            if (building == null || !building.IsAlive || building.UnitProduction?.HasGroundDeployment != true)
                 continue;
 
             var exit = building.UnitProduction.GetPlacementExit(grid);

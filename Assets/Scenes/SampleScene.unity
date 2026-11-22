@@ -1397,6 +1397,7 @@ MonoBehaviour:
   cellSize: 1
   maxWalkableSlope: 35
   maxBuildableSlope: 8
+  flightAltitude: 36
 --- !u!114 &316370791
 MonoBehaviour:
   m_ObjectHideFlags: 0

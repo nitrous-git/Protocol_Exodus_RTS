@@ -21,12 +21,16 @@ public sealed class CameraController : MonoBehaviour
 
     private bool hasValidMovementBounds;
     private bool isInitialized;
+    private Transform view;
+    private Vector3 groundViewPosition;
+    private Vector3 flightViewOffset;
+    private float flightViewBlend;
 
     public Terrain Terrain => terrain;
     public float MovementSpeed => movementSpeed;
     public float BorderBuffer => borderBuffer;
 
-    public void Initialize()
+    public void Initialize(float flightAltitude = TerrainGrid.DefaultFlightAltitude)
     {
         if (terrain == null)
             terrain = Terrain.activeTerrain;
@@ -45,15 +49,33 @@ public sealed class CameraController : MonoBehaviour
 
         // Ensure the initial scene position is also inside the map.
         SetGroundPosition(transform.position);
+
+        Camera camera = GetComponentInChildren<Camera>();
+        if (camera != null && camera.transform != transform && camera.transform.forward.y < -0.01f)
+        {
+            view = camera.transform;
+            groundViewPosition = view.localPosition;
+            float groundY = terrain.transform.position.y;
+            float viewingHeight = groundY + (flightAltitude - groundY) * 1.6f;
+            float extraHeight = Mathf.Max(0f, viewingHeight - view.position.y);
+            // Pull back along the view axis so the ground aim point stays centered.
+            Vector3 dolly = view.forward * (extraHeight / view.forward.y);
+            flightViewOffset = view.parent.InverseTransformVector(dolly);
+        }
     }
 
 
-    public void TickLate(float deltaTime)
+    public void TickLate(float deltaTime, bool hasAircraft = false)
     {
         if (!isInitialized || !isActiveAndEnabled)
             return;
 
         Move(movementInput, deltaTime);
+
+        float blend = Mathf.MoveTowards(flightViewBlend, hasAircraft ? 1f : 0f, deltaTime * 2f);
+        if (view != null && flightViewOffset.sqrMagnitude > 0f && blend != flightViewBlend)
+            view.localPosition = groundViewPosition + flightViewOffset * blend;
+        flightViewBlend = blend;
     }
 
     /// <summary>

@@ -61,12 +61,15 @@ public class CombatUnit : UnitBase
         }
 
         weapon.Initialize(this, gameContext);
-        if (ownerFaction?.Controller is AIFactionController aiController && CanAttack() && CanReceiveCommands)
+        if (!IsAirUnit && ownerFaction?.Controller is AIFactionController aiController && CanAttack() && CanReceiveCommands)
             combatAI = new CombatUnitAI(this, aiController.BaseAnchor ?? Position);
     }
 
     public override void Tick(float deltaTime)
     {
+        if (IsAirUnit && !IsAlive)
+            return;
+
         weapon?.Tick(deltaTime);
 
         using (CombatAwarenessTickMarker.Auto())
@@ -111,7 +114,10 @@ public class CombatUnit : UnitBase
                 break;
 
             case CommandType.HoldPosition:
-                EnterCombatIdle();
+                if (IsAirUnit)
+                    SetState(new CombatIdleState());
+                else
+                    EnterCombatIdle();
                 break;
             
             case CommandType.Idle:
@@ -272,7 +278,14 @@ public class CombatUnit : UnitBase
         if (!IsWithinAttackRange(currentTarget))
             return;
          
-        FaceTarget(currentTarget, deltaTime);
+        bool facingTarget = FaceTarget(currentTarget, deltaTime);
+
+        if (definition.attackExecution == AttackExecutionMode.ImmediateProjectile)
+        {
+            if (facingTarget)
+                weapon.TryFireImmediate(currentTarget);
+            return;
+        }
 
         if (attackAnimationActive)
             return;
@@ -397,10 +410,10 @@ public class CombatUnit : UnitBase
         return sensor.FindClosestEnemy(searchRange);
     }
 
-    public void FaceTarget(ITargetable target, float deltaTime)
+    public bool FaceTarget(ITargetable target, float deltaTime)
     {
         if (target == null)
-            return;
+            return false;
 
         Vector3 direction = target.Position - transform.position;
 
@@ -408,10 +421,12 @@ public class CombatUnit : UnitBase
         direction.y = 0f;
 
         if (direction.sqrMagnitude <= 0.0001f)
-            return;
+            return true;
 
         Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, combatRotationSpeed * deltaTime);
+        return definition.attackExecution != AttackExecutionMode.ImmediateProjectile ||
+            Quaternion.Angle(transform.rotation, targetRotation) <= 5f;
     }
 
     // ---------------------------------------------------------------------

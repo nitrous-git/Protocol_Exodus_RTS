@@ -4,6 +4,7 @@ using System.Linq;
 public sealed class GameContext
 {
     private readonly List<UnitBase> allUnits = new();
+    private readonly List<UnitBase> airUnits = new();
     private readonly List<BuildingBase> allBuildings = new();
     private readonly List<ResourceNode> allResourceNodes = new();
     private readonly List<ITargetable> allTargetables = new();
@@ -17,6 +18,7 @@ public sealed class GameContext
     private int nextMovementGroupId = 1;
 
     public IReadOnlyList<UnitBase> AllUnits => allUnits;
+    internal IReadOnlyList<UnitBase> AirUnits => airUnits;
     public IReadOnlyList<BuildingBase> AllBuildings => allBuildings;
     public IReadOnlyList<ResourceNode> AllResourceNodes => allResourceNodes;
     public IReadOnlyList<ITargetable> AllTargetables => allTargetables;
@@ -96,7 +98,11 @@ public sealed class GameContext
             return;
 
         if (!allUnits.Contains(unit))
+        {
             allUnits.Add(unit);
+            if (unit.IsAirUnit)
+                airUnits.Add(unit);
+        }
 
         RegisterTargetable(unit);
     }
@@ -106,7 +112,10 @@ public sealed class GameContext
         if (unit == null)
             return;
 
-        GridNavigationStateSystem?.ReleaseAll(unit);
+        if (unit.IsAirUnit)
+            airUnits.Remove(unit);
+        else
+            GridNavigationStateSystem?.ReleaseAll(unit);
 
         allUnits.Remove(unit);
 
@@ -327,6 +336,7 @@ public sealed class GameContext
         GameLog.Clear();
 
         allUnits.Clear();
+        airUnits.Clear();
         allBuildings.Clear();
         allTargetables.Clear();
         allResourceNodes.Clear();

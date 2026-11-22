@@ -113,6 +113,9 @@ public class Projectile : MonoBehaviour
 
     private void SpawnHitColisionFx()
     {
+        if (!Application.isPlaying || hitCollisionFx == null)
+            return;
+
         GameObject hitFx = GameObject.Instantiate(hitCollisionFx, this.transform.position, this.transform.rotation, projectileRoot);
         Object.Destroy(hitFx, 1.3f);
     }

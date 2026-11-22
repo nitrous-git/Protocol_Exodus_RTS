@@ -162,7 +162,8 @@ public sealed class TurretDefenseComponent : MonoBehaviour
             return float.PositiveInfinity;
 
         Vector3 offset = candidate.Position - origin;
-        offset.y = 0f;
+        if (candidate is not UnitBase { IsAirUnit: true })
+            offset.y = 0f;
         return offset.sqrMagnitude;
     }
 

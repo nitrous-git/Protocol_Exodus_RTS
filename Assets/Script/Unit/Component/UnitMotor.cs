@@ -34,6 +34,7 @@ public class UnitMotor : MonoBehaviour
     private IPathfindingService pathfindingService;
     private GridNavigationStateSystem navigationState;
     private LocalSteeringSystem localSteeringSystem;
+    private AirMovement airMovement;
     private float moveSpeed;
     private Vector3 currentVelocity; // actual resulting movement
     private Vector3 preferredVelocity; // navigation intent
@@ -54,9 +55,9 @@ public class UnitMotor : MonoBehaviour
     //public bool HasPath { get { return hasPath; } }
     //public bool HasArrived { get { return !hasPath; } }
 
-    public bool HasPath => hasPath;
+    public bool HasPath => airMovement?.HasDestination ?? hasPath;
     public bool IsFollowingNavigationSolution => navigationSolution != null;
-    public bool HasArrived => !hasPath && navigationSolution == null;
+    public bool HasArrived => !HasPath && navigationSolution == null;
 
     internal bool IsAtDestination(Vector3 destination) => HasReachedTarget(destination);
 
@@ -82,7 +83,8 @@ public class UnitMotor : MonoBehaviour
         GridNavigationStateSystem navigationState,
         LocalSteeringSystem localSteeringSystem,
         float moveSpeed,
-        bool preserveSpawnPosition = false)
+        bool preserveSpawnPosition = false,
+        IReadOnlyList<UnitBase> aircraft = null)
     {
         this.owner = owner;
         this.pathfindingService = pathfindingService;
@@ -90,6 +92,12 @@ public class UnitMotor : MonoBehaviour
         this.localSteeringSystem = localSteeringSystem;
         this.moveSpeed = moveSpeed;
         this.terrainGrid = terrainGrid;
+
+        if (owner.IsAirUnit)
+        {
+            airMovement = new AirMovement(owner, terrainGrid, aircraft ?? Array.Empty<UnitBase>(), moveSpeed);
+            return;
+        }
 
         if (terrain == null)
             terrain = Terrain.activeTerrain;
@@ -103,8 +111,15 @@ public class UnitMotor : MonoBehaviour
         UpdateUnitOccupancy();
     }
 
-    public void Tick()
+    public void Tick(float deltaTime)
     {
+        if (airMovement != null)
+        {
+            currentVelocity = airMovement.Tick(deltaTime);
+            preferredVelocity = currentVelocity;
+            return;
+        }
+
         if (navigationSolution != null)
         {
             NavigationSolutionUpdate();
@@ -124,9 +139,17 @@ public class UnitMotor : MonoBehaviour
 
     public bool MoveTo(Vector3 destination)
     {
+        if (airMovement != null)
+            return airMovement.MoveTo(destination, spaceArrival: true);
+
         ClearNavigationSolution();
 
         return TryBuildPath(destination);
+    }
+
+    internal void ApproachByAir(Vector3 destination)
+    {
+        airMovement?.MoveTo(destination, spaceArrival: false);
     }
 
     internal void FollowProductionPath(Vector3 exitWaypoint, List<Vector3> route)
@@ -141,6 +164,14 @@ public class UnitMotor : MonoBehaviour
 
     public void Stop()
     {
+        if (airMovement != null)
+        {
+            airMovement.Stop();
+            currentVelocity = Vector3.zero;
+            preferredVelocity = Vector3.zero;
+            return;
+        }
+
         ClearPath();
 
         ClearNavigationSolution();
@@ -577,6 +608,9 @@ public class UnitMotor : MonoBehaviour
 
     public bool FollowNavigationSolution(INavigationSolution solution)
     {
+        if (airMovement != null)
+            return false;
+
         if (solution == null || !solution.IsValid)
         {
             return false;
@@ -796,6 +830,9 @@ public class UnitMotor : MonoBehaviour
 
     public void ApplyDepenetration(Vector3 displacement)
     {
+        if (airMovement != null)
+            return;
+
         displacement.y = 0f;
 
         if (displacement.sqrMagnitude <= Mathf.Epsilon)
