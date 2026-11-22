@@ -41,6 +41,7 @@ public sealed class CommandPanelController : MonoBehaviour
     // Building command presentation
     private const int TrainUnitSlot = 0;
     private const int TrainMechaSlot = 1;
+    private const int TrainFlamerSlot = 2;
     private const int UpgradeSlot = 1;
     private const int SetRallyPointSlot = 5;
     private const int CloseBuildingSelectionSlot = 8;
@@ -239,6 +240,7 @@ public sealed class CommandPanelController : MonoBehaviour
                 return CommandPanelLayout.WorkerUnit;
 
             case UnitType.Combat:
+            case UnitType.Flamer:
             case UnitType.Mech:
             case UnitType.Aircraft:
                 return CommandPanelLayout.CombatUnit;
@@ -392,9 +394,11 @@ public sealed class CommandPanelController : MonoBehaviour
 
         UnitDefinition combatDefinition = GetSelectedBuildingUnitDefinition(UnitType.Combat);
         UnitDefinition mechDefinition = GetSelectedBuildingUnitDefinition(UnitType.Mech);
+        UnitDefinition flamerDefinition = GetSelectedBuildingUnitDefinition(UnitType.Flamer);
 
         ConfigureGameplaySlot(TrainUnitSlot, combatDefinition?.Icon, operational && combatDefinition != null, CommandPanelAction.TrainUnit(combatDefinition));
         ConfigureGameplaySlot(TrainMechaSlot, mechDefinition?.Icon, operational && mechDefinition != null, CommandPanelAction.TrainUnit(mechDefinition));
+        ConfigureGameplaySlot(TrainFlamerSlot, flamerDefinition?.Icon, operational && flamerDefinition != null, CommandPanelAction.TrainUnit(flamerDefinition));
         ShowProductionBuildingCommands(operational);
     }
 

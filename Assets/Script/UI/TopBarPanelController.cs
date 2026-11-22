@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 [DisallowMultipleComponent]
 public sealed class TopBarPanelController : MonoBehaviour
@@ -16,7 +17,11 @@ public sealed class TopBarPanelController : MonoBehaviour
     [SerializeField] private UnityEngine.UI.Button menuButton;
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private UnityEngine.UI.Button resumeButton;
-    [SerializeField] private UnityEngine.UI.Button quitButton;
+    [FormerlySerializedAs("quitButton")]
+    [SerializeField] private UnityEngine.UI.Button returnToMenuButton;
+    [SerializeField] private SceneTransitionController transitionPrefab;
+    [SerializeField] private string mainMenuScenePath;
+    [SerializeField] private TMP_Text returnErrorText;
 
     private GameLoop gameLoop;
     private ResourceManager resources;
@@ -36,14 +41,8 @@ public sealed class TopBarPanelController : MonoBehaviour
         if (resumeButton != null)
             resumeButton.onClick.AddListener(ResumeGame);
 
-        if (quitButton != null)
-        {
-#if UNITY_EDITOR
-            quitButton.interactable = false;
-#else
-            quitButton.onClick.AddListener(QuitGame);
-#endif
-        }
+        if (returnToMenuButton != null)
+            returnToMenuButton.onClick.AddListener(ReturnToMainMenu);
     }
 
     private void OnDestroy()
@@ -54,10 +53,8 @@ public sealed class TopBarPanelController : MonoBehaviour
         if (resumeButton != null)
             resumeButton.onClick.RemoveListener(ResumeGame);
 
-#if !UNITY_EDITOR
-        if (quitButton != null)
-            quitButton.onClick.RemoveListener(QuitGame);
-#endif
+        if (returnToMenuButton != null)
+            returnToMenuButton.onClick.RemoveListener(ReturnToMainMenu);
     }
 
     public void Initialize(Faction playerFaction, GameLoop gameLoop)
@@ -117,6 +114,9 @@ public sealed class TopBarPanelController : MonoBehaviour
         if (!visible && selected != null && selected.transform.IsChildOf(pauseMenu.transform))
             eventSystem.SetSelectedGameObject(null);
 
+        if (visible && returnErrorText != null)
+            returnErrorText.text = string.Empty;
+
         pauseMenu.SetActive(visible);
         if (visible && resumeButton != null)
             resumeButton.Select();
@@ -133,10 +133,19 @@ public sealed class TopBarPanelController : MonoBehaviour
         gameLoop?.SetPaused(false);
     }
 
-#if !UNITY_EDITOR
-    private static void QuitGame()
+    private void ReturnToMainMenu()
     {
-        Application.Quit();
+        if (returnErrorText != null)
+            returnErrorText.text = string.Empty;
+
+        SceneTransitionController.LoadScene(transitionPrefab, mainMenuScenePath, null, ShowReturnError);
     }
-#endif
+
+    private void ShowReturnError(string message)
+    {
+        if (returnErrorText != null)
+            returnErrorText.text = message;
+
+        returnToMenuButton.Select();
+    }
 }

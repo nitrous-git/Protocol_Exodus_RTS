@@ -28,10 +28,10 @@ public sealed class CommandTooltipView : MonoBehaviour
         description.text = content.Description;
 
         Cost cost = content.Cost;
-        SetCost(mineralsCost, cost.Minerals, "Minerals");
-        SetCost(gasCost, cost.Gas, "Gas");
-        SetCost(supplyCost, cost.Supply, "Supply");
-        costRow.gameObject.SetActive(cost.Minerals != 0 || cost.Gas != 0 || cost.Supply != 0);
+        SetCost(mineralsCost, cost.Minerals, "Minerals", content.ShowZeroCosts);
+        SetCost(gasCost, cost.Gas, "Gas", content.ShowZeroCosts);
+        SetCost(supplyCost, cost.Supply, "Supply", content.ShowZeroCosts);
+        costRow.gameObject.SetActive(content.ShowZeroCosts || cost.Minerals != 0 || cost.Gas != 0 || cost.Supply != 0);
 
         panel.gameObject.SetActive(true);
         UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(body);
@@ -84,10 +84,11 @@ public sealed class CommandTooltipView : MonoBehaviour
         Hide();
     }
 
-    private static void SetCost(TMP_Text text, int value, string resource)
+    private static void SetCost(TMP_Text text, int value, string resource, bool showZero)
     {
-        text.transform.parent.gameObject.SetActive(value != 0);
-        if (value != 0)
+        bool visible = showZero || value != 0;
+        text.transform.parent.gameObject.SetActive(visible);
+        if (visible)
             text.text = $"{value} {resource}";
     }
 }

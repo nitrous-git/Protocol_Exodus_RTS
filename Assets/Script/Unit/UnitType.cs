@@ -9,5 +9,6 @@ public enum UnitType
     Mech,
     Tank,
     Aircraft,
-    Artillery
+    Artillery,
+    Flamer
 }

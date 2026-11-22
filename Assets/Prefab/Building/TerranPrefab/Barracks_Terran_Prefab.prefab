@@ -466,7 +466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29b459ecc49bc564ab03c2954a508a14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitProductionComponent
-  producibleUnitTypes: 0100000002000000i
+  producibleUnitTypes: 010000000200000006000000i
   spawnPoint: {fileID: 1688950823721946990}
   defaultRallyPoint: {fileID: 8111539896581338106}
   gatheringPadding: 0.2

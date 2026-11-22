@@ -204,6 +204,7 @@ public class CombatUnit : UnitBase
 
     protected override void HandleDied()
     {
+        CancelAttackAnimation();
         ReleaseCombatAI();
         base.HandleDied();
     }
@@ -287,7 +288,7 @@ public class CombatUnit : UnitBase
             return;
         }
 
-        if (attackAnimationActive)
+        if (attackAnimationActive || (weapon.UsesFlameCone && !facingTarget))
             return;
 
         if (!weapon.TryBeginAttack(currentTarget))
@@ -303,23 +304,19 @@ public class CombatUnit : UnitBase
         if (!attackAnimationActive)
             return;
 
-        if (attackTarget == null || !attackTarget.IsAlive)
-            return;
-
-        weapon.TryFireProjectile(attackTarget);
+        weapon.FireFromAnimation(attackTarget);
     }
 
     public void OnAttackAnimationFinished()
     {
-        attackAnimationActive = false;
-        attackTarget = null;
-
+        CancelAttackAnimation();
     }
 
     public void CancelAttackAnimation()
     {
         attackAnimationActive = false;
         attackTarget = null;
+        weapon?.StopFlameBurst();
     }
 
     // ---------------------------------------------------------------------
@@ -425,7 +422,7 @@ public class CombatUnit : UnitBase
 
         Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, combatRotationSpeed * deltaTime);
-        return definition.attackExecution != AttackExecutionMode.ImmediateProjectile ||
+        return (definition.attackExecution != AttackExecutionMode.ImmediateProjectile && weapon?.UsesFlameCone != true) ||
             Quaternion.Angle(transform.rotation, targetRotation) <= 5f;
     }
 

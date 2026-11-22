@@ -260,8 +260,10 @@ public sealed class BattleShipEditModeTests
         Assert.That(ship.Motor.HasArrived, Is.True);
     }
 
-    [Test]
-    public void BarracksStillSpawnsGroundUnitsWithNavigationAndRallyReservation()
+    [TestCase(UnitType.Combat)]
+    [TestCase(UnitType.Mech)]
+    [TestCase(UnitType.Flamer)]
+    public void BarracksSpawnsGroundUnitsWithNavigationAndRallyReservation(UnitType type)
     {
         var groundPathfinding = world.gameObject.AddComponent<GridAStarPathfindingService>();
         groundPathfinding.Initialize(grid, navigation);
@@ -273,14 +275,15 @@ public sealed class BattleShipEditModeTests
         grid.RebuildStaticClearanceField();
         Physics.SyncTransforms();
 
-        UnitDefinition infantry = roster.GetUnitDefinition(UnitType.Combat);
-        Assert.That(building.UnitProduction.TryEnqueue(infantry), Is.True);
-        building.UnitProduction.Tick(infantry.ProductionDuration);
+        UnitDefinition definition = roster.GetUnitDefinition(type);
+        Assert.That(building.UnitProduction.TryEnqueue(definition), Is.True);
+        building.UnitProduction.Tick(definition.ProductionDuration);
 
         Assert.That(building.UnitProduction.QueueCount, Is.Zero);
-        Assert.That(faction.UnitManager.CurrentPopulation, Is.EqualTo(infantry.Cost.Supply));
+        Assert.That(faction.UnitManager.CurrentPopulation, Is.EqualTo(definition.Cost.Supply));
         Assert.That(faction.UnitManager.ReservedPopulation, Is.Zero);
         UnitBase unit = faction.UnitManager.UnitList[0];
+        Assert.That(unit.Definition, Is.EqualTo(definition));
         Assert.That(unit.IsAirUnit, Is.False);
         Assert.That(unit.CurrentCommand, Is.EqualTo(CommandType.Move));
         Assert.That(unit.Motor.HasPath, Is.True);

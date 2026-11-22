@@ -7,12 +7,14 @@ internal readonly struct CommandTooltipContent
     public string Title { get; }
     public string Description { get; }
     public Cost Cost { get; }
+    public bool ShowZeroCosts { get; }
 
-    private CommandTooltipContent(string title, string description, Cost cost = default)
+    private CommandTooltipContent(string title, string description, Cost cost = default, bool showZeroCosts = false)
     {
         Title = title;
         Description = description;
         Cost = cost;
+        ShowZeroCosts = showZeroCosts;
     }
 
     public static CommandTooltipContent ForAction(CommandPanelAction action, bool interactable)
@@ -28,7 +30,7 @@ internal readonly struct CommandTooltipContent
                 UnitDefinition unit = action.UnitDefinition;
                 return new(
                     string.IsNullOrWhiteSpace(unit.DisplayName) ? "Train Unit" : unit.DisplayName.Trim(),
-                    "Queue this unit for training.", unit.Cost);
+                    "Queue this unit for training.", unit.Cost, showZeroCosts: unit.Type == UnitType.Flamer);
             case CommandPanelActionType.BeginMoveTargeting:
                 return new("Move", "Choose a destination for the selected units.");
             case CommandPanelActionType.HoldPosition:

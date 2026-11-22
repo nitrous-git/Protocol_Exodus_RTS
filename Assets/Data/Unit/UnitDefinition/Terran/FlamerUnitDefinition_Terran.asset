@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f4e02a934297f3419e52e3b94a4ef31, type: 3}
+  m_Name: FlamerUnitDefinition_Terran
+  m_EditorClassIdentifier: Assembly-CSharp::UnitDefinition
+  unitType: 6
+  displayName: Terran Flamer
+  icon: {fileID: 21300000, guid: e593a517e6006a842920547359b413b1, type: 3}
+  prefab: {fileID: 1844406064657770358, guid: feaf66361658dd849b82011e0be1ed14, type: 3}
+  cost:
+    minerals: 75
+    gas: 0
+    supply: 1
+  productionDuration: 8
+  maxHealth: 800
+  moveSpeed: 2.5
+  visionRange: 18
+  canAttack: 1
+  attackRange: 5.5
+  attackDamage: 12
+  attackCooldown: 2
+  attackExecution: 0
+  combatAI:
+    retreatHealthThreshold: 0.3
+    recentDamageWindow: 1.2
+    decisionInterval: 0.15
+    threatRadius: 18
+    pursuitDistance: 28
+    repathInterval: 0.6
+    repathDistance: 2
+    threatExitPadding: 2
+    threatReengageDelay: 1.2
+  selectionRadius: 0.5
+  movementDomain: 0
+  navigationRadius: 0.45

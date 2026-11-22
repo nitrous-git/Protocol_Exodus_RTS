@@ -10,7 +10,8 @@ public sealed class GameLoop : MonoBehaviour
     private bool isPaused;
     private int pauseChangedFrame = -1;
 
-    public bool IsGameplayInputBlocked => isPaused || pauseChangedFrame == Time.frameCount;
+    public bool IsGameplayInputBlocked => isPaused || pauseChangedFrame == Time.frameCount ||
+        SceneTransitionController.BlocksGameplay;
 
     public void Initialize(
         MatchWorld matchWorld,
@@ -30,7 +31,7 @@ public sealed class GameLoop : MonoBehaviour
 
         float deltaTime = Time.deltaTime;
 
-        bool escapeHandled = HandleEscape();
+        bool escapeHandled = !SceneTransitionController.BlocksGameplay && HandleEscape();
         if (!IsGameplayInputBlocked && !escapeHandled)
             matchWorld?.TickInput(deltaTime);
 
@@ -52,7 +53,7 @@ public sealed class GameLoop : MonoBehaviour
 
     public void SetPaused(bool paused)
     {
-        if (!isInitialized || isPaused == paused)
+        if (!isInitialized || isPaused == paused || SceneTransitionController.BlocksGameplay)
             return;
 
         isPaused = paused;

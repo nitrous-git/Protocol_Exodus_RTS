@@ -119,10 +119,16 @@ public class UnitSensor : MonoBehaviour
         if (!owner.OwnerFaction.IsEnemy(candidate.OwnerFaction))
             return false;
 
-        // Ground weapons can engage aircraft already within their existing 3D firing range.
-        if (owner.IsAirUnit || candidate is not UnitBase { IsAirUnit: true })
+        if (candidate is not UnitBase { IsAirUnit: true })
             return true;
 
+        if (owner is CombatUnit { Weapon: { UsesFlameCone: true } })
+            return false;
+
+        if (owner.IsAirUnit)
+            return true;
+
+        // Ground projectile weapons can engage aircraft within their existing 3D firing range.
         float range = owner.Definition?.attackRange ?? 0f;
         return (candidate.Position - owner.Position).sqrMagnitude <= range * range;
     }

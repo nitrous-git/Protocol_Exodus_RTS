@@ -66,6 +66,7 @@ public class UnitView : MonoBehaviour
             return;
 
         UpdateOneShotAnimation();
+        CheckFlameAttackAnimation();
 
         if (selectionRing == null)
             return;
@@ -248,6 +249,16 @@ public class UnitView : MonoBehaviour
         currentAnimState = null;
 
         PlayAnim(baseAnimState);
+    }
+
+    private void CheckFlameAttackAnimation()
+    {
+        if (owner is not CombatUnit { IsPlayingAttackAnimation: true, Weapon: { UsesFlameCone: true } } combat)
+            return;
+
+        AnimatorStateInfo state = animator != null ? animator.GetCurrentAnimatorStateInfo(0) : default;
+        if (animator == null || !animator.isActiveAndEnabled || !state.IsName("Attack") || state.normalizedTime >= 1f)
+            combat.CancelAttackAnimation();
     }
 
     public void ResetAnimState()

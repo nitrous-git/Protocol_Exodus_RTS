@@ -74,6 +74,7 @@ public sealed class AIEconomyManager
     private int queuedWorkers;
     private int infantryCount;
     private int mechCount;
+    private int flamerCount;
     private int queuedCombat;
     private int pendingBuildings;
     private AIEconomyGoals? strategicGoals;
@@ -171,7 +172,7 @@ public sealed class AIEconomyManager
         Blocked status = hasWaitingProducer ? blocked | Blocked.ProductionExit : blocked;
         return $"{Faction.Name} ({Faction.ColorType}) AI economy {(controller.EconomyEnabled ? "enabled" : "disabled")}. " +
             $"Command Centers {headquartersCount}, Barracks {barracksCount}, Supply Depots {depotCount}, " +
-            $"workers {workers.Count} (+{queuedWorkers} queued), Infantry/Mechs including queued {infantryCount}/{mechCount}, " +
+            $"workers {workers.Count} (+{queuedWorkers} queued), Infantry/Mechs/Flamers including queued {infantryCount}/{mechCount}/{flamerCount}, " +
             $"supply {Faction.UnitManager.OccupiedPopulation}/{Resources.MaxSupply} (+{pendingSupply} pending), " +
             $"minerals/gas {Resources.Minerals}/{Resources.Gas}. Waiting on: {status}.";
     }
@@ -239,7 +240,7 @@ public sealed class AIEconomyManager
         int infantryTarget = Mathf.RoundToInt(armyTarget * infantryShare);
         int missingInfantry = Mathf.Max(0, infantryTarget - infantryCount);
         int missingMechs = Mathf.Max(0, armyTarget - infantryTarget - mechCount);
-        int armySlots = Mathf.Max(0, armyTarget - infantryCount - mechCount);
+        int armySlots = Mathf.Max(0, armyTarget - infantryCount - mechCount - flamerCount);
         UnitDefinition first = missingInfantry > 0 &&
             (missingMechs == 0 || infantryCount < Mathf.RoundToInt((infantryCount + mechCount + 1) * infantryShare))
             ? infantryDefinition : mechDefinition;
@@ -324,7 +325,7 @@ public sealed class AIEconomyManager
         headquartersProducers.Clear();
         barracksProducers.Clear();
         headquarters = null;
-        headquartersCount = barracksCount = depotCount = pendingSupply = queuedWorkers = infantryCount = mechCount = 0;
+        headquartersCount = barracksCount = depotCount = pendingSupply = queuedWorkers = infantryCount = mechCount = flamerCount = 0;
         pendingBuildings = queuedCombat = 0;
         hasWaitingProducer = false;
 
@@ -375,7 +376,7 @@ public sealed class AIEconomyManager
             foreach (UnitDefinition order in producer.ProductionQueue)
             {
                 CountOrder(order);
-                if (order.Type is UnitType.Combat or UnitType.Mech)
+                if (order.Type is UnitType.Combat or UnitType.Mech or UnitType.Flamer)
                     queuedCombat++;
             }
         }
@@ -388,6 +389,7 @@ public sealed class AIEconomyManager
             case UnitType.Worker: queuedWorkers++; break;
             case UnitType.Combat: infantryCount++; break;
             case UnitType.Mech: mechCount++; break;
+            case UnitType.Flamer: flamerCount++; break;
         }
     }
 
