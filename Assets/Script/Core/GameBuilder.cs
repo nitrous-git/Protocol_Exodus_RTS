@@ -49,6 +49,14 @@ public class GameBuilder : MonoBehaviour
     {
         ResolveSceneReferences();
 
+        if (matchWorld == null || FactionTerran_Definition == null ||
+            matchWorld.FactionSpawnPoints == null || matchWorld.FactionSpawnPoints.Count < 2 ||
+            matchWorld.FactionSpawnPoints[0] == null || matchWorld.FactionSpawnPoints[1] == null)
+        {
+            Debug.LogError("GameBuilder requires a match world, a faction definition, and two faction spawn points.", this);
+            return;
+        }
+
         // because we need to pass it to factions before InitializeSections, we might fix this later. 
         matchWorld.ResolveServices(); 
 
@@ -175,7 +183,11 @@ public class GameBuilder : MonoBehaviour
             return;
         }
 
-        gameLoop.Initialize(matchWorld, matchUI);
+        MatchResultSystem matchResults = new(FactionManager.Factions, PlayerFaction);
+        if (!matchResults.IsEnabled)
+            Debug.LogWarning("Match results are disabled because the starting faction roster is incomplete.", this);
+
+        gameLoop.Initialize(matchWorld, matchUI, matchResults);
     }
 
 #if UNITY_EDITOR

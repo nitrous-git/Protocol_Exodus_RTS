@@ -16,6 +16,7 @@ public sealed class MatchUIController : MonoBehaviour
     [SerializeField] private CommandPanelController commandPanel;
     [SerializeField] private GameLogPanel gameLogPanel;
     [SerializeField] private TopBarPanelController topBarPanel;
+    [SerializeField] private MatchResultPanel resultPanel;
 
     private GameContext gameContext;
     private MatchWorld matchWorld;
@@ -42,6 +43,7 @@ public sealed class MatchUIController : MonoBehaviour
         commandPanel?.Initialize(playerFaction, gameContext);
         gameLogPanel?.Initialize(gameContext.GameLog);
         topBarPanel?.Initialize(playerFaction, gameLoop);
+        resultPanel?.Initialize(topBarPanel);
 
         isInitialized = true;
     }
@@ -70,6 +72,18 @@ public sealed class MatchUIController : MonoBehaviour
         topBarPanel?.SetPauseMenuVisible(paused);
     }
 
+    public void ShowResult(MatchResult result)
+    {
+        minimapPanel?.CancelNavigation();
+        commandPanel?.SetTooltipsPaused(true);
+        topBarPanel?.SetPauseMenuVisible(false);
+
+        if (resultPanel != null)
+            resultPanel.Show(result.Outcome);
+        else
+            Debug.LogError("MatchUIController is missing its match result panel.", this);
+    }
+
     private void OnDisable()
     {
         if (commandPanel != null)
@@ -92,6 +106,9 @@ public sealed class MatchUIController : MonoBehaviour
 
         if (topBarPanel == null)
             topBarPanel = GetComponentInChildren<TopBarPanelController>(true);
+
+        if (resultPanel == null)
+            resultPanel = GetComponentInChildren<MatchResultPanel>(true);
     }
 
 #if UNITY_EDITOR

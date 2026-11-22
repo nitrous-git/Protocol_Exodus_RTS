@@ -138,7 +138,17 @@ public sealed class TopBarPanelController : MonoBehaviour
         if (returnErrorText != null)
             returnErrorText.text = string.Empty;
 
-        SceneTransitionController.LoadScene(transitionPrefab, mainMenuScenePath, null, ShowReturnError);
+        LoadMainMenu(ShowReturnError);
+    }
+
+    internal void LoadMainMenu(System.Action<string> showError)
+    {
+        SceneTransitionController.LoadScene(transitionPrefab, mainMenuScenePath, null, showError);
+    }
+
+    internal void ReloadMatch(System.Action<string> showError)
+    {
+        SceneTransitionController.LoadScene(transitionPrefab, gameObject.scene.path, null, showError);
     }
 
     private void ShowReturnError(string message)

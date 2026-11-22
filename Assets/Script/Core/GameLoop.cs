@@ -2,31 +2,39 @@ using UnityEngine;
 
 public sealed class GameLoop : MonoBehaviour
 {
+    private enum MatchState { Initializing, Running, Ended }
+
     private MatchWorld matchWorld;
     private MatchUIController matchUI;
     private PlayerFactionController playerController;
+    private MatchResultSystem matchResults;
 
-    private bool isInitialized;
+    private MatchState state = MatchState.Initializing;
     private bool isPaused;
     private int pauseChangedFrame = -1;
 
-    public bool IsGameplayInputBlocked => isPaused || pauseChangedFrame == Time.frameCount ||
+    public bool IsGameplayInputBlocked => state != MatchState.Running || isPaused || pauseChangedFrame == Time.frameCount ||
         SceneTransitionController.BlocksGameplay;
 
     public void Initialize(
         MatchWorld matchWorld,
-        MatchUIController matchUI)
+        MatchUIController matchUI,
+        MatchResultSystem matchResults)
     {
+        if (state != MatchState.Initializing)
+            return;
+
         this.matchWorld = matchWorld;
         this.matchUI = matchUI;
+        this.matchResults = matchResults;
         playerController = matchWorld?.PlayerFaction?.Controller as PlayerFactionController;
 
-        isInitialized = true;
+        state = MatchState.Running;
     }
 
     private void Update()
     {
-        if (!isInitialized)
+        if (state != MatchState.Running)
             return;
 
         float deltaTime = Time.deltaTime;
@@ -36,14 +44,26 @@ public sealed class GameLoop : MonoBehaviour
             matchWorld?.TickInput(deltaTime);
 
         if (!IsGameplayInputBlocked)
+        {
             matchWorld?.TickSimulation(deltaTime);
+
+            // Projectiles can deal damage after factions finish ticking.
+            if (matchResults.TryResolve(out MatchResult result))
+            {
+                state = MatchState.Ended;
+                isPaused = false;
+                playerController?.CancelPlayerInput();
+                matchUI?.ShowResult(result);
+                return;
+            }
+        }
 
         matchUI?.Tick(deltaTime);
     }
 
     private void LateUpdate()
     {
-        if (!isInitialized || IsGameplayInputBlocked)
+        if (IsGameplayInputBlocked)
             return;
 
         float deltaTime = Time.deltaTime;
@@ -53,7 +73,7 @@ public sealed class GameLoop : MonoBehaviour
 
     public void SetPaused(bool paused)
     {
-        if (!isInitialized || isPaused == paused || SceneTransitionController.BlocksGameplay)
+        if (state != MatchState.Running || isPaused == paused || SceneTransitionController.BlocksGameplay)
             return;
 
         isPaused = paused;
