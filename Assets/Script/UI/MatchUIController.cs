@@ -66,7 +66,14 @@ public sealed class MatchUIController : MonoBehaviour
         if (paused)
             minimapPanel?.CancelNavigation();
 
+        commandPanel?.SetTooltipsPaused(paused);
         topBarPanel?.SetPauseMenuVisible(paused);
+    }
+
+    private void OnDisable()
+    {
+        if (commandPanel != null)
+            commandPanel.HideTooltip();
     }
 
     private void ResolvePanelReferences()
