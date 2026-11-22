@@ -1144,6 +1144,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5015786680697259255}
     m_Modifications:
+    - target: {fileID: 1851426652214293700, guid: cb13a5ae21b99c9478ece8c7a9c10a96, type: 3}
+      propertyPath: InitialModule.startSizeY.scalar
+      value: 11.2
+      objectReference: {fileID: 0}
     - target: {fileID: 8095694603667971056, guid: cb13a5ae21b99c9478ece8c7a9c10a96, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.4

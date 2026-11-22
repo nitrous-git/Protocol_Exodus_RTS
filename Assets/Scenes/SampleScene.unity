@@ -6609,7 +6609,7 @@ MonoBehaviour:
   gameLogDisplayDuration: 3
   FactionTerran_Definition: {fileID: 11400000, guid: 7b8a27e9e91423d4ba5ab8c503ebc4fa, type: 2}
   FactionSpecter_Definition: {fileID: 11400000, guid: 71a1c259c663f564f88a5f217f0805fa, type: 2}
-  matchProfile: 0
+  matchProfile: 1
   standardStartingMinerals: 550
   standardStartingSupply: 10
   startingCombatCount: 2
