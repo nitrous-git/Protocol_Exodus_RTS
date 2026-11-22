@@ -35,6 +35,7 @@ public sealed class CommandPanelController : MonoBehaviour
     private const int SupplyDepotSlot = 1;
     private const int BarracksSlot = 2;
     private const int TurretSlot = 3;
+    private const int HeavyProductionFacilitySlot = 4;
     private const int BackSlot = 8;
 
     // Building command presentation
@@ -165,6 +166,10 @@ public sealed class CommandPanelController : MonoBehaviour
                 ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
                 break;
 
+            case CommandPanelLayout.HeavyProductionFacility:
+                ShowProductionBuildingCommands(CanOperateSelectedBuilding());
+                break;
+
             case CommandPanelLayout.Empty:
             case CommandPanelLayout.Uninitialized:
             default:
@@ -266,6 +271,9 @@ public sealed class CommandPanelController : MonoBehaviour
             case BuildingType.Turret:
                 return CommandPanelLayout.Turret;
 
+            case BuildingType.HeavyProductionFacility:
+                return CommandPanelLayout.HeavyProductionFacility;
+
             default:
                 return CommandPanelLayout.Empty;
         }
@@ -300,12 +308,15 @@ public sealed class CommandPanelController : MonoBehaviour
         BuildingDefinition barracksDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.Barracks);
         BuildingDefinition supplyDepotDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.SupplyDepot);
         BuildingDefinition turretDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.Turret);
+        BuildingDefinition heavyProductionDefinition = playerFaction.BuildingManager?.GetProducibleBuilding(BuildingType.HeavyProductionFacility);
 
         ConfigureGameplaySlot(CommandCenterSlot, commandCenterDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(commandCenterDefinition));
         ConfigureGameplaySlot(SupplyDepotSlot, supplyDepotDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(supplyDepotDefinition));
         ConfigureGameplaySlot(BarracksSlot, barracksDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(barracksDefinition));
         if (turretDefinition != null)
             ConfigureGameplaySlot(TurretSlot, turretDefinition.Icon, true, CommandPanelAction.PlaceBuilding(turretDefinition));
+        if (heavyProductionDefinition != null)
+            ConfigureGameplaySlot(HeavyProductionFacilitySlot, heavyProductionDefinition.Icon, true, CommandPanelAction.PlaceBuilding(heavyProductionDefinition));
         ConfigureSlot(BackSlot, icons?.Back, true, CloseBuildMenu, CommandTooltipContent.Back);
     }
 
@@ -371,8 +382,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
         ConfigureGameplaySlot(TrainUnitSlot, workerDefinition?.Icon, operational, CommandPanelAction.TrainUnit(workerDefinition));
         ConfigureSlot(UpgradeSlot, icons?.Upgrade, false, null, CommandTooltipContent.Upgrade);
-        ConfigureGameplaySlot(SetRallyPointSlot, icons?.RallyPoint, operational, CommandPanelAction.SetRallyPoint());
-        ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
+        ShowProductionBuildingCommands(operational);
     }
 
     private void ShowBarracksCommands()
@@ -384,6 +394,11 @@ public sealed class CommandPanelController : MonoBehaviour
 
         ConfigureGameplaySlot(TrainUnitSlot, combatDefinition?.Icon, operational && combatDefinition != null, CommandPanelAction.TrainUnit(combatDefinition));
         ConfigureGameplaySlot(TrainMechaSlot, mechDefinition?.Icon, operational && mechDefinition != null, CommandPanelAction.TrainUnit(mechDefinition));
+        ShowProductionBuildingCommands(operational);
+    }
+
+    private void ShowProductionBuildingCommands(bool operational)
+    {
         ConfigureGameplaySlot(SetRallyPointSlot, icons?.RallyPoint, operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
     }
@@ -569,6 +584,7 @@ public sealed class CommandPanelController : MonoBehaviour
         CommandCenter,
         Barracks,
         SupplyDepot,
-        Turret
+        Turret,
+        HeavyProductionFacility
     }
 }

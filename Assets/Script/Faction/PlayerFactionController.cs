@@ -260,10 +260,13 @@ public sealed class PlayerFactionController : IFactionController, IPlayerInputCo
             return null;
 
         BuildingType type = building.Definition.Type;
+        UnitProductionComponent producer = building.UnitProduction;
+        if (type == BuildingType.HeavyProductionFacility)
+            return producer;
+
         if (type != BuildingType.CommandCenter && type != BuildingType.Barracks)
             return null;
 
-        UnitProductionComponent producer = building.UnitProduction;
         return producer != null && producer.ProducibleUnits.Count > 0 ? producer : null;
     }
 
