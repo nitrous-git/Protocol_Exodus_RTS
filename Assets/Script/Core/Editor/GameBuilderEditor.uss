@@ -1,0 +1,21 @@
+.game-builder-inspector > .unity-foldout {
+    margin-top: 5px;
+    margin-bottom: 3px;
+}
+
+.game-builder-inspector > .unity-foldout > .unity-foldout__toggle {
+    -unity-font-style: bold;
+}
+
+.game-builder-inspector .unity-help-box {
+    margin-top: 3px;
+    margin-bottom: 4px;
+}
+
+.game-builder-inspector .unity-base-field__label {
+    white-space: normal;
+}
+
+.game-builder-inspector .unity-property-field > .unity-decorator-drawers-container {
+    display: none;
+}
