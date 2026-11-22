@@ -46,6 +46,35 @@ public sealed class BattleShipEditModeTests
     }
 
     [Test]
+    public void SelectionMarkerUsesUniformScaleAndStaysAtFlightAltitude()
+    {
+        Faction faction = CreateFaction(FactionColorType.Blue);
+        UnitBase ship = Spawn(faction, UnitType.Aircraft, 10, 17);
+        Transform marker = ship.transform.Find("vfx_RoundMarker01_Blue");
+
+        Assert.That(marker, Is.Not.Null);
+        Assert.That(marker.localScale, Is.EqualTo(Vector3.one * 0.4f));
+        Assert.That(marker.localPosition, Is.EqualTo(Vector3.zero));
+        Assert.That(marker.gameObject.activeSelf, Is.False);
+        ParticleSystem[] systems = marker.GetComponentsInChildren<ParticleSystem>(true);
+        Assert.That(systems, Is.Not.Empty);
+        foreach (ParticleSystem system in systems)
+            Assert.That(system.main.simulationSpace, Is.EqualTo(ParticleSystemSimulationSpace.Local));
+
+        context.SelectUnit(ship, append: false);
+        Assert.That(marker.gameObject.activeInHierarchy, Is.True);
+        Vector3 destination = At(15, 17);
+        ship.IssueCommand(CommandType.Move, CommandContext.MoveTo(destination));
+        ship.Tick(1f);
+        ship.TickLate(1f);
+
+        Assert.That(ship.Position, Is.EqualTo(new Vector3(destination.x, FlightAltitude, destination.z)));
+        Assert.That(marker.position, Is.EqualTo(ship.Position));
+        context.ClearSelectedUnits();
+        Assert.That(marker.gameObject.activeSelf, Is.False);
+    }
+
+    [Test]
     public void MixedTravelUsesGroundFormationAndSeparateAirDestinations()
     {
         Faction faction = CreateFaction(FactionColorType.Blue);

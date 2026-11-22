@@ -40,12 +40,12 @@ public class UnitView : MonoBehaviour
     {
         this.owner = owner;
 
-        if (terrain == null)
+        if (projectSelectionRingToGround && terrain == null)
             terrain = Terrain.activeTerrain;
 
         propertyBlock = new();
 
-        selectionRingRenderer = selectionRing.GetComponent<MeshRenderer>();
+        selectionRingRenderer = selectionRing != null ? selectionRing.GetComponent<MeshRenderer>() : null;
 
         SetSelected(false);
         RefreshFactionVisuals();
@@ -161,10 +161,12 @@ public class UnitView : MonoBehaviour
             targetRenderer.SetPropertyBlock(propertyBlock);
         }
 
-        // Set Selection Ring
-        selectionRingRenderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
-        selectionRingRenderer.SetPropertyBlock(propertyBlock);
+        if (selectionRingRenderer != null)
+        {
+            selectionRingRenderer.GetPropertyBlock(propertyBlock);
+            propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
+            selectionRingRenderer.SetPropertyBlock(propertyBlock);
+        }
     }
 
     private Texture GetFactionTexture(FactionColorType colorType)
