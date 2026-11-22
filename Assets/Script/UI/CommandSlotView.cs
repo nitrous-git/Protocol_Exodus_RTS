@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 /// Visual representation of one reusable Command Panel slot.
 /// Gameplay meaning is assigned later by CommandPanelController.
 /// </summary>
-public sealed class CommandSlotView : MonoBehaviour
+public sealed class CommandSlotView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("References")]
     [SerializeField] private Button button;
@@ -15,6 +16,8 @@ public sealed class CommandSlotView : MonoBehaviour
     [SerializeField] private TMP_Text labelText;
 
     private UnityAction currentClickAction;
+    private CommandPanelController tooltipOwner;
+    private CommandTooltipContent tooltipContent;
 
     public Button Button => button;
 
@@ -57,8 +60,38 @@ public sealed class CommandSlotView : MonoBehaviour
 
     public void ClearVisual()
     {
+        HideTooltip();
+        tooltipContent = default;
         SetClickAction(null);
         SetVisual(string.Empty, null, false);
+    }
+
+    internal void SetTooltip(CommandPanelController owner, CommandTooltipContent content)
+    {
+        tooltipOwner = owner;
+        tooltipContent = content;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (tooltipOwner != null && !string.IsNullOrEmpty(tooltipContent.Title))
+            tooltipOwner.ShowTooltip(this, tooltipContent);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        HideTooltip();
+    }
+
+    private void OnDisable()
+    {
+        HideTooltip();
+    }
+
+    private void HideTooltip()
+    {
+        if (tooltipOwner != null)
+            tooltipOwner.HideTooltip(this);
     }
 
 #if UNITY_EDITOR

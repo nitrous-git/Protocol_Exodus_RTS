@@ -50,7 +50,7 @@ public sealed class Faction
         BuildingManager.Tick(deltaTime);
         UnitManager?.Tick(deltaTime);
         
-        Controller?.Tick();
+        Controller?.Tick(deltaTime);
     }
 
     public void TickLate(float deltaTime)

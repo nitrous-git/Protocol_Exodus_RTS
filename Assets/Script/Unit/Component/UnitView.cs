@@ -182,6 +182,15 @@ public class UnitView : MonoBehaviour
     // Animations
     // ---------------------------------------------------------------------
 
+    internal void SyncLocomotion(UnitMotor motor)
+    {
+        if (animator == null || playingOneShot || owner is CombatUnit { IsPlayingAttackAnimation: true })
+            return;
+
+        bool isMoving = motor != null && motor.CurrentVelocity.sqrMagnitude > 0f;
+        PlayAnim(isMoving ? "Walk" : "Idle");
+    }
+
     public void PlayAnim(string newAnimState, bool restart = false)
     {
         if (animator == null)

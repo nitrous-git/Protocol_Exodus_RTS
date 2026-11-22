@@ -50,7 +50,11 @@ public sealed class CommandPanelController : MonoBehaviour
     [SerializeField] private CommandSlotView[] commandSlots = new CommandSlotView[SlotCount];
 
     [SerializeField] private CommandIconLibrary icons;
+    [SerializeField] private CommandTooltipView tooltip;
 
+    private readonly List<UnitBase> tooltipSelectedUnits = new();
+    private ResourceNode tooltipSelectedResource;
+    private bool tooltipsPaused;
     private BuildingBase lastSelectedBuilding;
     private Faction playerFaction;
     private GameContext gameContext;
@@ -84,6 +88,14 @@ public sealed class CommandPanelController : MonoBehaviour
             return;
 
         RefreshCommands();
+
+        if (tooltip == null || !tooltip.IsShowing)
+            return;
+
+        if (TooltipSelectionChanged())
+            HideTooltip();
+        else
+            tooltip.RefreshPosition();
     }
 
     // ---------------------------------------------------------------------
@@ -279,7 +291,7 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ShowMainMenu()
     {
-        ConfigureLocalSlot(BuildMenuSlot, icons?.BuildMenu, true, OpenBuildMenu);
+        ConfigureSlot(BuildMenuSlot, icons?.BuildMenu, true, OpenBuildMenu, CommandTooltipContent.BuildMenu);
     }
 
     private void ShowBuildMenu()
@@ -294,7 +306,7 @@ public sealed class CommandPanelController : MonoBehaviour
         ConfigureGameplaySlot(BarracksSlot, barracksDefinition?.Icon, true, CommandPanelAction.PlaceBuilding(barracksDefinition));
         if (turretDefinition != null)
             ConfigureGameplaySlot(TurretSlot, turretDefinition.Icon, true, CommandPanelAction.PlaceBuilding(turretDefinition));
-        ConfigureLocalSlot(BackSlot, icons?.Back, true, CloseBuildMenu);
+        ConfigureSlot(BackSlot, icons?.Back, true, CloseBuildMenu, CommandTooltipContent.Back);
     }
 
     private void OpenBuildMenu()
@@ -358,7 +370,7 @@ public sealed class CommandPanelController : MonoBehaviour
         UnitDefinition workerDefinition = GetSelectedBuildingUnitDefinition(UnitType.Worker);
 
         ConfigureGameplaySlot(TrainUnitSlot, workerDefinition?.Icon, operational, CommandPanelAction.TrainUnit(workerDefinition));
-        ConfigureLocalSlot(UpgradeSlot, icons?.Upgrade, false, null);
+        ConfigureSlot(UpgradeSlot, icons?.Upgrade, false, null, CommandTooltipContent.Upgrade);
         ConfigureGameplaySlot(SetRallyPointSlot, icons?.RallyPoint, operational, CommandPanelAction.SetRallyPoint());
         ConfigureGameplaySlot(CloseBuildingSelectionSlot, icons?.ClearSelection, true, CommandPanelAction.ClearSelection());
     }
@@ -388,24 +400,72 @@ public sealed class CommandPanelController : MonoBehaviour
 
     private void ConfigureGameplaySlot(int slotIndex, Sprite icon, bool interactable, CommandPanelAction action)
     {
-        CommandSlotView slot = GetSlot(slotIndex);
-
-        if (slot == null)
-            return;
-
-        slot.SetClickAction(interactable ? () => HandleGameplayAction(action) : null);
-        slot.SetVisual(string.Empty, icon, interactable);
+        ConfigureSlot(slotIndex, icon, interactable,
+            interactable ? () => HandleGameplayAction(action) : null,
+            CommandTooltipContent.ForAction(action, interactable));
     }
 
-    private void ConfigureLocalSlot(int slotIndex, Sprite icon, bool interactable, UnityEngine.Events.UnityAction clickAction)
+    private void ConfigureSlot(
+        int slotIndex, Sprite icon, bool interactable, UnityEngine.Events.UnityAction clickAction,
+        CommandTooltipContent tooltipContent)
     {
         CommandSlotView slot = GetSlot(slotIndex);
 
         if (slot == null)
             return;
 
-        slot.SetClickAction(interactable ? clickAction : null);
+        slot.SetClickAction(clickAction);
         slot.SetVisual(string.Empty, icon, interactable);
+        slot.SetTooltip(this, tooltipContent);
+    }
+
+    internal void ShowTooltip(CommandSlotView slot, CommandTooltipContent content)
+    {
+        if (!isInitialized || !isActiveAndEnabled || tooltipsPaused || tooltip == null || !tooltip.isActiveAndEnabled)
+            return;
+
+        tooltip.Show(slot, content);
+
+        // A different selection can keep exactly the same command layout.
+        tooltipSelectedUnits.Clear();
+        tooltipSelectedUnits.AddRange(gameContext.SelectedUnits);
+        tooltipSelectedResource = gameContext.SelectedResourceNode;
+    }
+
+    internal void HideTooltip(CommandSlotView slot = null)
+    {
+        if (tooltip == null || !tooltip.Hide(slot))
+            return;
+
+        tooltipSelectedUnits.Clear();
+        tooltipSelectedResource = null;
+    }
+
+    internal void SetTooltipsPaused(bool paused)
+    {
+        tooltipsPaused = paused;
+        if (paused)
+            HideTooltip();
+    }
+
+    private void OnDisable()
+    {
+        HideTooltip();
+    }
+
+    private bool TooltipSelectionChanged()
+    {
+        IReadOnlyList<UnitBase> units = gameContext.SelectedUnits;
+        if (tooltipSelectedResource != gameContext.SelectedResourceNode || tooltipSelectedUnits.Count != units.Count)
+            return true;
+
+        for (int i = 0; i < units.Count; i++)
+        {
+            if (tooltipSelectedUnits[i] != units[i])
+                return true;
+        }
+
+        return false;
     }
 
     private void HandleGameplayAction(CommandPanelAction action)

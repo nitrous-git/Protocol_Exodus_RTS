@@ -4,9 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(WorkerResourceComponent))]
 public sealed class WorkerUnit : UnitBase
 {
+    [SerializeField, Tooltip("Log failed gathering and delivery approaches for this worker.")]
+    private bool logLogisticsRecovery;
+
     private WorkerResourceComponent resourceComponent;
 
     public WorkerResourceComponent ResourceComponent => resourceComponent;
+    internal bool UsesEconomyAssignments => OwnerFaction?.Controller is AIFactionController { EconomyEnabled: true };
+    internal bool LogLogisticsRecovery => logLogisticsRecovery;
+    internal bool IsWaitingForLogistics => currentState is WorkerInteractionState { IsWaitingToRetry: true };
     //public TerrainGrid TerrainGrid => ownerFaction?.BuildingManager?.TerrainGrid;
     public ResourceNodeRepository ResourceNodeRepository => gameContext?.ResourceNodeRepository;
 
@@ -18,7 +24,7 @@ public sealed class WorkerUnit : UnitBase
 
     public override void IssueCommand(CommandType commandType, CommandContext context)
     {
-        if (!CanReceiveCommands)
+        if (!CanReceiveCommands || !IsAlive)
             return;
         
         ApplyCommandContext(commandType, context);
@@ -55,7 +61,9 @@ public sealed class WorkerUnit : UnitBase
     /// Finds the closest operational headquarters owned by this worker faction.
     /// HeadquartersComponent identifies a valid resource drop-off.
     /// </summary>
-    public BuildingBase FindClosestResourceDropOff()
+    public BuildingBase FindClosestResourceDropOff() => FindClosestResourceDropOff(null);
+
+    internal BuildingBase FindClosestResourceDropOff(ISet<int> triedDropOffs)
     {
         BuildingManager buildingManager = ownerFaction?.BuildingManager;
 
@@ -71,15 +79,7 @@ public sealed class WorkerUnit : UnitBase
         {
             BuildingBase building = buildings[i];
 
-            if (building == null)
-                continue;
-
-            if (!building.IsInitialized || !building.IsAlive || !building.IsOperational)
-            {
-                continue;
-            }
-
-            if (building.Headquarters == null)
+            if (!IsResourceDropOffAvailable(building) || triedDropOffs?.Contains(building.BuildingId) == true)
                 continue;
 
             float distanceSquared = (building.Position - Position).sqrMagnitude;
@@ -94,13 +94,19 @@ public sealed class WorkerUnit : UnitBase
         return closestBuilding;
     }
 
+    internal bool IsResourceDropOffAvailable(BuildingBase building)
+    {
+        return building != null && OwnerFaction != null && building.OwnerFaction == OwnerFaction &&
+               building.IsInitialized && building.IsAlive && building.IsOperational && building.Headquarters != null;
+    }
+
     /// <summary>
     /// Finds another available resource node matching the worker
     /// currently assigned resource type.
     /// </summary>
     public ResourceNode FindReplacementResourceNode()
     {
-        if (resourceComponent == null || !resourceComponent.HasAssignedResourceType)
+        if (UsesEconomyAssignments || resourceComponent == null || !resourceComponent.HasAssignedResourceType)
         {
             return null;
         }

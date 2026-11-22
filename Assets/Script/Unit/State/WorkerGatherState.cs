@@ -1,15 +1,13 @@
-using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Moves a worker beside a ResourceNode and gathers until its cargo
 /// is full or the node is depleted.
 /// </summary>
-public class WorkerGatherState : UnitState<WorkerUnit>
+public class WorkerGatherState : WorkerInteractionState
 {
     private readonly ResourceNode targetNode;
-
-    private GridCoord? reservedInteractionCell;
-    private bool pathRequested;
+    private readonly HashSet<GridCoord> rejectedCells = new();
 
     public WorkerGatherState(ResourceNode targetNode)
     {
@@ -47,37 +45,24 @@ public class WorkerGatherState : UnitState<WorkerUnit>
             return;
         }
 
-        //reservedInteractionCell = unit.ReserveInteractionCell(targetNode);
-        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(unit, targetNode.OriginCell, targetNode.Footprint);
-
-        if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
-        {
-            unit.IssueCommand(CommandType.Idle, CommandContext.None());
-            return;
-        }
-
-        Vector3 interactionPosition = unit.TerrainGrid.CellToWorld(reservedInteractionCell.Value);
-        pathRequested = unit.Motor.MoveTo(interactionPosition);
-
-        if (!pathRequested)
-        {
-            Debug.LogWarning($"{unit.name} could not reach {targetNode.name}.");
-            unit.IssueCommand(CommandType.Idle, CommandContext.None());
-        }
+        FindApproach(unit);
     }
+
+    protected override void FindApproach(WorkerUnit unit) =>
+        StartApproach(unit, targetNode.OriginCell, targetNode.Footprint, rejectedCells, targetNode);
 
     protected override void TickTyped(WorkerUnit unit, float deltaTime)
     {
+        if (!unit.IsAlive)
+            return;
+
         if (!IsNodeAvailable(targetNode))
         {
             ContinueWithReplacementOrIdle(unit);
             return;
         }
 
-        if (!pathRequested || unit.Motor == null)
-            return;
-
-        if (!unit.Motor.HasArrived)
+        if (!TickApproach(unit, deltaTime))
             return;
 
         WorkerResourceComponent resourceComponent = unit.ResourceComponent;
@@ -94,16 +79,6 @@ public class WorkerGatherState : UnitState<WorkerUnit>
 
             ContinueWithReplacementOrIdle(unit);
         }
-    }
-
-    protected override void OnExitTyped(WorkerUnit unit)
-    {
-        if (!reservedInteractionCell.HasValue)
-            return;
-
-        //unit.ReleaseInteractionCell(reservedInteractionCell.Value);
-        unit.ReleaseDestination(reservedInteractionCell.Value);
-        reservedInteractionCell = null;
     }
 
     // ---------------------------------------------------------------------

@@ -113,7 +113,10 @@ public sealed class AttackPositionAllocator
     // combat. Group player Attack commands use AllocateGroup() below.
     // =====================================================================
 
-    public GridCoord? TryAllocate(CombatUnit unit, ITargetable target)
+    public GridCoord? TryAllocate(CombatUnit unit, ITargetable target) =>
+        TryAllocate(unit, target, null);
+
+    internal GridCoord? TryAllocate(CombatUnit unit, ITargetable target, GridCoord? rejectedCell)
     {
         if (unit == null ||
             target == null ||
@@ -152,7 +155,7 @@ public sealed class AttackPositionAllocator
 
         DeploymentEntry entry = new DeploymentEntry(unit, depth01, approachDirection);
 
-        if (TryAllocateNearTopology(entry, target, out GridCoord cell))
+        if (TryAllocateNearTopology(entry, target, out GridCoord cell, rejectedCell))
         {
             return cell;
         }
@@ -341,7 +344,8 @@ public sealed class AttackPositionAllocator
     // Local topology search
     // =====================================================================
 
-    private bool TryAllocateNearTopology(DeploymentEntry entry, ITargetable target, out GridCoord result)
+    private bool TryAllocateNearTopology(DeploymentEntry entry, ITargetable target, out GridCoord result,
+        GridCoord? rejectedCell = null)
     {
         result = default;
 
@@ -501,6 +505,8 @@ public sealed class AttackPositionAllocator
         for (int i = 0; i < candidateBuffer.Count; i++)
         {
             GridCoord candidate = candidateBuffer[i].Cell;
+            if (rejectedCell.HasValue && candidate.x == rejectedCell.Value.x && candidate.z == rejectedCell.Value.z)
+                continue;
 
             //diagnosticReservationAttempts++;
 

@@ -58,6 +58,21 @@ public class UnitMotor : MonoBehaviour
     public bool IsFollowingNavigationSolution => navigationSolution != null;
     public bool HasArrived => !hasPath && navigationSolution == null;
 
+    internal bool IsAtDestination(Vector3 destination) => HasReachedTarget(destination);
+
+    internal bool TryGetPathProgress(out int waypointIndex, out float distanceToWaypoint)
+    {
+        waypointIndex = pathIndex;
+        distanceToWaypoint = 0f;
+        if (!hasPath || pathIndex >= path.Count)
+            return false;
+
+        Vector3 offset = path[pathIndex] - transform.position;
+        offset.y = 0f;
+        distanceToWaypoint = offset.magnitude;
+        return true;
+    }
+
     public Vector3 CurrentVelocity => currentVelocity;
     public Vector3 PreferredVelocity => preferredVelocity;
 

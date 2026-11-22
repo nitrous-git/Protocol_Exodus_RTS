@@ -22,6 +22,15 @@ public sealed class AttackState :
 
     private bool pathRequested;
 
+    private readonly CombatUnitAISettings aiSettings;
+    private readonly bool canPursue;
+    private GridCoord? rejectedAttackCell;
+    private Vector3 plannedTargetPosition;
+    private Vector3 lastProgressPosition;
+    private float repathDelay;
+    private float timeWithoutProgress;
+    private int failedApproaches;
+
     // =====================================================================
     // Automatic / individual combat
     //
@@ -58,6 +67,13 @@ public sealed class AttackState :
             preallocatedAttackCell;
     }
 
+    internal AttackState(ITargetable target, CombatUnitAISettings settings, bool canPursue)
+        : this(target)
+    {
+        aiSettings = settings;
+        this.canPursue = canPursue;
+    }
+
     // =====================================================================
     // State
     // =====================================================================
@@ -70,9 +86,8 @@ public sealed class AttackState :
         unit.SetCurrentTarget(
             target);
 
-        //unit.View?.PlayAnim("Idle");
-
-        RequestAttackPosition(unit);
+        if (aiSettings == null)
+            RequestAttackPosition(unit);
     }
 
     protected override void TickTyped(
@@ -87,6 +102,12 @@ public sealed class AttackState :
                 target))
         {
             unit.FinishCombatEngagement();
+            return;
+        }
+
+        if (aiSettings != null)
+        {
+            TickAICombat(unit, deltaTime);
             return;
         }
 
@@ -110,7 +131,7 @@ public sealed class AttackState :
                 if (HasReachedAssignedRadialDepth(
                         unit))
                 {
-                    FinishTacticalApproach(
+                    StopTacticalApproach(
                         unit);
                 }
                 else if (unit.Motor != null &&
@@ -124,7 +145,7 @@ public sealed class AttackState :
                     // Exact assigned cell reached before our
                     // radial tolerance triggered.
                     //
-                    FinishTacticalApproach(
+                    StopTacticalApproach(
                         unit);
                 }
             }
@@ -140,7 +161,7 @@ public sealed class AttackState :
                     return;
                 }
 
-                FinishTacticalApproach(
+                StopTacticalApproach(
                     unit);
             }
         }
@@ -168,6 +189,78 @@ public sealed class AttackState :
         unit.CancelAttackAnimation();
 
         unit.ClearCurrentTarget();
+    }
+
+    private void TickAICombat(CombatUnit unit, float deltaTime)
+    {
+        repathDelay -= deltaTime;
+        if (unit.IsWithinAttackRange(target))
+        {
+            if (pathRequested)
+                StopTacticalApproach(unit);
+
+            failedApproaches = 0;
+            rejectedAttackCell = null;
+            timeWithoutProgress = 0f;
+            unit.UpdateAttack(deltaTime);
+            return;
+        }
+
+        if (!canPursue)
+        {
+            unit.FinishCombatEngagement();
+            return;
+        }
+
+        if (pathRequested)
+        {
+            timeWithoutProgress += deltaTime;
+            if (FlatDistance(lastProgressPosition, unit.Position) >= CombatUnitAISettings.ProgressDistance)
+            {
+                lastProgressPosition = unit.Position;
+                timeWithoutProgress = 0f;
+            }
+
+            bool stalled = unit.Motor.HasArrived || timeWithoutProgress >= CombatUnitAISettings.StalledTravelTimeout;
+            bool destinationBlocked = !unit.TerrainGrid.HasNavigationClearance(reservedAttackCell.Value, unit.NavigationRadius);
+            if (stalled || destinationBlocked)
+            {
+                failedApproaches++;
+                rejectedAttackCell = reservedAttackCell;
+            }
+            else if (repathDelay > 0f || !ShouldRepath(unit))
+            {
+                return;
+            }
+
+            // A replacement path can start this tick.
+            StopTacticalApproach(unit);
+        }
+
+        if (failedApproaches >= 3)
+        {
+            unit.FinishCombatEngagement();
+            return;
+        }
+
+        if (repathDelay <= 0f)
+        {
+            unit.CancelAttackAnimation();
+            repathDelay = Mathf.Max(0.05f, aiSettings.repathInterval);
+            plannedTargetPosition = target.Position;
+            lastProgressPosition = unit.Position;
+            RequestAttackPosition(unit);
+            if (!pathRequested)
+                failedApproaches++;
+        }
+    }
+
+    private bool ShouldRepath(CombatUnit unit)
+    {
+        Vector3 targetPosition = target.Position;
+        Vector3 destination = unit.TerrainGrid.CellToWorld(reservedAttackCell.Value);
+        return FlatDistance(plannedTargetPosition, targetPosition) >= aiSettings.repathDistance &&
+            FlatDistance(destination, targetPosition) > unit.GetAttackRange();
     }
 
     // =====================================================================
@@ -253,7 +346,7 @@ public sealed class AttackState :
                     .Attack
                     .TryAllocate(
                         unit,
-                        target);
+                        target, rejectedAttackCell);
 
             if (!reservedAttackCell
                 .HasValue)
@@ -291,6 +384,8 @@ public sealed class AttackState :
 
         if (!pathRequested)
         {
+            if (aiSettings != null)
+                rejectedAttackCell = reservedAttackCell;
             ReleaseAttackPosition(
                 unit);
 
@@ -299,12 +394,7 @@ public sealed class AttackState :
                 unit.PrepareMovementGroup(
                     0);
             }
-
-            return;
         }
-
-        unit.View?.PlayAnim(
-            "Walk");
     }
 
     // =====================================================================
@@ -366,8 +456,7 @@ public sealed class AttackState :
                    tolerance;
     }
 
-    private void FinishTacticalApproach(
-        CombatUnit unit)
+    private void StopTacticalApproach(CombatUnit unit)
     {
         //
         // Important:
@@ -398,9 +487,6 @@ public sealed class AttackState :
             unit.PrepareMovementGroup(
                 0);
         }
-
-        unit.View?.PlayAnim(
-            "Idle");
     }
 
     // =====================================================================
