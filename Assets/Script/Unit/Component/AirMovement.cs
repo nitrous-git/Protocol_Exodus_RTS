@@ -3,6 +3,7 @@ using UnityEngine;
 
 internal sealed class AirMovement
 {
+    private const float FlightAltitude = 6f;
     private const float SeparationPadding = 0.25f;
     private const float ArrivalTolerance = 0.05f;
     private const float YawSpeed = 240f;
@@ -110,7 +111,7 @@ internal sealed class AirMovement
 
     internal static Vector3 Project(Vector3 position, TerrainGrid grid, float radius)
     {
-        position.y = grid?.FlightAltitude ?? TerrainGrid.DefaultFlightAltitude;
+        position.y = FlightAltitude;
         return grid == null ? position : grid.ClampHorizontalPosition(position, radius);
     }
 

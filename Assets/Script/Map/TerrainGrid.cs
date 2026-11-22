@@ -3,12 +3,9 @@ using UnityEngine;
 
 public class TerrainGrid
 {
-    internal const float DefaultFlightAltitude = 9f;
-
     public int Width { get; private set; }
     public int Height { get; private set; }
     public float CellSize { get; private set; }
-    internal float FlightAltitude { get; }
     public GridCell[,] cells { get; private set; }
 
     private Terrain terrain;
@@ -21,11 +18,8 @@ public class TerrainGrid
 
     private StaticClearanceField staticClearanceField;
 
-    public TerrainGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope,
-        float flightAltitude = DefaultFlightAltitude)
+    public TerrainGrid(Terrain terrain, float cellSize, float maxWalkableSlope, float maxBuildableSlope)
     {
-        FlightAltitude = flightAltitude;
-
         if (terrain == null)
         {
             Debug.LogError("TerrainGrid cannot be created because Terrain is null.");

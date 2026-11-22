@@ -6402,7 +6402,6 @@ MonoBehaviour:
   cellSize: 1
   maxWalkableSlope: 35
   maxBuildableSlope: 8
-  flightAltitude: 70
 --- !u!4 &1546265023
 Transform:
   m_ObjectHideFlags: 0

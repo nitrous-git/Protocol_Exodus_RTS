@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class BattleShipEditModeTests
 {
     private const string TerranPath = "Assets/Data/Faction/FactionDefinition/FactionDefinition_Terran.asset";
-    private const float FlightAltitude = 36f;
+    private const float FlightAltitude = 6f;
     private TerrainData terrainData;
     private TerrainGrid grid;
     private GameContext context;
@@ -23,7 +23,7 @@ public sealed class BattleShipEditModeTests
         terrainData = new TerrainData { heightmapResolution = 33, size = new Vector3(96f, 10f, 96f) };
         var terrain = Terrain.CreateTerrainGameObject(terrainData).GetComponent<Terrain>();
         terrain.transform.SetParent(world, false);
-        grid = new TerrainGrid(terrain, 1f, 35f, 8f, FlightAltitude);
+        grid = new TerrainGrid(terrain, 1f, 35f, 8f);
         navigation = new GridNavigationStateSystem(grid);
         pathfinding = new RecordingPathfinding();
         context = new GameContext();

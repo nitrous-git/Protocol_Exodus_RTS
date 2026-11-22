@@ -12,10 +12,6 @@ public class TerrainGridSystem : MonoBehaviour
     [SerializeField] private float maxWalkableSlope = 35f;
     [SerializeField] private float maxBuildableSlope = 8f;
 
-    [Header("Air Navigation")]
-    [Tooltip("Shared world-space Y coordinate for aircraft on this map.")]
-    [SerializeField] private float flightAltitude = TerrainGrid.DefaultFlightAltitude;
-
     public TerrainGrid Grid { get; private set; }
 
     public Terrain Terrain => terrain;
@@ -44,7 +40,7 @@ public class TerrainGridSystem : MonoBehaviour
         if (Grid != null)
             return;
 
-        Grid = new TerrainGrid(terrain, cellSize, maxWalkableSlope, maxBuildableSlope, flightAltitude);
+        Grid = new TerrainGrid(terrain, cellSize, maxWalkableSlope, maxBuildableSlope);
     }
 }
     
