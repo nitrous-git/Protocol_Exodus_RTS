@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class GameBuilder : MonoBehaviour
 {
+    private enum MatchProfile { StandardMatch, DevelopmentSandbox }
+
     [Header("Core")]
     [SerializeField] private GameLoop gameLoop;
     [SerializeField] private MatchWorld matchWorld;
@@ -15,10 +17,16 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private FactionDefinition FactionTerran_Definition;
     [SerializeField] private FactionDefinition FactionSpecter_Definition;
 
-    [Header("Starting Units")]
-    //[SerializeField] private UnitBase combatUnitPrefab;
+    [Header("Match Setup")]
+    [SerializeField] private MatchProfile matchProfile = MatchProfile.StandardMatch;
+    [SerializeField, Min(0)] private int standardStartingMinerals = 550;
+    [SerializeField, Min(0)] private int standardStartingSupply = 10;
+    [Tooltip("Development Sandbox only. Standard Match starts with workers and builds headquarters during play.")]
     [SerializeField] private int startingCombatCount = 1;
     [SerializeField] private float startingUnitSpacing = 1f;
+
+    [Header("AI Strategy")]
+    [SerializeField] private AIStrategySettings aiStrategy = new AIStrategySettings();
 
     [Header("AI Waves")]
     [SerializeField] private AIWaveSettings aiWaves = new AIWaveSettings();
@@ -27,6 +35,7 @@ public class GameBuilder : MonoBehaviour
     [SerializeField] private AIEconomySettings aiEconomy = new AIEconomySettings();
 
     private AIFactionController aiFactionController;
+    private bool IsStandardMatch => matchProfile == MatchProfile.StandardMatch;
 
     public GameContext GameContext { get; private set; }
     public FactionManager FactionManager { get; private set; }
@@ -91,24 +100,21 @@ public class GameBuilder : MonoBehaviour
         PlayerFactionController playerFactionController = new();
 
         Faction playerFaction = BuildFaction(FactionTerran_Definition, FactionColorType.Blue, playerFactionController);
-        SpawnStartingUnits(playerFaction, matchWorld.FactionSpawnPoints[0]);
 
-        aiFactionController = new AIFactionController(aiWaves, aiEconomy);
+        aiFactionController = new AIFactionController(aiWaves, aiEconomy,
+            IsStandardMatch || aiStrategy.enableStrategyAI ? aiStrategy : null);
         Faction aiFaction01 = BuildFaction(FactionTerran_Definition, FactionColorType.Green, aiFactionController);
-        SpawnStartingUnits(aiFaction01, matchWorld.FactionSpawnPoints[1]);
-
-        //Faction aiFaction02 = BuildFaction(FactionTerran_Definition, FactionColorType.Red, new AIFactionController());
-        //SpawnStartingUnits(aiFaction02, matchWorld.FactionSpawnPoints[2]);
 
         FactionManager.AddFaction(playerFaction);
         FactionManager.AddFaction(aiFaction01);
-        //FactionManager.AddFaction(aiFaction02);
 
         PlayerFaction = playerFaction;
         GameContext.SetPlayerFaction(PlayerFaction);
 
         // --- Initialize ---
         matchWorld.Initialize(GameContext, FactionManager, ResourceNodeRepository, ProjectileManager, PlayerFaction);
+        SeedStartingAssets(playerFaction, matchWorld.FactionSpawnPoints[0]);
+        SeedStartingAssets(aiFaction01, matchWorld.FactionSpawnPoints[1]);
         matchWorld.TerrainGrid?.RebuildStaticClearanceField(); // Build clearance field once after all static initialization
 
         matchUI?.Initialize(PlayerFaction, GameContext, matchWorld, gameLoop);
@@ -131,7 +137,9 @@ public class GameBuilder : MonoBehaviour
     {
         UnitManager unitManager = new UnitManager(GameContext, matchWorld.PathfindingService, matchWorld.UnitsRoot);
         BuildingManager buildingManager = new BuildingManager(GameContext, matchWorld.TerrainGrid, matchWorld.BuildingsRoot); // we can evetually remove TerrainGrid and simply get it from the GameContext
-        ResourceManager resourceManager = new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
+        ResourceManager resourceManager = IsStandardMatch
+            ? new ResourceManager(standardStartingMinerals, 0, standardStartingSupply)
+            : new ResourceManager(definition.startingMinerals, definition.startingGas, definition.startingMaxSupply);
 
         return new Faction(
             definition,
@@ -210,62 +218,78 @@ public class GameBuilder : MonoBehaviour
         if (Application.isPlaying && aiFactionController?.EconomyManager is AIEconomyManager economy)
             Debug.Log(economy.GetStatus(), this);
     }
+
+    [ContextMenu("AI Strategy/Log Strategy Status")]
+    private void LogAIStrategyStatus()
+    {
+        if (Application.isPlaying)
+            Debug.Log(aiFactionController?.Strategy?.GetStatus() ?? "AI strategy is disabled for this match.", this);
+    }
 #endif
 
-    // Helper methods (should be moved later on)
-    private void SpawnStartingUnits(Faction faction, Transform spawnPoint)
+    private void SeedStartingAssets(Faction faction, Transform spawnPoint)
     {
-        if (faction == null || matchWorld == null)
-            return;
-
-        UnitDefinition combatDefinition; // = faction.Definition?.GetUnitDefinition(UnitType.Mech);
-
-        //if (combatDefinition.Prefab == null)
-        //{
-        //    Debug.LogWarning("GameBuilder has no workerUnitPrefab assigned.");
-        //    return;
-        //}
-
         Vector3 origin = spawnPoint != null ? spawnPoint.position : Vector3.zero;
         Quaternion rotation = spawnPoint != null ? spawnPoint.rotation : Quaternion.identity;
-        if (faction.Controller is AIFactionController aiController)
-            aiController.SetBaseAnchor(origin);
+        var aiController = faction.Controller as AIFactionController;
+        aiController?.SetBaseAnchor(origin);
+        if (IsStandardMatch)
+        {
+            SpawnStartingWorkers(faction, origin, rotation);
+            return;
+        }
 
+        int columns = Mathf.CeilToInt(Mathf.Sqrt(startingCombatCount));
         for (int i = 0; i < startingCombatCount; i++)
         {
-            if (i%5 == 0)
-            {
-                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Mech);
-            }
-            else
-            {
-                combatDefinition = faction.Definition?.GetUnitDefinition(UnitType.Combat);
-            }
-
-            Vector3 spawnPosition = origin + GetStartingUnitOffset(i);
-
-            faction.UnitManager.SpawnUnit(
-                combatDefinition.Prefab,
-                spawnPosition,
-                rotation,
-                matchWorld.UnitsRoot
-            );
+            UnitDefinition definition = faction.Definition.GetUnitDefinition(i % 5 == 0 ? UnitType.Mech : UnitType.Combat);
+            Vector3 offset = new(i % columns * startingUnitSpacing, 0f, i / columns * startingUnitSpacing);
+            if (definition != null && definition.Prefab != null)
+                faction.UnitManager.SpawnUnit(definition.Prefab, origin + offset, rotation);
         }
     }
 
-    private Vector3 GetStartingUnitOffset(int index)
+    private void SpawnStartingWorkers(Faction faction, Vector3 origin, Quaternion rotation)
     {
- 
-        int columns = Mathf.CeilToInt(Mathf.Sqrt(startingCombatCount));
-        int rows = Mathf.CeilToInt((float)startingCombatCount / columns);
+        UnitDefinition worker = faction.Definition.GetUnitDefinition(UnitType.Worker);
+        if (worker == null || worker.Prefab == null)
+        {
+            Debug.LogError($"Unable to seed starting workers for {faction.ColorType}. The worker definition is missing.", this);
+            return;
+        }
 
-        int row = index / columns;
-        int column = index % columns;
+        // Keep the spawn area open for either orientation of a future headquarters.
+        BuildingDefinition headquarters = faction.Definition.GetBuildingDefinition(BuildingType.CommandCenter);
+        Vector2Int footprint = headquarters != null ? headquarters.FootprintSize : Vector2Int.zero;
+        int firstRing = Mathf.Max(footprint.x, footprint.y) / 2 + 1;
+        int searchRadius = Mathf.Max(24, firstRing);
+        int remaining = Mathf.Max(2, aiStrategy.initialWorkerGoal);
+        TerrainGrid grid = matchWorld.TerrainGrid;
+        GridCoord center = grid.WorldToCell(origin);
+        float radius = worker.NavigationRadius;
+        for (int ring = firstRing; ring <= searchRadius && remaining > 0; ring++)
+        {
+            for (int z = -ring; z <= ring && remaining > 0; z++)
+            {
+                int step = Mathf.Abs(z) == ring ? 1 : Mathf.Max(1, 2 * ring);
+                for (int x = -ring; x <= ring && remaining > 0; x += step)
+                {
+                    GridCoord cell = new(center.x + x, center.z + z);
+                    if (!grid.IsStaticallyTraversable(cell, radius))
+                        continue;
 
-        float x = column * startingUnitSpacing;
-        float z = row * startingUnitSpacing;
+                    Vector3 position = grid.CellToWorld(cell);
+                    if (!GridNavigationStateSystem.IsUnitSpaceClear(position, radius))
+                        continue;
 
-        return new Vector3(x, 0f, z);
+                    if (faction.UnitManager.SpawnUnit(worker.Prefab, position, rotation) != null)
+                        remaining--;
+                }
+            }
+        }
+
+        if (remaining > 0)
+            Debug.LogError($"Unable to find space for {remaining} starting workers for {faction.ColorType}.", this);
     }
 
 }

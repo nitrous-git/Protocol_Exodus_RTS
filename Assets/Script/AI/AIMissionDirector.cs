@@ -1,8 +1,18 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public sealed class AIMissionDirector
 {
+    internal enum LaunchResult { Started, AssaultActive, NoBase, InsufficientRecruits, NoObjective, StagingUnavailable }
+
+    internal struct MilitaryStatus
+    {
+        public int Living, Available, Defending, Assaulting, Recovering, NearbyDefenders, NearbyAvailable;
+        public bool HasAssault;
+    }
+
     private const float DecisionInterval = 0.4f;
 
     private readonly AIFactionController controller;
@@ -10,6 +20,8 @@ public sealed class AIMissionDirector
     private readonly AIWaveSettings settings;
     private readonly HashSet<CombatUnit> assignedUnits = new();
     private readonly List<CombatUnit> recruits = new();
+    private readonly Comparison<CombatUnit> compareRecruits;
+    private Vector3 recruitAnchor;
 
     private AISquadMission assault;
     private AISquadMission defense;
@@ -21,6 +33,9 @@ public sealed class AIMissionDirector
     public AISquadMissionState? DefenseState => defense?.State;
     public AISquadMissionState? LastAssaultOutcome { get; private set; }
     public AISquadMissionState? LastDefenseOutcome { get; private set; }
+    internal int AssaultCompletionRevision { get; private set; }
+    internal int LastAssaultCasualties { get; private set; }
+    internal int ManualCancellationRevision { get; private set; }
 
     internal Faction Faction => controller.Faction;
     internal GameContext Context => context;
@@ -31,6 +46,7 @@ public sealed class AIMissionDirector
         this.controller = controller;
         this.context = context;
         this.settings = settings;
+        compareRecruits = CompareRecruits;
         nextWaveAt = Mathf.Max(0f, settings.initialDelay);
     }
 
@@ -48,16 +64,20 @@ public sealed class AIMissionDirector
         DispatchWave();
     }
 
-    public bool TryLaunchAssault()
-    {
-        if (assault != null || !controller.BaseAnchor.HasValue)
-            return false;
+    public bool TryLaunchAssault() => TryLaunchAssault(settings.minimumParticipants, settings.maximumParticipants,
+        settings.homeDefenders) == LaunchResult.Started;
 
-        Vector3 anchor = controller.BaseAnchor.Value;
-        int minimum = Mathf.Max(1, settings.minimumParticipants);
-        int maximum = Mathf.Max(minimum, settings.maximumParticipants);
-        int defendersOnDuty = defense != null && defense.Covers(anchor) ? defense.MemberCount : 0;
-        int reserve = Mathf.Max(0, settings.homeDefenders - defendersOnDuty);
+    internal LaunchResult TryLaunchAssault(int minimum, int maximum, int homeReserve, float maximumDuration = 0f,
+        Vector3? home = null)
+    {
+        if (assault != null)
+            return LaunchResult.AssaultActive;
+        if ((home ?? controller.BaseAnchor) is not Vector3 anchor)
+            return LaunchResult.NoBase;
+
+        minimum = Mathf.Max(1, minimum);
+        maximum = Mathf.Max(minimum, maximum);
+        int reserve = GetUnassignedReserve(homeReserve, anchor);
 
         CollectRecruits(anchor);
         int count = Mathf.Min(maximum, recruits.Count - reserve);
@@ -65,37 +85,37 @@ public sealed class AIMissionDirector
         if (objective == null)
         {
             recruits.Clear();
-            return false;
+            return count < minimum ? LaunchResult.InsufficientRecruits : LaunchResult.NoObjective;
         }
 
         var mission = new AISquadMission(this, anchor, recruits, reserve, count);
         recruits.Clear();
-        if (!mission.TryAssemble(objective, time))
+        if (!mission.TryAssemble(objective, time, maximumDuration))
         {
             mission.Finish(AISquadMissionState.Failed);
-            return false;
+            return LaunchResult.StagingUnavailable;
         }
 
         assault = mission;
-        return true;
+        return LaunchResult.Started;
     }
 
-    public bool TryDefendArea(Vector3 anchor, float guardRadius, int participantCount)
+    public bool TryDefendArea(Vector3 anchor, float guardRadius, int participantCount) =>
+        TryDefendArea(anchor, guardRadius, participantCount, 0);
+
+    private bool TryDefendArea(Vector3 anchor, float guardRadius, int participantCount, int guardSlots, Vector3? rally = null)
     {
-        TerrainGrid grid = context.TerrainGrid;
-        if (defense != null || participantCount < 1 || !float.IsFinite(guardRadius) || guardRadius <= 0f ||
-            !float.IsFinite(anchor.x) || !float.IsFinite(anchor.z) || grid == null ||
-            !grid.IsInside(grid.WorldToCell(anchor)))
+        if (defense != null || participantCount < 1 || !IsValidGuardArea(anchor, guardRadius))
             return false;
 
-        CollectRecruits(anchor);
+        CollectRecruits(rally ?? anchor);
         int count = Mathf.Min(participantCount, recruits.Count);
         if (count == 0)
             return false;
 
         var mission = new AISquadMission(this, anchor, recruits, 0, count);
         recruits.Clear();
-        if (!mission.TryDefend(guardRadius))
+        if (!mission.TryDefend(guardRadius, guardSlots, rally))
         {
             mission.Finish(AISquadMissionState.Failed);
             return false;
@@ -104,6 +124,46 @@ public sealed class AIMissionDirector
         defense = mission;
         return true;
     }
+
+    internal void MaintainDefense(Vector3 anchor, float guardRadius, int desiredCount, int guardSlots, Vector3? rally)
+    {
+        if (desiredCount < 1)
+        {
+            CancelDefense();
+            return;
+        }
+        if (!IsValidGuardArea(anchor, guardRadius))
+            return;
+
+        if (defense == null)
+        {
+            TryDefendArea(anchor, guardRadius, desiredCount, guardSlots, rally);
+            return;
+        }
+
+        defense.UpdateGuardArea(anchor, guardRadius, desiredCount, guardSlots, rally);
+        if (defense.MemberCount >= desiredCount)
+            return;
+
+        CollectRecruits(rally ?? anchor);
+        defense.ReinforceGuard(recruits, desiredCount);
+        recruits.Clear();
+        if (defense.MemberCount == 0)
+        {
+            defense.Finish(AISquadMissionState.Failed);
+            EndDefense();
+        }
+    }
+
+    internal int GetUnassignedReserve(int homeReserve, Vector3 home)
+    {
+        int defendersOnDuty = defense != null && defense.Covers(home) ? defense.MemberCount : 0;
+        return Mathf.Max(0, homeReserve - defendersOnDuty);
+    }
+
+    private bool IsValidGuardArea(Vector3 anchor, float radius) => float.IsFinite(radius) && radius > 0f &&
+        float.IsFinite(anchor.x) && float.IsFinite(anchor.z) && context.TerrainGrid is TerrainGrid grid &&
+        grid.IsInside(grid.WorldToCell(anchor));
 
     public void CancelAssault()
     {
@@ -125,6 +185,7 @@ public sealed class AIMissionDirector
 
     public void CancelAll()
     {
+        ManualCancellationRevision++;
         CancelAssault();
         CancelDefense();
         ScheduleCooldown();
@@ -149,7 +210,8 @@ public sealed class AIMissionDirector
 
     private void DispatchWave()
     {
-        if (settings.automaticWaves && assault == null && time >= nextWaveAt && !TryLaunchAssault())
+        if (controller.Strategy == null && settings.automaticWaves && assault == null && time >= nextWaveAt &&
+            !TryLaunchAssault())
             ScheduleCooldown();
     }
 
@@ -158,6 +220,8 @@ public sealed class AIMissionDirector
     private void EndAssault()
     {
         LastAssaultOutcome = assault.State;
+        LastAssaultCasualties = assault.Casualties;
+        AssaultCompletionRevision++;
         assault = null;
         ScheduleCooldown();
     }
@@ -175,22 +239,56 @@ public sealed class AIMissionDirector
         unit.IsInitialized && unit.IsAlive && unit.Motor != null && unit.CanAttack() &&
         unit.CombatAI?.IsFitForSquad == true;
 
+    private bool CanRecruit(CombatUnit unit) => CanParticipate(unit) && !assignedUnits.Contains(unit) &&
+        !unit.CombatAI.IsMissionActive && unit.CurrentCommand == CommandType.Idle && unit.CurrentTarget == null;
+
+    internal MilitaryStatus ObserveMilitary(Vector3 guardAnchor, float guardRadius)
+    {
+        MilitaryStatus status = new()
+        {
+            Defending = defense?.MemberCount ?? 0,
+            Assaulting = assault?.MemberCount ?? 0,
+            HasAssault = assault != null,
+            NearbyDefenders = defense?.CountNear(guardAnchor, guardRadius) ?? 0
+        };
+        float radiusSquared = guardRadius * guardRadius;
+        IReadOnlyList<UnitBase> units = Faction.UnitManager.UnitList;
+        for (int i = 0; i < units.Count; i++)
+        {
+            if (units[i] is not CombatUnit unit || unit == null || !unit.IsAlive)
+                continue;
+
+            status.Living++;
+            if (unit.CombatAI?.IsFitForSquad == false)
+                status.Recovering++;
+            if (CanRecruit(unit))
+            {
+                status.Available++;
+                if (DistanceSquared(unit.Position, guardAnchor) <= radiusSquared)
+                    status.NearbyAvailable++;
+            }
+        }
+        return status;
+    }
+
     private void CollectRecruits(Vector3 anchor)
     {
         recruits.Clear();
         IReadOnlyList<UnitBase> units = Faction.UnitManager.UnitList;
         for (int i = 0; i < units.Count; i++)
         {
-            if (units[i] is CombatUnit unit && CanParticipate(unit) && !assignedUnits.Contains(unit) &&
-                !unit.CombatAI.IsMissionActive && unit.CurrentCommand == CommandType.Idle && unit.CurrentTarget == null)
+            if (units[i] is CombatUnit unit && CanRecruit(unit))
                 recruits.Add(unit);
         }
 
-        recruits.Sort((first, second) =>
-        {
-            int distance = DistanceSquared(first.Position, anchor).CompareTo(DistanceSquared(second.Position, anchor));
-            return distance != 0 ? distance : first.UnitId.CompareTo(second.UnitId);
-        });
+        recruitAnchor = anchor;
+        recruits.Sort(compareRecruits);
+    }
+
+    private int CompareRecruits(CombatUnit first, CombatUnit second)
+    {
+        int distance = DistanceSquared(first.Position, recruitAnchor).CompareTo(DistanceSquared(second.Position, recruitAnchor));
+        return distance != 0 ? distance : first.UnitId.CompareTo(second.UnitId);
     }
 
     internal bool IsValidObjective(ITargetable target) => target is Object unityObject && unityObject != null &&

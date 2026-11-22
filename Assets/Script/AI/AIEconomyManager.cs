@@ -2,8 +2,36 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+internal readonly struct AIEconomyGoals
+{
+    public readonly int Workers, GasWorkers, Barracks, Army, SupplyBuffer;
+    public readonly float InfantryToMechRatio;
+    public readonly bool InfantryFirst;
+
+    public AIEconomyGoals(int workers, int gasWorkers, int barracks, int army, int supplyBuffer,
+        float infantryToMechRatio, bool infantryFirst)
+    {
+        Workers = workers;
+        GasWorkers = gasWorkers;
+        Barracks = barracks;
+        Army = army;
+        SupplyBuffer = supplyBuffer;
+        InfantryToMechRatio = infantryToMechRatio;
+        InfantryFirst = infantryFirst;
+    }
+}
+
 public sealed class AIEconomyManager
 {
+    internal struct Situation
+    {
+        public BuildingBase Headquarters;
+        public int Minerals, Gas, OccupiedSupply, MaxSupply, PendingSupply;
+        public int Workers, ActiveGatherers, HeadquartersCount, Barracks, OperationalBarracks;
+        public int PendingBuildings, QueuedWorkers, QueuedCombat;
+        public bool CanReplaceHeadquarters, ProductionExitBlocked;
+    }
+
     [Flags]
     private enum Blocked
     {
@@ -29,8 +57,6 @@ public sealed class AIEconomyManager
     private readonly Dictionary<ResourceNode, int> nodeLoads = new();
     private readonly Dictionary<(WorkerUnit Worker, ResourceNode Node), float> gatheringRetry = new();
     private readonly List<(WorkerUnit Worker, ResourceNode Node)> expiredGatheringRetries = new();
-    private readonly Dictionary<WorkerUnit, float> deliveryRetry = new();
-    private readonly List<WorkerUnit> expiredDeliveryRetries = new();
 
     private Faction Faction => controller.Faction;
     private ResourceManager Resources => Faction.ResourceManager;
@@ -48,6 +74,61 @@ public sealed class AIEconomyManager
     private int queuedWorkers;
     private int infantryCount;
     private int mechCount;
+    private int queuedCombat;
+    private int pendingBuildings;
+    private AIEconomyGoals? strategicGoals;
+
+    internal bool HasBarracksDefinition => barracksDefinition != null && barracksDefinition.Prefab != null;
+    internal bool UsesGasForProduction => (infantryDefinition?.Cost.Gas ?? 0) > 0 || (mechDefinition?.Cost.Gas ?? 0) > 0;
+
+    internal void SetStrategicGoals(AIEconomyGoals goals) => strategicGoals = goals;
+
+    internal Situation Observe()
+    {
+        ReadFactionState();
+        int activeGatherers = 0;
+        foreach (WorkerUnit worker in workers)
+        {
+            WorkerResourceComponent cargo = worker.ResourceComponent;
+            if (!worker.IsWaitingForLogistics &&
+                ((worker.CurrentCommand == CommandType.Gather && IsAvailable(cargo.AssignedNode)) ||
+                 (worker.CurrentCommand == CommandType.Deliver && cargo.HasCargo)))
+                activeGatherers++;
+        }
+
+        return new Situation
+        {
+            Headquarters = headquarters,
+            HeadquartersCount = headquartersCount,
+            Workers = workers.Count,
+            ActiveGatherers = activeGatherers,
+            Barracks = barracksCount,
+            OperationalBarracks = barracksProducers.Count,
+            PendingBuildings = pendingBuildings,
+            QueuedWorkers = queuedWorkers,
+            QueuedCombat = queuedCombat,
+            Minerals = Resources.Minerals,
+            Gas = Resources.Gas,
+            OccupiedSupply = Faction.UnitManager.OccupiedPopulation,
+            MaxSupply = Resources.MaxSupply,
+            PendingSupply = pendingSupply,
+            CanReplaceHeadquarters = headquartersDefinition != null && headquartersDefinition.Prefab != null &&
+                Resources.CanAffordResources(headquartersDefinition.Cost),
+            ProductionExitBlocked = hasWaitingProducer
+        };
+    }
+
+    internal bool CanFundBarracksExpansion(int mineralBuffer)
+    {
+        if (!HasBarracksDefinition || headquartersDefinition == null)
+            return false;
+
+        Cost barracks = barracksDefinition.Cost;
+        Cost headquartersCost = headquartersDefinition.Cost;
+        Cost worker = workerDefinition != null ? workerDefinition.Cost : Cost.Zero;
+        return Resources.Minerals >= barracks.Minerals + headquartersCost.Minerals + worker.Minerals + mineralBuffer &&
+            Resources.Gas >= barracks.Gas + headquartersCost.Gas + worker.Gas;
+    }
 
     internal AIEconomyManager(AIFactionController controller, GameContext context, AIEconomySettings settings)
     {
@@ -66,7 +147,7 @@ public sealed class AIEconomyManager
 
     public void Tick(float deltaTime)
     {
-        if (!settings.enableEconomyAI || deltaTime <= 0f)
+        if (!controller.EconomyEnabled || deltaTime <= 0f)
             return;
 
         time += deltaTime;
@@ -82,14 +163,13 @@ public sealed class AIEconomyManager
         nextDecision = time;
         constructionRetry.Clear();
         gatheringRetry.Clear();
-        deliveryRetry.Clear();
     }
 
     public string GetStatus()
     {
         ReadFactionState();
         Blocked status = hasWaitingProducer ? blocked | Blocked.ProductionExit : blocked;
-        return $"{Faction.Name} ({Faction.ColorType}) AI economy {(settings.enableEconomyAI ? "enabled" : "disabled")}. " +
+        return $"{Faction.Name} ({Faction.ColorType}) AI economy {(controller.EconomyEnabled ? "enabled" : "disabled")}. " +
             $"Command Centers {headquartersCount}, Barracks {barracksCount}, Supply Depots {depotCount}, " +
             $"workers {workers.Count} (+{queuedWorkers} queued), Infantry/Mechs including queued {infantryCount}/{mechCount}, " +
             $"supply {Faction.UnitManager.OccupiedPopulation}/{Resources.MaxSupply} (+{pendingSupply} pending), " +
@@ -106,9 +186,11 @@ public sealed class AIEconomyManager
         }
 
         ReadFactionState();
-        int workerTarget = Mathf.Max(0, settings.targetWorkerCount);
+        int workerTarget = Mathf.Max(0, strategicGoals?.Workers ?? settings.targetWorkerCount);
+        int barracksTarget = Mathf.Max(0, strategicGoals?.Barracks ?? settings.targetBarracksCount);
         int minimumWorkers = Mathf.Min(2, workerTarget);
-        int mineralWorkers = AssignWorkers(minimumWorkers);
+        int gasTarget = Mathf.Clamp(strategicGoals?.GasWorkers ?? settings.targetGasWorkerCount, 0, workerTarget);
+        int mineralWorkers = AssignWorkers(minimumWorkers, gasTarget);
         if (headquarters == null)
         {
             if (headquartersCount == 0)
@@ -135,13 +217,25 @@ public sealed class AIEconomyManager
         }
 
         economyEstablished |= minimumWorkers == 0 || mineralWorkers > 0;
-        if (economyEstablished && barracksCount < settings.targetBarracksCount &&
-            TryConstruct(barracksDefinition, anchor))
-            return;
+        if (economyEstablished && barracksCount < barracksTarget)
+        {
+            if (strategicGoals != null && !CanFundBarracksExpansion(0))
+                blocked |= Blocked.Resources;
+            else if (TryConstruct(barracksDefinition, anchor))
+                return;
+        }
 
-        int armyTarget = Mathf.Max(0, settings.targetArmySize);
-        float ratio = Mathf.Max(0f, settings.infantryToMechRatio);
+        int armyTarget = Mathf.Max(0, strategicGoals?.Army ?? settings.targetArmySize);
+        float ratio = Mathf.Max(0f, strategicGoals?.InfantryToMechRatio ?? settings.infantryToMechRatio);
         float infantryShare = ratio / (1f + ratio);
+        if (strategicGoals is AIEconomyGoals goals && barracksProducers.Count > 0)
+        {
+            if (!CanTrain(barracksProducers, infantryDefinition))
+                infantryShare = 0f;
+            else if (goals.InfantryFirst || !CanTrain(barracksProducers, mechDefinition))
+                infantryShare = 1f;
+        }
+
         int infantryTarget = Mathf.RoundToInt(armyTarget * infantryShare);
         int missingInfantry = Mathf.Max(0, infantryTarget - infantryCount);
         int missingMechs = Mathf.Max(0, armyTarget - infantryTarget - mechCount);
@@ -150,16 +244,21 @@ public sealed class AIEconomyManager
             (missingMechs == 0 || infantryCount < Mathf.RoundToInt((infantryCount + mechCount + 1) * infantryShare))
             ? infantryDefinition : mechDefinition;
         UnitDefinition second = first == infantryDefinition ? mechDefinition : infantryDefinition;
-        bool needsArmy = armySlots > 0 && (barracksCount > 0 || settings.targetBarracksCount > 0);
+        bool needsArmy = armySlots > 0 && (barracksCount > 0 || barracksTarget > 0);
+        if (strategicGoals != null && barracksProducers.Count > 0 && !CanTrain(barracksProducers, first))
+            needsArmy = false;
         if (needsArmy && first == null)
             blocked |= Blocked.MissingDefinition;
         int armySupply = needsArmy && first != null ? first.Cost.Supply : 0;
 
+        Cost headquartersReserve = headquartersDefinition != null ? headquartersDefinition.Cost : Cost.Zero;
+        bool preserveHeadquarters = strategicGoals != null;
         if ((workerSupply > AvailableSupply || (barracksProducers.Count > 0 && armySupply > AvailableSupply)) &&
-            EnsureSupply(anchor))
+            EnsureSupply(anchor, preserveHeadquarters))
             return;
 
-        if (missingWorkers > 0 && TryQueue(headquartersProducers, workerDefinition))
+        Cost growthReserve = strategicGoals != null && workers.Count >= minimumWorkers ? headquartersReserve : Cost.Zero;
+        if (missingWorkers > 0 && TryQueue(headquartersProducers, workerDefinition, growthReserve))
         {
             missingWorkers--;
             queuedWorkers++;
@@ -168,7 +267,6 @@ public sealed class AIEconomyManager
         if (needsArmy && barracksCount > 0)
         {
             // Keep enough stock for a headquarters and one replacement worker before spending on the army.
-            Cost headquartersReserve = headquartersDefinition != null ? headquartersDefinition.Cost : Cost.Zero;
             Cost workerReserve = workerTarget > 0 && workerDefinition != null ? workerDefinition.Cost : Cost.Zero;
             UnitDefinition queued = null;
             if (first != null && TryQueue(barracksProducers, first, headquartersReserve, workerReserve))
@@ -201,9 +299,21 @@ public sealed class AIEconomyManager
         }
 
         int nextSupply = Mathf.Max(missingWorkers > 0 ? workerSupply : 0, armySlots > 0 ? armySupply : 0);
-        int desiredSupply = Mathf.Min(remainingSupply, nextSupply + Mathf.Max(0, settings.supplyBuffer));
+        int desiredSupply = Mathf.Min(remainingSupply, nextSupply + Mathf.Max(0, strategicGoals?.SupplyBuffer ?? settings.supplyBuffer));
         if (desiredSupply > AvailableSupply + pendingSupply)
-            EnsureSupply(anchor);
+            EnsureSupply(anchor, preserveHeadquarters);
+    }
+
+    private static bool CanTrain(List<UnitProductionComponent> producers, UnitDefinition unit)
+    {
+        if (unit == null || unit.Prefab == null)
+            return false;
+        foreach (UnitProductionComponent producer in producers)
+        {
+            if (producer.Supports(unit))
+                return true;
+        }
+        return false;
     }
 
     private int AvailableSupply => Resources.MaxSupply - Faction.UnitManager.OccupiedPopulation;
@@ -215,6 +325,7 @@ public sealed class AIEconomyManager
         barracksProducers.Clear();
         headquarters = null;
         headquartersCount = barracksCount = depotCount = pendingSupply = queuedWorkers = infantryCount = mechCount = 0;
+        pendingBuildings = queuedCombat = 0;
         hasWaitingProducer = false;
 
         foreach (UnitBase unit in Faction.UnitManager.UnitList)
@@ -244,8 +355,12 @@ public sealed class AIEconomyManager
             else if (building.Definition.Type == BuildingType.SupplyDepot)
                 depotCount++;
 
-            if (building.IsUnderConstruction && building.SupplyProvider != null)
-                pendingSupply += building.SupplyProvider.SupplyProvided;
+            if (building.IsUnderConstruction)
+            {
+                pendingBuildings++;
+                if (building.SupplyProvider != null)
+                    pendingSupply += building.SupplyProvider.SupplyProvided;
+            }
 
             UnitProductionComponent producer = building.UnitProduction;
             if (!building.IsOperational || producer == null)
@@ -258,7 +373,11 @@ public sealed class AIEconomyManager
 
             hasWaitingProducer |= producer.IsWaitingForSpawn;
             foreach (UnitDefinition order in producer.ProductionQueue)
+            {
                 CountOrder(order);
+                if (order.Type is UnitType.Combat or UnitType.Mech)
+                    queuedCombat++;
+            }
         }
     }
 
@@ -272,7 +391,7 @@ public sealed class AIEconomyManager
         }
     }
 
-    private bool EnsureSupply(Vector3 anchor)
+    private bool EnsureSupply(Vector3 anchor, bool preserveHeadquarters = false)
     {
         blocked |= Blocked.Supply;
         if (pendingSupply > 0)
@@ -282,6 +401,14 @@ public sealed class AIEconomyManager
             !depotDefinition.Prefab.TryGetComponent(out SupplyProviderComponent provider) || provider.SupplyProvided <= 0)
         {
             blocked |= Blocked.MissingDefinition;
+            return false;
+        }
+
+        if (preserveHeadquarters && headquartersDefinition != null &&
+            (Resources.Minerals < headquartersDefinition.Cost.Minerals + depotDefinition.Cost.Minerals ||
+             Resources.Gas < headquartersDefinition.Cost.Gas + depotDefinition.Cost.Gas))
+        {
+            blocked |= Blocked.Resources;
             return false;
         }
 
@@ -361,7 +488,7 @@ public sealed class AIEconomyManager
         return false;
     }
 
-    private int AssignWorkers(int minimumMineralWorkers)
+    private int AssignWorkers(int minimumMineralWorkers, int gasTarget)
     {
         ExpireWorkerRetries();
         nodeLoads.Clear();
@@ -372,21 +499,14 @@ public sealed class AIEconomyManager
             if (worker.CurrentCommand is not (CommandType.Gather or CommandType.Deliver))
                 continue;
 
-            if (headquarters == null)
-            {
-                worker.IssueCommand(CommandType.Idle, CommandContext.None());
-                continue;
-            }
+            if (worker.CurrentCommand == CommandType.Deliver && worker.IsWaitingForLogistics)
+                blocked |= Blocked.Delivery;
 
             ResourceNode node = worker.ResourceComponent.AssignedNode;
             if (IsAvailable(node))
                 AddWorkerLoad(node, ref mineralWorkers, ref gasWorkers);
         }
 
-        if (headquarters == null)
-            return 0;
-
-        int gasTarget = Mathf.Clamp(settings.targetGasWorkerCount, 0, Mathf.Max(0, settings.targetWorkerCount));
         foreach (WorkerUnit worker in workers)
         {
             if (worker.CurrentCommand != CommandType.Idle || !worker.CanReceiveCommands || worker.Motor == null)
@@ -395,22 +515,16 @@ public sealed class AIEconomyManager
             WorkerResourceComponent cargo = worker.ResourceComponent;
             if (cargo.HasCargo)
             {
-                if (deliveryRetry.ContainsKey(worker))
-                {
-                    blocked |= Blocked.Delivery;
-                    continue;
-                }
-
                 worker.IssueCommand(CommandType.Deliver, CommandContext.None());
-                if (worker.CurrentCommand == CommandType.Idle)
-                {
-                    deliveryRetry[worker] = time + RetryInterval;
+                if (worker.IsWaitingForLogistics)
                     blocked |= Blocked.Delivery;
-                }
-                else if (IsAvailable(cargo.AssignedNode))
+                if (IsAvailable(cargo.AssignedNode))
                     AddWorkerLoad(cargo.AssignedNode, ref mineralWorkers, ref gasWorkers);
                 continue;
             }
+
+            if (headquarters == null)
+                continue;
 
             if (IsAvailable(cargo.AssignedNode))
             {
@@ -490,14 +604,5 @@ public sealed class AIEconomyManager
         }
         foreach (var key in expiredGatheringRetries)
             gatheringRetry.Remove(key);
-
-        expiredDeliveryRetries.Clear();
-        foreach (var retry in deliveryRetry)
-        {
-            if (time >= retry.Value || retry.Key == null || !retry.Key.IsAlive)
-                expiredDeliveryRetries.Add(retry.Key);
-        }
-        foreach (WorkerUnit worker in expiredDeliveryRetries)
-            deliveryRetry.Remove(worker);
     }
 }

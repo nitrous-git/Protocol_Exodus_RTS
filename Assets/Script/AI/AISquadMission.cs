@@ -23,6 +23,7 @@ internal sealed class AISquadMission
     private const float ContactRange = 10f;
     private const float TravelStallTimeout = 7f;
     private const float EngagementStallTimeout = 40f;
+    private const float RallyHoldRadiusInCells = 6f;
     private static readonly Vector3[] RallyOffsets =
     {
         Vector3.right, Vector3.left, Vector3.forward, Vector3.back,
@@ -38,6 +39,7 @@ internal sealed class AISquadMission
         public MoveState TravelOrder;
         public bool HasTacticalAssignment;
         public Vector3 LastPosition;
+        public int GuardSlot;
 
         public Member(CombatUnit unit)
         {
@@ -65,7 +67,7 @@ internal sealed class AISquadMission
     }
 
     private readonly AIMissionDirector director;
-    private readonly Vector3 anchor;
+    private Vector3 anchor;
     private readonly List<Member> members;
     private readonly int initialCount;
     private readonly float readiness;
@@ -82,17 +84,23 @@ internal sealed class AISquadMission
     private Vector3 pursuitOrigin;
     private Vector3 resumePursuitOrigin;
     private float guardRadius;
+    private float guardSpacing;
+    private int guardSlots;
+    private Vector3? guardRally;
     private float arrivalRadius;
     private float stateDeadline;
     private float lastProgressAt;
     private float readySince = float.PositiveInfinity;
     private float objectiveHealth;
     private bool retriedAdvance;
+    private float operationDeadline = float.PositiveInfinity;
+    private bool plannedReturn;
 
     private TerrainGrid Grid => director.Context.TerrainGrid;
     private FormationDestinationAllocator Formation => director.Context.DestinationAllocationSystem.Formation;
     private int RequiredReady => Mathf.CeilToInt(members.Count * readiness);
     public int MemberCount => members.Count;
+    public int Casualties { get; private set; }
     public AISquadMissionState State { get; private set; } = AISquadMissionState.Form;
     public bool IsFinished => State is AISquadMissionState.Completed or AISquadMissionState.Withdrawn or
         AISquadMissionState.Failed or AISquadMissionState.Cancelled;
@@ -116,9 +124,11 @@ internal sealed class AISquadMission
         initialCount = members.Count;
     }
 
-    public bool TryAssemble(ITargetable target, float time)
+    public bool TryAssemble(ITargetable target, float time, float maximumDuration)
     {
         objective = target;
+        if (maximumDuration > 0f)
+            operationDeadline = time + maximumDuration;
         Vector3 direction = Direction(anchor, target.Position);
         float stagingDistance = Mathf.Max(0f, director.Settings.stagingDistance);
         if (DistanceSquared(anchor, target.Position) < stagingDistance * stagingDistance * 2f)
@@ -133,24 +143,121 @@ internal sealed class AISquadMission
         return true;
     }
 
-    public bool TryDefend(float radius)
+    public bool TryDefend(float radius, int slotCount, Vector3? rally)
     {
         guardRadius = radius;
-        GridCoord center = Grid.WorldToCell(anchor);
-        float maxRadius = GetMaxRadius();
+        guardSlots = Mathf.Max(initialCount, slotCount);
+        guardSpacing = GetMaxRadius();
+        guardRally = rally;
         for (int i = members.Count - 1; i >= 0; i--)
         {
-            GridCoord slot = Formation.GetPreferredSlot(center, i, initialCount, maxRadius);
-            Vector3 post = Grid.IsInside(slot) ? Grid.CellToWorld(slot) : anchor;
-            if (!IsNear(post, anchor, radius * 0.8f) || !Grid.IsStaticallyTraversable(slot, members[i].Unit.NavigationRadius))
-                post = anchor;
-
-            if (!TryAssign(members[i], CombatMission.DefendArea(anchor, radius, post)))
+            members[i].GuardSlot = i;
+            if (!TryAssignGuard(members[i]))
                 RemoveMember(i);
         }
 
         State = AISquadMissionState.Defend;
         return members.Count > 0;
+    }
+
+    public void UpdateGuardArea(Vector3 position, float radius, int desiredCount, int slotCount, Vector3? rally)
+    {
+        PruneMembers();
+        while (members.Count > desiredCount)
+            RemoveMember(members.Count - 1);
+
+        int capacity = Mathf.Max(guardSlots, slotCount);
+        if (anchor == position && guardRadius == radius && guardSlots == capacity && guardRally == rally)
+            return;
+
+        anchor = position;
+        guardRadius = radius;
+        guardSlots = capacity;
+        guardRally = rally;
+        for (int i = members.Count - 1; i >= 0; i--)
+        {
+            if (!TryAssignGuard(members[i]))
+                RemoveMember(i);
+        }
+    }
+
+    public void ReinforceGuard(IReadOnlyList<CombatUnit> recruits, int desiredCount)
+    {
+        int slot = 0;
+        foreach (CombatUnit unit in recruits)
+        {
+            if (members.Count >= desiredCount)
+                break;
+            if (!director.Reserve(unit))
+                continue;
+
+            while (HasGuardSlot(slot))
+                slot++;
+
+            var member = new Member(unit) { GuardSlot = slot };
+            if (TryAssignGuard(member))
+                members.Add(member);
+            else
+                director.Release(unit);
+        }
+    }
+
+    private bool HasGuardSlot(int slot)
+    {
+        foreach (Member member in members)
+        {
+            if (member.GuardSlot == slot)
+                return true;
+        }
+        return false;
+    }
+
+    private bool TryAssignGuard(Member member)
+    {
+        Vector3 post = FindGuardPost(member);
+
+        return TryAssign(member, CombatMission.DefendArea(anchor, guardRadius, post));
+    }
+
+    private Vector3 FindGuardPost(Member member)
+    {
+        float unitRadius = member.Unit.NavigationRadius;
+        Vector3 position = member.Unit.Position;
+        if (guardRally is Vector3 rally && IsNear(position, rally, Grid.CellSize * RallyHoldRadiusInCells) &&
+            IsNear(position, anchor, guardRadius) && Grid.IsStaticallyTraversable(Grid.WorldToCell(position), unitRadius) &&
+            !IsNearProductionExit(position, unitRadius))
+            return position;
+
+        GridCoord center = Grid.WorldToCell(guardRally ?? anchor);
+        GridCoord preferred = Formation.GetPreferredSlot(center, member.GuardSlot, guardSlots, guardSpacing);
+        if (TryGetGuardPost(preferred, unitRadius, out Vector3 post))
+            return post;
+
+        // A building center often covers every formation slot. Spread posts around its perimeter and clear its exit.
+        int directions = RallyOffsets.Length;
+        int searchCells = Mathf.Min(12, Mathf.CeilToInt(guardRadius * 0.8f / Grid.CellSize));
+        for (int ring = 1; ring <= searchCells; ring++)
+        {
+            for (int i = 0; i < directions; i++)
+            {
+                Vector3 offset = RallyOffsets[(member.GuardSlot + i) % directions] * ring;
+                GridCoord cell = new(center.x + (int)offset.x, center.z + (int)offset.z);
+                if (TryGetGuardPost(cell, unitRadius, out post))
+                    return post;
+            }
+        }
+
+        return anchor;
+    }
+
+    private bool TryGetGuardPost(GridCoord cell, float unitRadius, out Vector3 position)
+    {
+        position = default;
+        if (!Grid.IsStaticallyTraversable(cell, unitRadius))
+            return false;
+
+        position = Grid.CellToWorld(cell);
+        return IsNear(position, anchor, guardRadius * 0.8f) && !IsNearProductionExit(position, unitRadius + Grid.CellSize);
     }
 
     public bool Covers(Vector3 position) => IsNear(position, anchor, guardRadius);
@@ -169,6 +276,13 @@ internal sealed class AISquadMission
 
         if (State != AISquadMissionState.Withdraw && TooManyLosses())
         {
+            BeginWithdrawal(time);
+            return;
+        }
+
+        if (State != AISquadMissionState.Withdraw && time >= operationDeadline)
+        {
+            plannedReturn = true;
             BeginWithdrawal(time);
             return;
         }
@@ -332,6 +446,13 @@ internal sealed class AISquadMission
 
     private void TickEngage(float time)
     {
+        if (!float.IsPositiveInfinity(operationDeadline) && !director.IsValidObjective(objective))
+        {
+            plannedReturn = true;
+            BeginWithdrawal(time);
+            return;
+        }
+
         if (!director.IsValidObjective(objective) || !HasActiveAttackers())
         {
             State = AISquadMissionState.Evaluate;
@@ -378,10 +499,11 @@ internal sealed class AISquadMission
     private void TickWithdraw(float time)
     {
         int returned = CountNear(travelDestination, arrivalRadius);
+        AISquadMissionState outcome = plannedReturn && !TooManyLosses() ? AISquadMissionState.Completed : AISquadMissionState.Withdrawn;
         if (returned == members.Count)
-            Finish(AISquadMissionState.Withdrawn);
+            Finish(outcome);
         else if (TravelExpired(time))
-            Finish(returned >= RequiredReady ? AISquadMissionState.Withdrawn : AISquadMissionState.Failed);
+            Finish(returned >= RequiredReady ? outcome : AISquadMissionState.Failed);
     }
 
     private bool TooManyLosses() => initialCount - members.Count >= initialCount * withdrawalThreshold;
@@ -462,7 +584,7 @@ internal sealed class AISquadMission
                     continue;
 
                 Vector3 centerPosition = Grid.CellToWorld(center);
-                if (nearHome && IsNearProductionExit(centerPosition))
+                if (nearHome && IsNearProductionExit(centerPosition, arrivalRadius))
                     continue;
 
                 int largeSlots = 0;
@@ -490,14 +612,14 @@ internal sealed class AISquadMission
         return bestClearSlots >= RequiredReady;
     }
 
-    private bool IsNearProductionExit(Vector3 position)
+    private bool IsNearProductionExit(Vector3 position, float padding)
     {
         IReadOnlyList<BuildingBase> buildings = director.Faction.BuildingManager.BuildingList;
         for (int i = 0; i < buildings.Count; i++)
         {
             BuildingBase building = buildings[i];
             if (building != null && building.IsAlive && building.UnitProduction != null &&
-                building.UnitProduction.IsNearExit(Grid, position, arrivalRadius))
+                building.UnitProduction.IsNearExit(Grid, position, padding))
                 return true;
         }
 
@@ -578,7 +700,7 @@ internal sealed class AISquadMission
         return center / members.Count;
     }
 
-    private int CountNear(Vector3 position, float radius)
+    internal int CountNear(Vector3 position, float radius)
     {
         int count = 0;
         foreach (Member member in members)
@@ -627,6 +749,8 @@ internal sealed class AISquadMission
     private void RemoveMember(int index)
     {
         Member member = members[index];
+        if (member.Unit == null || !member.Unit.IsAlive)
+            Casualties++;
         member.StopOwnedOrders();
         director.Release(member.Unit);
         members.RemoveAt(index);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class RingDestinationAllocator
@@ -22,7 +23,8 @@ public sealed class RingDestinationAllocator
         Vector2Int footprintSize,
         int initialDepth = 1,
         int maxExtraDepth = 2,
-        GridCoord? preferredCell = null)
+        GridCoord? preferredCell = null,
+        ISet<GridCoord> excludedCells = null)
     {
         if (unit == null || terrainGrid == null || navigationState == null)
         {
@@ -31,7 +33,7 @@ public sealed class RingDestinationAllocator
 
         GridCoord targetCell = preferredCell ?? terrainGrid.WorldToCell(unit.Position);
 
-        GridCoord? destinationCell =
+        GridCoord? FindCandidate(bool checkClearance) =>
             PlacementUtil.GetPlacementAroundFootprintScoredWithFallback(
                 terrainGrid,
                 footprintOrigin,
@@ -42,18 +44,29 @@ public sealed class RingDestinationAllocator
                 PlacementUtil.PlacementPolicy.Closest,
                 openRadius: 1,
                 openWeight: 2,
-                distanceWeight: 1);
+                distanceWeight: 1,
+                additionalValidator: cell =>
+                    (excludedCells == null || !excludedCells.Contains(cell)) &&
+                    (!checkClearance || navigationState.CanStandAt(cell, unit)));
 
+        GridCoord? destinationCell = FindCandidate(checkClearance: false);
         if (!destinationCell.HasValue)
             return null;
 
-        bool reserved = navigationState.TryReserveDestination(destinationCell.Value, unit);
+        if (navigationState.TryReserveDestination(destinationCell.Value, unit))
+            return destinationCell;
 
-        if (!reserved)
-            return null;
-
-        return destinationCell;
+        // Placement alone does not account for unit radii, occupied space, or nearby reservations.
+        destinationCell = FindCandidate(checkClearance: true);
+        return destinationCell.HasValue && navigationState.TryReserveDestination(destinationCell.Value, unit)
+            ? destinationCell
+            : null;
     }
 
+    internal bool IsReservationUsable(GridCoord cell, UnitBase unit)
+    {
+        return navigationState.IsDestinationReservedBy(cell, unit) &&
+               terrainGrid.IsStaticallyTraversable(cell, unit.NavigationRadius);
+    }
 
 }

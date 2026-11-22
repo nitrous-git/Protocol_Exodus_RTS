@@ -1,16 +1,16 @@
-using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
-/// Moves a worker beside the closest operational headquarters,
+/// Moves a worker beside an operational friendly headquarters,
 /// deposits its cargo, and resumes its assigned gathering task.
 /// </summary>
-public class WorkerDeliverState : UnitState<WorkerUnit>
+public class WorkerDeliverState : WorkerInteractionState
 {
     private readonly BuildingBase requestedDropOff;
+    private readonly HashSet<int> triedDropOffs = new();
+    private readonly Dictionary<int, HashSet<GridCoord>> rejectedCellsByDropOff = new();
 
     private BuildingBase dropOffBuilding;
-    private GridCoord? reservedInteractionCell;
-    private bool pathRequested;
 
     public WorkerDeliverState(BuildingBase requestedDropOff = null)
     {
@@ -34,101 +34,76 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
         }
 
         resourceComponent.ResetActionCycle();
+        FindApproach(unit);
+    }
 
-        if (IsDropOffAvailable(requestedDropOff, unit.OwnerFaction))
+    protected override void FindApproach(WorkerUnit unit)
+    {
+        if (unit.OwnerFaction?.ResourceManager == null)
         {
-            dropOffBuilding = requestedDropOff;
+            WaitForRetry(unit, "faction resource manager unavailable");
+            return;
         }
-        else
+
+        dropOffBuilding = FindNextDropOff(unit);
+        if (dropOffBuilding == null && triedDropOffs.Count > 0)
         {
-            dropOffBuilding = unit.FindClosestResourceDropOff();
+            // Every eligible headquarters had a turn. Start again with the requested or nearest one.
+            triedDropOffs.Clear();
+            dropOffBuilding = FindNextDropOff(unit);
         }
 
         if (dropOffBuilding == null)
         {
-            if (!unit.UsesEconomyAssignments)
-                Debug.LogWarning($"{unit.name} has cargo but no operational headquarters is available.");
-            unit.IssueCommand(CommandType.Idle, CommandContext.None());
+            rejectedCellsByDropOff.Clear();
+            WaitForRetry(unit, "no operational friendly headquarters");
             return;
         }
 
-        //reservedInteractionCell = unit.ReserveInteractionCell(dropOffBuilding);
-        reservedInteractionCell = unit.DestinationAllocationSystem?.Ring.TryAllocate(
-            unit, dropOffBuilding.FootprintOrigin, dropOffBuilding.PlacedFootprintSize);
-
-        if (!reservedInteractionCell.HasValue || unit.Motor == null || unit.TerrainGrid == null)
+        int buildingId = dropOffBuilding.BuildingId;
+        triedDropOffs.Add(buildingId);
+        if (!rejectedCellsByDropOff.TryGetValue(buildingId, out HashSet<GridCoord> rejectedCells))
         {
-            unit.IssueCommand(CommandType.Idle, CommandContext.None());
-            return;
+            rejectedCells = new HashSet<GridCoord>();
+            rejectedCellsByDropOff.Add(buildingId, rejectedCells);
         }
 
-        Vector3 interactionPosition = unit.TerrainGrid.CellToWorld(reservedInteractionCell.Value);
-        pathRequested = unit.Motor.MoveTo(interactionPosition);
-
-        if (!pathRequested)
-        {
-            if (!unit.UsesEconomyAssignments)
-                Debug.LogWarning($"{unit.name} could not reach {dropOffBuilding.name}.");
-            unit.IssueCommand(CommandType.Idle, CommandContext.None());
-        }
-    }
-
-    protected override void OnExitTyped(WorkerUnit unit)
-    {
-        if (!reservedInteractionCell.HasValue)
-            return;
-
-        //unit.ReleaseInteractionCell(reservedInteractionCell.Value);
-        unit.ReleaseDestination(reservedInteractionCell.Value);
-        reservedInteractionCell = null;
+        StartApproach(unit, dropOffBuilding.FootprintOrigin, dropOffBuilding.PlacedFootprintSize, rejectedCells, dropOffBuilding);
     }
 
     protected override void TickTyped(WorkerUnit unit, float deltaTime)
     {
-        if (!IsDropOffAvailable(dropOffBuilding, unit.OwnerFaction))
+        if (!unit.IsAlive)
+            return;
+
+        if (HasApproach && !unit.IsResourceDropOffAvailable(dropOffBuilding))
         {
-            // Re-enter delivery so another headquarters can be selected.
-            unit.IssueCommand(CommandType.Deliver, CommandContext.None());
+            WaitForRetry(unit, "selected headquarters unavailable", rejectCell: false);
             return;
         }
 
-        if (!pathRequested || unit.Motor == null)
+        if (!TickApproach(unit, deltaTime))
             return;
 
-        if (!unit.Motor.HasArrived)
-            return;
-
-        ResourceManager resourceManager = unit.OwnerFaction?.ResourceManager;
-
-        unit.ResourceComponent.TickDeliver(resourceManager, deltaTime);
-
-        if (unit.ResourceComponent.HasCargo)
-            return;
-
-        ResumeGatheringOrIdle(unit);
+        unit.ResourceComponent.TickDeliver(unit.OwnerFaction.ResourceManager, deltaTime);
+        if (!unit.ResourceComponent.HasCargo)
+            ResumeGatheringOrIdle(unit);
     }
 
-    // ---------------------------------------------------------------------
-    // Helper methods
-    // ---------------------------------------------------------------------
+    private BuildingBase FindNextDropOff(WorkerUnit unit)
+    {
+        if (unit.IsResourceDropOffAvailable(requestedDropOff) && !triedDropOffs.Contains(requestedDropOff.BuildingId))
+            return requestedDropOff;
 
-    //private static bool IsDropOffAvailable(BuildingBase building)
-    //{
-    //    return building != null &&
-    //           building.IsInitialized &&
-    //           building.IsAlive &&
-    //           building.IsOperational &&
-    //           building.Headquarters != null;
-    //}
+        return unit.FindClosestResourceDropOff(triedDropOffs);
+    }
 
     private static void ResumeGatheringOrIdle(WorkerUnit unit)
     {
-        ResourceNode resourceNode = unit.ResourceComponent?.AssignedNode;
+        ResourceNode resourceNode = unit.ResourceComponent.AssignedNode;
 
         if (resourceNode == null || !resourceNode.IsInitialized || resourceNode.IsDepleted)
-        {
             resourceNode = unit.FindReplacementResourceNode();
-        }
 
         if (resourceNode != null)
         {
@@ -137,15 +112,5 @@ public class WorkerDeliverState : UnitState<WorkerUnit>
         }
 
         unit.IssueCommand(CommandType.Idle, CommandContext.None());
-    }
-
-    private static bool IsDropOffAvailable(BuildingBase building, Faction faction)
-    {
-        return building != null &&
-               building.IsInitialized &&
-               building.IsAlive &&
-               building.IsOperational &&
-               building.OwnerFaction == faction &&
-               building.Headquarters != null;
     }
 }

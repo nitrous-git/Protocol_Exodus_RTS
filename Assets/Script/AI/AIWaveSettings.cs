@@ -4,6 +4,7 @@ using UnityEngine;
 [Serializable]
 public sealed class AIWaveSettings
 {
+    [Tooltip("Standalone A2 only. Faction strategy owns automatic assault dispatch when enabled.")]
     public bool automaticWaves;
     [Min(0f)] public float initialDelay = 20f;
     [Min(0.5f)] public float waveCooldown = 25f;

@@ -22,6 +22,7 @@ public class UnitManager
     public int CurrentPopulation => currentPopulation;
     public int ReservedPopulation => reservedPopulation;
     public int OccupiedPopulation => currentPopulation + reservedPopulation;
+    internal int CombatUnitsLost { get; private set; }
 
     public UnitManager(GameContext gameContext, IPathfindingService pathfindingService, Transform unitsRoot)
     {
@@ -80,6 +81,8 @@ public class UnitManager
         if (!wasRegistered)
             return;
 
+        if (unit is CombatUnit && !unit.IsAlive)
+            CombatUnitsLost++;
         currentPopulation = Mathf.Max(0, currentPopulation - GetPopulationCost(unit));
 
         gameContext?.UnregisterUnit(unit);
