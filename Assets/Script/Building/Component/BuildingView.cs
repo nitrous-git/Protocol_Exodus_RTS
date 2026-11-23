@@ -21,6 +21,9 @@ public sealed class BuildingView : MonoBehaviour
     private BuildingBase owner;
 
     private MeshRenderer selectionIndicatorRenderer;
+    private ParticleSystem[] selectionParticles;
+    private Color[] selectionParticleColors;
+    private ParticleSystem selectionEffect;
 
     private MaterialPropertyBlock propertyBlock;
     private static readonly int BaseMapID = Shader.PropertyToID("_BaseMap");
@@ -42,11 +45,28 @@ public sealed class BuildingView : MonoBehaviour
         this.owner = owner;
 
         propertyBlock = new();
-        selectionIndicatorRenderer = selectionIndicator.GetComponent<MeshRenderer>();
+        CacheSelectionIndicator();
 
         SetSelected(false);
         RefreshFactionVisuals();
         //SetOperationalImmediate();
+    }
+
+    private void CacheSelectionIndicator()
+    {
+        if (selectionIndicator == null)
+            return;
+
+        selectionIndicatorRenderer = selectionIndicator.GetComponent<MeshRenderer>();
+        selectionParticles = selectionIndicator.GetComponentsInChildren<ParticleSystem>(true);
+        if (selectionParticles.Length == 0)
+            return;
+
+        // The marker's root particle system starts and stops the whole effect.
+        selectionEffect = selectionParticles[0];
+        selectionParticleColors = new Color[selectionParticles.Length];
+        for (int i = 0; i < selectionParticles.Length; i++)
+            selectionParticleColors[i] = selectionParticles[i].main.startColor.color;
     }
 
     //private void CacheComponents()
@@ -189,21 +209,49 @@ public sealed class BuildingView : MonoBehaviour
         FactionColorType colorType = owner.OwnerFaction.ColorType;
         Texture texture = GetFactionTexture(colorType);
 
-        // Set Textures
-        for (int i = 0; i < buildingRenderers.Length; i++)
+        if (texture != null)
         {
-            Renderer targetRenderer = buildingRenderers[i];
-
-            propertyBlock.Clear();
-            targetRenderer.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetTexture(BaseMapID, texture);
-            targetRenderer.SetPropertyBlock(propertyBlock);
+            for (int i = 0; i < buildingRenderers.Length; i++)
+            {
+                Renderer targetRenderer = buildingRenderers[i];
+                GetPropertyBlock(targetRenderer);
+                propertyBlock.SetTexture(BaseMapID, texture);
+                targetRenderer.SetPropertyBlock(propertyBlock);
+            }
         }
 
-        // Set Selection Ring
-        selectionIndicatorRenderer.GetPropertyBlock(propertyBlock);
-        propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
-        selectionIndicatorRenderer.SetPropertyBlock(propertyBlock);
+        ApplySelectionColor(owner.OwnerFaction.SelectionRingColor);
+    }
+
+    private void ApplySelectionColor(Color factionColor)
+    {
+        if (selectionIndicatorRenderer != null)
+        {
+            GetPropertyBlock(selectionIndicatorRenderer);
+            propertyBlock.SetColor(BaseColorID, factionColor);
+            selectionIndicatorRenderer.SetPropertyBlock(propertyBlock);
+        }
+
+        if (selectionEffect == null)
+            return;
+
+        Color.RGBToHSV(factionColor, out float hue, out float saturation, out _);
+        for (int i = 0; i < selectionParticles.Length; i++)
+        {
+            Color authoredColor = selectionParticleColors[i];
+            Color.RGBToHSV(authoredColor, out _, out float authoredSaturation, out float brightness);
+            Color tint = Color.HSVToRGB(hue, Mathf.Min(saturation, authoredSaturation), brightness);
+            tint.a = authoredColor.a;
+            var main = selectionParticles[i].main;
+            main.startColor = tint;
+        }
+
+        // Live particles keep the start color they had when emitted.
+        if (selectionIndicator.activeInHierarchy)
+        {
+            selectionEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            selectionEffect.Play(true);
+        }
     }
 
     private Texture GetFactionTexture(FactionColorType colorType)
@@ -223,8 +271,16 @@ public sealed class BuildingView : MonoBehaviour
 
     public void SetSelected(bool selected)
     {
-        if (selectionIndicator != null)
-            selectionIndicator.SetActive(selected);
+        if (selectionIndicator == null || selectionIndicator.activeSelf == selected)
+            return;
+
+        if (!selected && selectionEffect != null)
+            selectionEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        selectionIndicator.SetActive(selected);
+
+        if (selected && selectionEffect != null)
+            selectionEffect.Play(true);
     }
 
     // ---------------------------------------------------------------------

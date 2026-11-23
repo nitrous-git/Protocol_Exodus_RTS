@@ -4,6 +4,8 @@ public class UnitView : MonoBehaviour
 {
     [Header("Selection")]
     [SerializeField] private GameObject selectionRing;
+    [SerializeField] private ParticleSystem selectionRingCylinder;
+    [SerializeField] private ParticleSystem selectionRingIndicator;
     [SerializeField] private bool projectSelectionRingToGround = true;
     [SerializeField] private float selectionRingHeightOffset = 0.03f;
     [SerializeField] private float selectionRingRotationSpeed = 20f;
@@ -14,6 +16,8 @@ public class UnitView : MonoBehaviour
 
     [Header("Components")]
     private MeshRenderer selectionRingRenderer;
+    private Color authoredSelectionCylinderColor;
+    private Color authoredSelectionIndicatorColor;
 
     [Header("Faction Visuals")]
     [SerializeField] private Renderer[] factionRenderers;
@@ -46,6 +50,10 @@ public class UnitView : MonoBehaviour
         propertyBlock = new();
 
         selectionRingRenderer = selectionRing != null ? selectionRing.GetComponent<MeshRenderer>() : null;
+        if (selectionRingCylinder != null)
+            authoredSelectionCylinderColor = selectionRingCylinder.main.startColor.color;
+        if (selectionRingIndicator != null)
+            authoredSelectionIndicatorColor = selectionRingIndicator.main.startColor.color;
 
         SetSelected(false);
         RefreshFactionVisuals();
@@ -80,13 +88,29 @@ public class UnitView : MonoBehaviour
 
     public void SetSelected(bool selected)
     {
-        if (selectionRing != null)
-        {
-            selectionRing.SetActive(selected);
+        if (selectionRing == null)
+            return;
 
-            if (selected && projectSelectionRingToGround)
-                UpdateSelectionRingGroundProjection();
+        bool wasSelected = selectionRing.activeSelf;
+        selectionRing.SetActive(selected);
+        if (!selected)
+            return;
+
+        if (projectSelectionRingToGround)
+            UpdateSelectionRingGroundProjection();
+
+        if (!wasSelected)
+        {
+            ShowSelectionParticle(selectionRingCylinder);
+            ShowSelectionParticle(selectionRingIndicator);
         }
+    }
+
+    private static void ShowSelectionParticle(ParticleSystem particles)
+    {
+        // Simulate the initial burst and leave it paused so the marker lasts until deselection.
+        if (particles != null)
+            particles.Simulate(0.05f, withChildren: false);
     }
 
     private void UpdateSelectionRingGroundProjection()
@@ -151,23 +175,52 @@ public class UnitView : MonoBehaviour
         FactionColorType colorType = owner.OwnerFaction.ColorType;
         Texture texture = GetFactionTexture(colorType);
 
-        // Set Textures
-        for (int i = 0; i < factionRenderers.Length; i++)
+        if (texture != null)
         {
-            Renderer targetRenderer = factionRenderers[i];
+            for (int i = 0; i < factionRenderers.Length; i++)
+            {
+                Renderer targetRenderer = factionRenderers[i];
 
-            propertyBlock.Clear();
-            targetRenderer.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetTexture(BaseMapID, texture);
-            targetRenderer.SetPropertyBlock(propertyBlock);
+                propertyBlock.Clear();
+                targetRenderer.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetTexture(BaseMapID, texture);
+                targetRenderer.SetPropertyBlock(propertyBlock);
+            }
         }
 
+        Color ringColor = owner.OwnerFaction.SelectionRingColor;
         if (selectionRingRenderer != null)
         {
             selectionRingRenderer.GetPropertyBlock(propertyBlock);
-            propertyBlock.SetColor(BaseColorID, owner.OwnerFaction.SelectionRingColor);
+            propertyBlock.SetColor(BaseColorID, ringColor);
             selectionRingRenderer.SetPropertyBlock(propertyBlock);
         }
+
+        SetSelectionParticleColor(selectionRingCylinder, authoredSelectionCylinderColor, ringColor, colorType);
+        SetSelectionParticleColor(selectionRingIndicator, authoredSelectionIndicatorColor, ringColor, colorType);
+    }
+
+    private static void SetSelectionParticleColor(
+        ParticleSystem particles, Color authoredColor, Color factionColor, FactionColorType colorType)
+    {
+        if (particles == null)
+            return;
+
+        Color.RGBToHSV(factionColor, out float hue, out float saturation, out _);
+        Color.RGBToHSV(authoredColor, out float authoredHue, out float authoredSaturation, out float brightness);
+
+        // Map palette blue around the marker's authored cyan while keeping other faction hues.
+        if (colorType == FactionColorType.Blue)
+            hue = Mathf.Repeat(authoredHue + hue - 2f / 3f, 1f);
+
+        Color tint = Color.HSVToRGB(hue, Mathf.Min(saturation, authoredSaturation), brightness);
+        tint.a = authoredColor.a;
+        var main = particles.main;
+        main.startColor = tint;
+
+        // The burst's existing particle keeps its original start color.
+        if (particles.gameObject.activeInHierarchy)
+            ShowSelectionParticle(particles);
     }
 
     private Texture GetFactionTexture(FactionColorType colorType)

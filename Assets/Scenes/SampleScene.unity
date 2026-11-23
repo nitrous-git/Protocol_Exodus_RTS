@@ -8523,7 +8523,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5ba193e693fd76a4e87770d603969400, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchResultPanel
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
