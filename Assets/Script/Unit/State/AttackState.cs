@@ -194,6 +194,7 @@ public sealed class AttackState :
             unit);
 
         unit.CancelAttackAnimation();
+        unit.Weapon?.StopBombardment();
 
         unit.ClearCurrentTarget();
     }

@@ -205,6 +205,7 @@ public class CombatUnit : UnitBase
     protected override void HandleDied()
     {
         CancelAttackAnimation();
+        weapon?.StopBombardment();
         ReleaseCombatAI();
         base.HandleDied();
     }
@@ -316,7 +317,7 @@ public class CombatUnit : UnitBase
     {
         attackAnimationActive = false;
         attackTarget = null;
-        weapon?.StopFlameBurst();
+        weapon?.CancelPendingAttack();
     }
 
     // ---------------------------------------------------------------------

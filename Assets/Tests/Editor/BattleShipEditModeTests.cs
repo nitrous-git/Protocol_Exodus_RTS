@@ -222,16 +222,14 @@ public sealed class BattleShipEditModeTests
         Assert.That(faction.UnitManager.CurrentPopulation, Is.EqualTo(6));
     }
 
-    [TestCase(UnitType.Combat)]
-    [TestCase(UnitType.Mech)]
-    [TestCase(UnitType.Aircraft)]
-    public void AircraftProjectileHitsTargetAtItsAimPointAndRespectsCooldown(UnitType targetType)
+    [Test]
+    public void AircraftProjectileHitsAirTargetAtItsAimPointAndRespectsCooldown()
     {
         Faction faction = CreateFaction(FactionColorType.Blue);
         Faction enemy = CreateFaction(FactionColorType.Green);
         var ship = (CombatUnit)Spawn(faction, UnitType.Aircraft, 18, 18);
-        UnitBase target = Spawn(enemy, targetType, 18, 30);
-        UnitBase friendly = targetType == UnitType.Aircraft ? Spawn(faction, UnitType.Aircraft, 18, 24) : null;
+        UnitBase target = Spawn(enemy, UnitType.Aircraft, 18, 30);
+        UnitBase friendly = Spawn(faction, UnitType.Aircraft, 18, 24);
         float targetHealth = target.Health.CurrentHealth;
         Physics.SyncTransforms();
         ship.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
@@ -248,8 +246,7 @@ public sealed class BattleShipEditModeTests
         Assert.That(projectile.Tick(1f), Is.False);
         Assert.That(target.Health.CurrentHealth, Is.EqualTo(targetHealth - 35f));
         Assert.That(ship.Health.CurrentHealth, Is.EqualTo(650f));
-        if (friendly != null)
-            Assert.That(friendly.Health.CurrentHealth, Is.EqualTo(650f));
+        Assert.That(friendly.Health.CurrentHealth, Is.EqualTo(650f));
 
         ship.Tick(0.51f);
         Assert.That(context.ProjectileManager.Projectiles.Count, Is.EqualTo(2));
@@ -258,6 +255,144 @@ public sealed class BattleShipEditModeTests
         Assert.That(target.IsAlive, Is.False);
         Assert.That(ship.CurrentTarget, Is.Null);
         Assert.That(ship.Motor.HasArrived, Is.True);
+    }
+
+    [TestCase(FactionColorType.Red)]
+    [TestCase(FactionColorType.Blue)]
+    [TestCase(FactionColorType.Green)]
+    public void BombardmentUsesWeaponMountsAndDealsDamageOnceOnFourthImpact(FactionColorType color)
+    {
+        Faction faction = CreateFaction(color);
+        Faction enemy = CreateFaction(color == FactionColorType.Red ? FactionColorType.Blue : FactionColorType.Red);
+        var ship = (CombatUnit)Spawn(faction, UnitType.Aircraft, 20, 18);
+        UnitBase target = Spawn(enemy, UnitType.Mech, 20, 30);
+        target.gameObject.AddComponent<SphereCollider>();
+        float health = target.Health.CurrentHealth;
+        ship.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
+        ship.Tick(0.01f);
+        var projectiles = context.ProjectileManager.Projectiles;
+        Assert.That(projectiles.Count, Is.EqualTo(1));
+        var weapon = new SerializedObject(ship.Weapon);
+        var mounts = weapon.FindProperty("bombardmentFirePoints");
+        Assert.That(projectiles[0].transform.position, Is.EqualTo(((Transform)mounts.GetArrayElementAtIndex(0).objectReferenceValue).position));
+        ship.Tick(0.05f);
+        Assert.That(projectiles.Count, Is.EqualTo(1));
+        ship.Tick(0.011f);
+        Assert.That(projectiles.Count, Is.EqualTo(2));
+        Assert.That(projectiles[1].transform.position, Is.EqualTo(((Transform)mounts.GetArrayElementAtIndex(1).objectReferenceValue).position));
+        ship.Tick(0.4f);
+        Assert.That(projectiles.Count, Is.EqualTo(8));
+        Assert.That(target.Health.CurrentHealth, Is.EqualTo(health));
+        var firstSalvo = new HashSet<Projectile>(projectiles);
+
+        for (int i = 0; i < 3; i++)
+            Assert.That(projectiles[i].Tick(2f), Is.False);
+        Assert.That(target.Health.CurrentHealth, Is.EqualTo(health));
+        Assert.That(projectiles[3].Tick(2f), Is.False);
+        Assert.That(target.Health.CurrentHealth, Is.EqualTo(health - ship.Definition.attackDamage));
+        context.ProjectileManager.Tick(2f);
+        Assert.That(projectiles, Is.Empty);
+        Assert.That(target.Health.CurrentHealth, Is.EqualTo(health - ship.Definition.attackDamage));
+
+        ship.Tick(1f);
+        Assert.That(projectiles, Is.Empty);
+        ship.Tick(0.05f);
+        Assert.That(projectiles.Count, Is.EqualTo(1));
+        Assert.That(firstSalvo, Does.Contain(projectiles[0]));
+    }
+
+    [Test]
+    public void BombardmentUsesFixedTerrainPositionsAndCurrentGroundOccupants()
+    {
+        Faction faction = CreateFaction(FactionColorType.Green);
+        Faction enemy = CreateFaction(FactionColorType.Red);
+        var ship = (CombatUnit)Spawn(faction, UnitType.Aircraft, 20, 18);
+        UnitBase target = Spawn(enemy, UnitType.Combat, 20, 30);
+        UnitBase entering = Spawn(enemy, UnitType.Combat, 14, 32);
+        UnitBase nearby = Spawn(enemy, UnitType.Mech, 19, 30);
+        UnitBase friendly = Spawn(faction, UnitType.Combat, 20, 28);
+        UnitBase aircraft = Spawn(enemy, UnitType.Aircraft, 20, 30);
+        BuildingDefinition depot = roster.GetBuildingDefinition(BuildingType.SupplyDepot);
+        BuildingBase building = enemy.BuildingManager.Construct(depot, new GridCoord(22, 28));
+        Assert.That(building, Is.Not.Null);
+        building.Tick(depot.ConstructionDuration);
+        BuildingBase friendlyBuilding = faction.BuildingManager.Construct(depot, new GridCoord(14, 28));
+        Assert.That(friendlyBuilding, Is.Not.Null);
+        friendlyBuilding.Tick(depot.ConstructionDuration);
+        Assert.That(building.Position.x - target.Position.x, Is.GreaterThan(3f));
+
+        var heights = new float[33, 33];
+        for (int z = 0; z < 33; z++)
+        for (int x = 0; x < 33; x++)
+            heights[z, x] = 0.1f + x * 0.01f;
+        terrainData.SetHeights(0, 0, heights);
+
+        Vector3 center = target.Position;
+        float buildingHealth = building.Health.CurrentHealth;
+        float friendlyBuildingHealth = friendlyBuilding.Health.CurrentHealth;
+        float targetHealth = target.Health.CurrentHealth;
+        float nearbyHealth = nearby.Health.CurrentHealth;
+        float enteringHealth = entering.Health.CurrentHealth;
+        float friendlyHealth = friendly.Health.CurrentHealth;
+        float airHealth = aircraft.Health.CurrentHealth;
+        ship.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
+        ship.Tick(0.01f);
+        target.transform.position += Vector3.forward * 7f;
+        entering.transform.position = At(19, 32);
+        ship.Tick(0.43f);
+
+        var positions = new HashSet<Vector3>();
+        foreach (Projectile projectile in context.ProjectileManager.Projectiles)
+        {
+            Assert.That(projectile.Tick(2f), Is.False);
+            Vector3 impact = projectile.transform.position;
+            Assert.That(impact.y, Is.EqualTo(grid.SampleHeight(impact)).Within(0.0001f));
+            Assert.That(Vector2.Distance(new Vector2(impact.x, impact.z), new Vector2(center.x, center.z)), Is.LessThanOrEqualTo(3.001f));
+            positions.Add(impact);
+        }
+        center.y = grid.SampleHeight(center);
+        Assert.That(positions.Count, Is.EqualTo(8));
+        Assert.That(positions, Does.Contain(center));
+        float damage = ship.Definition.attackDamage;
+        Assert.That(target.Health.CurrentHealth, Is.EqualTo(targetHealth));
+        Assert.That(nearby.Health.CurrentHealth, Is.EqualTo(nearbyHealth - damage));
+        Assert.That(entering.Health.CurrentHealth, Is.EqualTo(enteringHealth - damage));
+        Assert.That(friendly.Health.CurrentHealth, Is.EqualTo(friendlyHealth));
+        Assert.That(aircraft.Health.CurrentHealth, Is.EqualTo(airHealth));
+        Assert.That(building.Health.CurrentHealth, Is.EqualTo(buildingHealth - damage));
+        Assert.That(friendlyBuilding.Health.CurrentHealth, Is.EqualTo(friendlyBuildingHealth));
+    }
+
+    [Test]
+    public void CommittedShotsLandAfterEitherShipOrTargetDiesAndASecondShipHasAnIndependentSalvo()
+    {
+        Faction faction = CreateFaction(FactionColorType.Blue);
+        Faction aiFaction = CreateFaction(FactionColorType.Red, controller: new AIFactionController());
+        Faction enemy = CreateFaction(FactionColorType.Green);
+        var ship = (CombatUnit)Spawn(faction, UnitType.Aircraft, 20, 18);
+        var aiShip = (CombatUnit)Spawn(aiFaction, UnitType.Aircraft, 20, 39);
+        aiShip.transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+        UnitBase target = Spawn(enemy, UnitType.Combat, 20, 30);
+        UnitBase nearby = Spawn(enemy, UnitType.Mech, 21, 30);
+        float health = nearby.Health.CurrentHealth;
+        ship.IssueCommand(CommandType.Attack, CommandContext.AttackTarget(target));
+        ship.Tick(0.01f);
+        // The AI-owned ship uses its normal idle combat awareness.
+        var projectiles = context.ProjectileManager.Projectiles;
+        for (int i = 0; i < 10 && projectiles.Count < 2; i++)
+            aiShip.Tick(0.05f);
+
+        Assert.That(aiShip.CurrentTarget, Is.SameAs(target));
+        Assert.That(projectiles.Count, Is.EqualTo(2));
+        ship.TakeDamage(new DamageInfo(ship.Health.CurrentHealth, nearby));
+        target.TakeDamage(new DamageInfo(target.Health.CurrentHealth, aiShip));
+        ship.Tick(0.01f);
+        aiShip.Tick(0.01f);
+        Assert.That(projectiles.Count, Is.EqualTo(2));
+
+        context.ProjectileManager.Tick(1f);
+        Assert.That(projectiles, Is.Empty);
+        Assert.That(nearby.Health.CurrentHealth, Is.EqualTo(health - ship.Definition.attackDamage - aiShip.Definition.attackDamage));
     }
 
     [TestCase(UnitType.Combat)]
@@ -311,7 +446,9 @@ public sealed class BattleShipEditModeTests
 
         Assert.That(ship.CurrentTarget, Is.SameAs(target));
         Assert.That(context.ProjectileManager.Projectiles.Count, Is.EqualTo(1));
-        Assert.That(context.ProjectileManager.Projectiles[0].Tick(1f), Is.False);
+        ship.Tick(0.43f);
+        Assert.That(context.ProjectileManager.Projectiles.Count, Is.EqualTo(8));
+        context.ProjectileManager.Tick(1f);
         Assert.That(target.Health.CurrentHealth, Is.EqualTo(targetHealth - 35f));
 
         target.TakeDamage(new DamageInfo(targetHealth, ship, faction));
@@ -321,8 +458,32 @@ public sealed class BattleShipEditModeTests
         Assert.That(ship.Position, Is.EqualTo(new Vector3(destination.x, FlightAltitude, destination.z)));
     }
 
-    private Faction CreateFaction(FactionColorType color, bool usePathfinding = true, IPathfindingService service = null) =>
-        new(roster, color, null, new UnitManager(context, usePathfinding ? service ?? pathfinding : null, world),
+    [Test]
+    public void TurretStillFiresAndDamagesWithAConventionalProjectile()
+    {
+        Faction faction = CreateFaction(FactionColorType.Blue);
+        Faction enemy = CreateFaction(FactionColorType.Red);
+        BuildingDefinition definition = roster.GetBuildingDefinition(BuildingType.Turret);
+        BuildingBase turret = faction.BuildingManager.Construct(definition, new GridCoord(19, 19));
+        Assert.That(turret, Is.Not.Null);
+        UnitBase target = Spawn(enemy, UnitType.Mech, 20, 28);
+        float health = target.Health.CurrentHealth;
+        turret.Tick(definition.ConstructionDuration);
+        TurretDefenseComponent defense = turret.GetComponent<TurretDefenseComponent>();
+        var projectiles = context.ProjectileManager.Projectiles;
+        for (int i = 0; i < 100 && projectiles.Count == 0; i++)
+            defense.Tick(0.05f);
+
+        Assert.That(projectiles.Count, Is.EqualTo(1));
+        Assert.That(projectiles[0].Source, Is.SameAs(turret));
+        Physics.SyncTransforms();
+        Assert.That(projectiles[0].Tick(1f), Is.False);
+        Assert.That(target.Health.CurrentHealth, Is.EqualTo(health - 15f));
+    }
+
+    private Faction CreateFaction(FactionColorType color, bool usePathfinding = true, IPathfindingService service = null,
+        IFactionController controller = null) =>
+        new(roster, color, controller, new UnitManager(context, usePathfinding ? service ?? pathfinding : null, world),
             new BuildingManager(context, grid, world), new ResourceManager(2000, 2000, 30), context);
 
     private UnitBase Spawn(Faction faction, UnitType type, float x, float z) =>

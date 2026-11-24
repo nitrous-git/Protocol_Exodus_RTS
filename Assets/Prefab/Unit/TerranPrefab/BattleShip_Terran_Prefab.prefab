@@ -515,7 +515,8 @@ Transform:
   m_LocalPosition: {x: 0.010491971, y: -0.19431126, z: 0.022679089}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7372100738578947075}
   m_Father: {fileID: 1804374110332845052}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &9127068277728731637
@@ -724,6 +725,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitView
   selectionRing: {fileID: 7690648555348888914}
+  selectionRingCylinder: {fileID: 0}
+  selectionRingIndicator: {fileID: 0}
   projectSelectionRingToGround: 0
   selectionRingHeightOffset: 0.03
   selectionRingRotationSpeed: 20
@@ -812,14 +815,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64ab831c87aa7a54c9d9f3fb3a3d4c2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitWeapon
-  projectilePrefab: {fileID: 4919975833753055912, guid: 87428c28ccb5ee343a7f80482fdf46b7, type: 3}
+  attackMode: 0
   firePoint: {fileID: 3523387621662406013}
+  projectilePrefab: {fileID: 4919975833753055912, guid: 87428c28ccb5ee343a7f80482fdf46b7, type: 3}
   projectileSpeed: 70
   projectileLifetime: 1.6
   projectileCollisionRadius: 0.14
   projectileCollisionMask:
     serializedVersion: 2
     m_Bits: 960
+  flameConeAngle: 70
+  flameHitMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  flameEffect: {fileID: 0}
+  groundBombardmentEnabled: 1
+  bombardmentRadius: 3
+  projectilesPerSalvo: 8
+  projectileLaunchInterval: 0.06
+  bombardmentProjectileSpeed: 22
+  bombardmentProjectilePrefab: {fileID: 8412635271044561837, guid: 5bc36e4602f50b548905ca45d14d3452, type: 3}
+  bombardmentImpactPrefab: {fileID: 1179480525421577439, guid: f48d27f4ac469854990a91ebe27f2f5d, type: 3}
+  bombardmentFirePoints:
+  - {fileID: 7372100738578947075}
+  - {fileID: 8516319472525182257}
+  drawBombardmentGizmos: 0
 --- !u!114 &6909505070804457585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -891,6 +911,68 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5015786680697259255}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5048923374150677511
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7372100738578947075}
+  m_Layer: 7
+  m_Name: BombardmentFirePointLeft
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7372100738578947075
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5048923374150677511}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000000022351742, y: 0.000000040978193, z: 0.35515663}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4879994100244191116}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5093735488567348077
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8516319472525182257}
+  m_Layer: 7
+  m_Name: BombardmentFirePointRight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8516319472525182257
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5093735488567348077}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000000022351742, y: 0.000000014901161, z: 0.35515657}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7407251365772992186}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6735876603534809513
 GameObject:
@@ -1076,7 +1158,8 @@ Transform:
   m_LocalPosition: {x: 0.006904125, y: -0.19402754, z: 0.020653903}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8516319472525182257}
   m_Father: {fileID: 6586344341172139295}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &467433899058527961

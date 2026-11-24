@@ -122,6 +122,13 @@ public class TerrainGrid
 
     public float SampleHeight(Vector3 position) => terrain.SampleHeight(position) + terrainOrigin.y;
 
+    internal Vector3 ReflectIntoTerrainBounds(Vector3 position)
+    {
+        position.x = terrainOrigin.x + Mathf.PingPong(position.x - terrainOrigin.x, terrainSize.x);
+        position.z = terrainOrigin.z + Mathf.PingPong(position.z - terrainOrigin.z, terrainSize.z);
+        return position;
+    }
+
     public Vector3 SampleNormal(Vector3 position)
     {
         float normalizedX = (position.x - terrainOrigin.x) / terrainSize.x;

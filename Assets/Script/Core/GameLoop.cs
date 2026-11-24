@@ -52,6 +52,7 @@ public sealed class GameLoop : MonoBehaviour
             {
                 state = MatchState.Ended;
                 isPaused = false;
+                matchWorld?.ProjectileManager?.Clear();
                 playerController?.CancelPlayerInput();
                 matchUI?.ShowResult(result);
                 return;

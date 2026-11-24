@@ -24,20 +24,36 @@ public class UnitWeapon : MonoBehaviour
     [SerializeField] private LayerMask flameHitMask = ~0;
     [SerializeField] private ParticleSystem flameEffect;
 
+    [Header("Ground Bombardment")]
+    [SerializeField] private bool groundBombardmentEnabled;
+    [SerializeField, Min(0.01f)] private float bombardmentRadius = 3f;
+    [SerializeField, Min(1)] private int projectilesPerSalvo = 8;
+    [SerializeField, Min(0.01f)] private float projectileLaunchInterval = 0.06f;
+    [SerializeField, Min(0.01f)] private float bombardmentProjectileSpeed = 22f;
+    [SerializeField] private Projectile bombardmentProjectilePrefab;
+    [SerializeField] private ParticleSystem bombardmentImpactPrefab;
+    [SerializeField] private Transform[] bombardmentFirePoints;
+    [SerializeField] private bool drawBombardmentGizmos;
+
     private CombatUnit owner;
+    private GameContext gameContext;
     private ProjectileManager projectileManager;
     private float cooldownRemaining;
     private bool flameBurstPending;
     private Collider[] flameHits;
     private HashSet<ITargetable> flameTargets;
+    private bool bombardmentPending;
+    private BombardmentSalvo salvo;
+    private float timeUntilNextLaunch;
 
-    public bool IsReady => cooldownRemaining <= 0f;
+    public bool IsReady => cooldownRemaining <= 0f && salvo?.IsLaunching != true;
     public Transform FirePoint => firePoint != null ? firePoint : transform;
     internal bool UsesFlameCone => attackMode == AttackMode.FlameCone;
 
     public void Initialize(CombatUnit owner, GameContext gameContext)
     {
         this.owner = owner;
+        this.gameContext = gameContext;
         projectileManager = gameContext != null ? gameContext.ProjectileManager : null;
         cooldownRemaining = 0f;
 
@@ -54,11 +70,30 @@ public class UnitWeapon : MonoBehaviour
     {
         if (cooldownRemaining > 0f)
             cooldownRemaining -= deltaTime;
+
+        if (salvo == null)
+            return;
+
+        if (!salvo.IsActive)
+        {
+            salvo = null;
+            return;
+        }
+
+        if (!salvo.IsLaunching)
+            return;
+
+        timeUntilNextLaunch -= deltaTime;
+        while (timeUntilNextLaunch <= 0f && salvo.IsLaunching)
+        {
+            LaunchBombardmentProjectile();
+            timeUntilNextLaunch += Mathf.Max(0.01f, projectileLaunchInterval);
+        }
     }
 
     internal bool TryFireImmediate(ITargetable target)
     {
-        if (!IsReady || !TryFireProjectile(target))
+        if (!IsReady || !(UsesBombardmentAt(target) ? TryStartBombardment(target) : TryFireProjectile(target)))
             return false;
 
         cooldownRemaining = owner.Definition.attackCooldown;
@@ -70,11 +105,13 @@ public class UnitWeapon : MonoBehaviour
         if (!IsReady || !CanFireAt(target))
             return false;
 
-        if (!UsesFlameCone && (projectilePrefab == null || projectileManager == null))
+        bool useBombardment = UsesBombardmentAt(target);
+        if (useBombardment ? !CanStartBombardment : !UsesFlameCone && (projectilePrefab == null || projectileManager == null))
             return false;
 
         cooldownRemaining = owner.Definition.attackCooldown;
         flameBurstPending = UsesFlameCone;
+        bombardmentPending = useBombardment;
 
         return true;
     }
@@ -83,7 +120,16 @@ public class UnitWeapon : MonoBehaviour
     {
         if (!UsesFlameCone)
         {
-            TryFireProjectile(target);
+            if (UsesBombardmentAt(target))
+            {
+                if (bombardmentPending)
+                {
+                    bombardmentPending = false;
+                    TryStartBombardment(target);
+                }
+            }
+            else
+                TryFireProjectile(target);
             return;
         }
 
@@ -100,8 +146,9 @@ public class UnitWeapon : MonoBehaviour
         FireFlameCone();
     }
 
-    internal void StopFlameBurst()
+    internal void CancelPendingAttack()
     {
+        bombardmentPending = false;
         flameBurstPending = false;
         if (flameEffect != null && flameEffect.isEmitting)
             flameEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
@@ -109,9 +156,66 @@ public class UnitWeapon : MonoBehaviour
 
     private void OnDisable()
     {
+        bombardmentPending = false;
+        StopBombardment();
         flameBurstPending = false;
         if (flameEffect != null)
             flameEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
+
+    internal void StopBombardment()
+    {
+        salvo?.StopLaunching();
+        salvo = null;
+    }
+
+    private bool UsesBombardmentAt(ITargetable target) => groundBombardmentEnabled && !UsesFlameCone &&
+        target is BuildingBase or UnitBase { IsAirUnit: false };
+
+    private bool CanStartBombardment => projectileManager != null && gameContext.TerrainGrid != null &&
+        bombardmentProjectilePrefab != null && bombardmentImpactPrefab != null;
+
+    private bool TryStartBombardment(ITargetable target)
+    {
+        if (!CanStartBombardment || !CanFireAt(target) || !owner.IsAlive || salvo?.IsLaunching == true)
+            return false;
+
+        salvo = new BombardmentSalvo(gameContext, owner, target.Position, Mathf.Max(0.01f, bombardmentRadius),
+            Mathf.Max(1, projectilesPerSalvo), bombardmentImpactPrefab);
+        timeUntilNextLaunch = Mathf.Max(0.01f, projectileLaunchInterval);
+        LaunchBombardmentProjectile();
+        return true;
+    }
+
+    private void LaunchBombardmentProjectile()
+    {
+        Transform mount = bombardmentFirePoints is { Length: > 0 }
+            ? bombardmentFirePoints[salvo.Launched % bombardmentFirePoints.Length]
+            : null;
+        salvo.Launch(bombardmentProjectilePrefab, (mount != null ? mount : FirePoint).position,
+            Mathf.Max(0.01f, bombardmentProjectileSpeed));
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!drawBombardmentGizmos || salvo == null)
+            return;
+
+        Color previousColor = Gizmos.color;
+        Gizmos.color = Color.red;
+        const int segments = 32;
+        Vector3 previous = salvo.Center + Vector3.forward * bombardmentRadius;
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = 2f * Mathf.PI * i / segments;
+            Vector3 point = salvo.Center + new Vector3(Mathf.Sin(angle), 0f, Mathf.Cos(angle)) * bombardmentRadius;
+            Gizmos.DrawLine(previous, point);
+            previous = point;
+        }
+
+        foreach (Vector3 point in salvo.Destinations)
+            Gizmos.DrawWireSphere(point, 0.15f);
+        Gizmos.color = previousColor;
     }
 
     private void FireFlameCone()

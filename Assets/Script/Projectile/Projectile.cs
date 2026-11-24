@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class Projectile : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class Projectile : MonoBehaviour
 
     [Header("Selection")]
     [SerializeField] private GameObject hitCollisionFx;
+    [SerializeField] private ParticleSystem destinationEffect;
 
     private readonly RaycastHit[] hitBuffer = new RaycastHit[HitBufferSize];
 
@@ -20,8 +22,35 @@ public class Projectile : MonoBehaviour
     private LayerMask collisionMask;
     private bool initialized;
     private Transform projectileRoot;
+    private BombardmentSalvo salvo;
+    private Vector3 destination;
+
+    internal ObjectPool<Projectile> DestinationPool { get; set; }
 
     public ITargetable Source => source;
+
+    internal void InitializeDestination(Vector3 point, float projectileSpeed, BombardmentSalvo bombardment)
+    {
+        destination = point;
+        speed = projectileSpeed;
+        salvo = bombardment;
+        source = salvo.Source;
+        initialized = true;
+        gameObject.SetActive(true);
+        if (Application.isPlaying && destinationEffect != null)
+            destinationEffect.Play(true);
+    }
+
+    internal void ResetDestination()
+    {
+        if (destinationEffect != null)
+            destinationEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        salvo = null;
+        source = null;
+        initialized = false;
+        gameObject.SetActive(false);
+    }
 
     public void Initialize(
         ITargetable source,
@@ -50,6 +79,8 @@ public class Projectile : MonoBehaviour
     public bool Tick(float deltaTime)
     {
         if (!initialized) return false;
+        if (salvo != null)
+            return TickDestination(deltaTime);
 
         remainingLifetime -= deltaTime;
         if (remainingLifetime <= 0.0f) return false;
@@ -68,6 +99,20 @@ public class Projectile : MonoBehaviour
         return true;
     }
 
+
+    private bool TickDestination(float deltaTime)
+    {
+        Vector3 position = Vector3.MoveTowards(transform.position, destination, speed * deltaTime);
+        transform.position = position;
+        if (position != destination)
+            return true;
+
+        BombardmentSalvo impactSalvo = salvo;
+        salvo = null;
+        initialized = false;
+        impactSalvo.Impact(destination);
+        return false;
+    }
 
     private bool TryGetFirstCollision(float distance, out RaycastHit closestHit)
     {
